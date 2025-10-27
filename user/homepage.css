@@ -1,0 +1,378 @@
+/* GLOBAL STYLES */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+}
+
+/* HEADER */
+.header {
+  background-color: #10006b;
+  color: white;
+  padding: 6px 20px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 60px;
+  border-radius: 50%;
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.logo-text h1 {
+  font-size: 22px; /* smaller text */
+  margin: 0;
+}
+
+.logo-text p {
+  font-size: 13px;
+  margin: 0;
+  opacity: 0.9;
+}
+.icon-link img {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+  transition: transform 0.2s, filter 0.3s;
+}
+
+.icon-link img:hover {
+  transform: scale(1.1);
+  filter: brightness(0.8) invert(1);
+}
+
+.profile-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
+/* HEADER ICONS — Top Right */
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+.header-icons a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.header-icons a:hover {
+  text-decoration: underline;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* NAVIGATION BAR */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ccc;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 18px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.navbar a:hover {
+  background-color: #10006b;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Active link (optional, to show the current section) */
+.navbar a.active {
+  background-color: #10006b;
+  color: white;
+}
+
+/* SEARCH BAR */
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 25px;
+  padding: 3px 10px;
+  border: 1px solid #aaa;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  padding: 6px 8px;
+  font-size: 14px;
+  border-radius: 25px;
+  width: 160px;
+  background: transparent;
+}
+
+.search-bar button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.search-bar button img {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Hover animation for the button */
+.search-bar button:hover img {
+  transform: scale(1.1);
+}
+
+/* Focus effect for input */
+.search-bar:focus-within {
+  box-shadow: 0 0 5px rgba(16, 0, 107, 0.5);
+}
+
+/* ====== CAROUSEL ====== */
+.carousel {
+  width: 100%;
+  overflow: hidden;
+  height: 480px;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slides img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.slides img.active {
+  display: block;
+}
+
+/* Overlay Text */
+.carousel-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  color: white;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.carousel-text h1 {
+  font-size: 48px;
+  margin: 0;
+  color: #ff6600;
+}
+
+.carousel-text h3 {
+  font-size: 20px;
+  color: #ffbfbf;
+  margin-bottom: 20px;
+}
+
+.carousel-text p {
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+/* ====== ARROWS ====== */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.carousel-arrow.left {
+  left: 20px;
+}
+
+.carousel-arrow.right {
+  right: 20px;
+}
+
+/* Dots */
+.carousel-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.carousel-dots span.active {
+  background: #0055ff;
+}
+
+/* SECTIONS */
+section {
+  padding: 30px;
+  background-color: #f6f6f6;
+}
+
+h2 {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.card-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding: 10px 0;
+  max-width: 100%;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  width: 150px;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  flex: 0 0 auto;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.price {
+  color: green;
+  font-weight: bold;
+}
+
+/* HELP BOX */
+.help-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* FOOTER */
+.footer {
+  background: #10006b;
+  color: white;
+  text-align: left;
+  padding: 20px;
+}
+
+.credits {
+  margin-top: 10px;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 1024px) {
+  .carousel {
+    height: 400px;
+  }
+  .carousel-text {
+    width: 50%;
+    padding: 30px;
+  }
+  .carousel-text h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    height: 350px;
+  }
+  .carousel-text {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 25px;
+  }
+  .carousel-text h1 {
+    font-size: 28px;
+  }
+}
