@@ -1,0 +1,207 @@
+body {
+  background: #e7e7e7;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.listing {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  padding: 40px 30px;
+}
+
+.back-btn {
+  grid-column: 1 / -1;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.product-title {
+  grid-column: 1 / -1;
+  font-size: 26px;
+  font-weight: bold;
+  margin: 10px 0 20px;
+}
+
+/* Product View */
+.product-view {
+  display: flex;
+  gap: 20px;
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.thumb {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+.thumb.active,
+.thumb:hover {
+  border: 2px solid #4a3aff;
+}
+
+.thumb-nav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* Slider */
+.slider {
+  position: relative;
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.slide {
+  width: 400px;
+  opacity: 0;
+  display: none;
+  transition: opacity 0.3s;
+}
+.slide.active {
+  opacity: 1;
+  display: block;
+}
+
+.slide-btn {
+  position: absolute;
+  background: none;
+  border: none;
+  font-size: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #444;
+  padding: 10px;
+}
+.slide-btn.prev { left: 10px; }
+.slide-btn.next { right: 10px; }
+
+/* Description box */
+.description-box {
+  background: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  grid-column: 1;
+}
+
+.desc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-left {
+  color: #ffbf00;
+  font-size: 14px;
+}
+
+.fav-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.tag {
+  background: #2e2a8c;
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  display: inline-block;
+  margin: 5px 0 10px;
+}
+
+.desc-text {
+  margin-bottom: 20px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.meetup,
+.payment,
+.seller {
+  margin-bottom: 15px;
+}
+
+.meetup h4,
+.payment h4,
+.seller h4 {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+/* Right-side bid info */
+.bid-info {
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  align-self: start;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 5px 0 15px;
+}
+
+.price.up {
+  color: #2ecc71;
+}
+
+.bid-btn {
+  background: #140066;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.delete-btn {
+  display: block;
+  margin: 0 auto;
+  background: none;
+  color: red;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .listing {
+    grid-template-columns: 1fr;
+  }
+  .bid-info {
+    justify-self: center;
+    width: 80%;
+  }
+  .slider .slide {
+    width: 100%;
+  }
+}

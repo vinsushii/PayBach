@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayBach | Listing View</title>
+
+  <!-- Shared header/footer -->
+  <link rel="stylesheet" href="homepage.css" />
+  <!-- Page-specific -->
+  <link rel="stylesheet" href="listing_view.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-section">
+        <img src="/images/payback-logo.png" alt="PayBach Logo" class="logo" />
+        <div class="logo-text">
+          <h1>PayBach</h1>
+          <p>We have your back 24/7.</p>
+        </div>
+      </div>
+
+      <div class="header-icons">
+        <a href="chats.html">Chats</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="../index.html">Log in/Sign up</a>
+      </div>
+    </div>
+
+    <nav class="navbar">
+      <a href="#" class="active">BIDS</a>
+      <a href="#">TRADES</a>
+      <a href="#">CATEGORIES</a>
+      <a href="#">HELP</a>
+      <div class="search-bar">
+        <input type="text" placeholder="Search..." />
+        <button type="submit"></button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN SECTION -->
+  <main class="listing">
+    <a href="ongoing_bids.html" class="back-btn">← Go back</a>
+    <h2 class="product-title">iPhone 17 Pro Max</h2>
+
+    <section class="product-view">
+      <!-- Thumbnails -->
+      <div class="thumbnails">
+        <button class="thumb-nav up">up</button>
+        <img src="images/iphone1.png" alt="iPhone front" class="thumb active" />
+        <img src="images/iphone2.png" alt="iPhone side" class="thumb" />
+        <img src="images/iphone3.png" alt="iPhone back" class="thumb" />
+        <img src="images/iphone4.png" alt="iPhone box" class="thumb" />
+        <button class="thumb-nav down">down</button>
+      </div>
+
+      <!-- Slider -->
+      <div class="slider">
+        <button class="slide-btn prev">prev</button>
+        <div class="slides">
+          <img src="images/iphone1.png" class="slide active" alt="iPhone front" />
+          <img src="images/iphone2.png" class="slide" alt="iPhone side" />
+          <img src="images/iphone3.png" class="slide" alt="iPhone back" />
+          <img src="images/iphone4.png" class="slide" alt="iPhone box" />
+        </div>
+        <button class="slide-btn next">next</button>
+      </div>
+    </section>
+
+    <!-- DESCRIPTION -->
+    <section class="description-box">
+      <div class="desc-header">
+        <h3>Description</h3>
+        <span class="time-left">2 days left to bid ✎</span>
+        <button class="fav-btn">♡</button>
+      </div>
+
+      <p><strong>Condition:</strong> Like new</p>
+      <span class="tag">TECHNOLOGY</span>
+
+      <p class="desc-text">
+        okay po siya desciption ppo ito 
+      </p>
+
+      <div class="meetup">
+        <h4>Meet-up</h4>
+        <p>Saint Louis University, Bakakeng Campus - Lobby</p>
+      </div>
+
+      <div class="payment">
+        <h4>Payment</h4>
+        <p>Online payment (GCash, Bank transfer)</p>
+      </div>
+
+      <div class="seller">
+        <h4>Seller</h4>
+        <p>Vincent Rafael Fajardo <br /> 222221@slu.edu.ph</p>
+      </div>
+    </section>
+
+    <!-- BID INFO -->
+    <aside class="bid-info">
+      <p>Current bid is at:</p>
+      <h3 class="price up">₱35 000</h3>
+      <button class="bid-btn">FOR BIDDING</button>
+      <button class="delete-btn">Delete listing</button>
+    </aside>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="contact">
+      <h3>Contact Us</h3>
+      <p>222222@slu.edu.ph</p>
+      <p>Saint Louis University, Maryheights Campus</p>
+      <p>Bakakeng Norte, Baguio City</p>
+    </div>
+    <p class="credits">Website made by Team Bach © 2025</p>
+  </footer>
+
+  <!-- JS file -->
+  <script src="listing_view.js"></script>
+</body>
+</html>
