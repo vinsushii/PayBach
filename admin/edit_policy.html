@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="edit_policy.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayBach — Policies</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  
+  <link rel="stylesheet" href="edit_policy.css">
 </head>
 <body>
-      <header class="header">
+
+  <header class="header">
     <div class="header-top">
       <div class="logo-section">
         <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
@@ -30,16 +34,53 @@
       </div>
     </div>
 
-    <!-- NAVIGATION -->
-    <nav class="nav-bar">
+    <nav class="nav-bar" aria-label="Main navigation">
       <a href="#" class="active">VALIDATE</a>
       <a href="#">REPORT</a>
       <a href="#">METRICS</a>
       <a href="#">POLICIES</a>
     </nav>
   </header>
-  <main>
 
+  <main>
+    <section class="card" aria-labelledby="policies-title">
+      <div class="page-title">
+        <h2 id="policies-title">Website Policies</h2>
+
+        <div class="controls">
+        
+          <button id="editBtn" class="btn primary" style="display:none">Edit Policies</button>
+          <button id="previewToggle" class="btn ghost" title="Toggle source/preview">Toggle Preview</button>
+        </div>
+      </div>
+
+      <!-- formatting toolbar (visible in edit mode) -->
+      <div id="toolbar" class="toolbar" style="display:none" aria-hidden="true">
+        <button data-cmd="bold" title="Bold (Ctrl/Cmd+B)">Bold</button>
+        <button data-cmd="italic" title="Italic (Ctrl/Cmd+I)">Italic</button>
+        <button data-cmd="underline" title="Underline">Underline</button>
+        <button data-cmd="insertUnorderedList" title="Bullet list">Bullets</button>
+        <button data-cmd="insertOrderedList" title="Numbered">Numbered</button>
+        <button id="linkBtn" title="Add / edit link">Link</button>
+        <button data-cmd="removeFormat" title="Remove formatting">Clear</button>
+      </div>
+
+      <!-- policy display / editor -->
+      <div id="policyView" class="policy-view" tabindex="0" aria-live="polite"></div>
+      <textarea id="policyEditor" aria-label="Policy source (HTML)"></textarea>
+
+      <!-- actions -->
+      <div id="editorActions" class="editor-actions" style="display:none" aria-hidden="true">
+        <button id="saveBtn" class="btn primary">Save</button>
+        <button id="cancelBtn" class="btn ghost">Cancel</button>
+        <button id="deleteBtn" class="btn warn" title="Reset to default policy">Reset</button>
+      </div>
+
+      <p class="meta">Last saved: <span id="lastSaved">never</span></p>
+    </section>
   </main>
+
+
+  <script src="edit_policy.js" defer></script>
 </body>
 </html>
