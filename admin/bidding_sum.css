@@ -1,23 +1,44 @@
+:root {
+  --brand: #10006b;
+  --muted: #b8b5c1;
+  --accent: #ffde59;
+  --bg: #f3f6fb;
+  --card: #fff;
+  --max-width: 1200px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
-  background-color: #f3f6fb;
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  color: #111;
 }
 
 /* HEADER */
 .header {
-  background-color: #10006b;
+  background-color: var(--brand);
   color: white;
-  padding: 6px 20px;
+  padding: 8px 20px;
 }
 
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  max-width: var(--max-width);
+  margin: 0 auto;
 }
 
 .logo-section {
@@ -32,7 +53,7 @@ body {
 }
 
 .logo-text h1 {
-  font-size: 22px;
+  font-size: 20px;
   margin: 0;
 }
 
@@ -44,11 +65,11 @@ body {
 
 .header-icons {
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 10px;
   position: absolute;
-  top: 10px;
   right: 20px;
+  top: 10px;
 }
 
 .header-icons a {
@@ -57,37 +78,189 @@ body {
   font-size: 14px;
 }
 
-.header-icons a:hover {
-  text-decoration: underline;
-}
-
 .icon {
   width: 20px;
   height: 20px;
   vertical-align: middle;
+  margin-right: 6px;
 }
 
 /* NAVBAR */
-nav {
+.nav-bar {
   display: flex;
-  justify-content: flex-start;
+  gap: 1rem;
+  padding: 0.6rem 2rem;
+  background-color: var(--muted);
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #b8b5c1;
-  width: 100%;
-  box-sizing: border-box;
-  gap: 2rem;
 }
 
-nav a {
+.nav-bar a {
   text-decoration: none;
   color: #000;
   font-weight: 600;
-  letter-spacing: 1px;
+  padding: 6px 10px;
+  border-radius: 4px;
 }
 
-nav a.active {
-  color: #10006b;
-  border-bottom: 4px solid #ffde59;
-  padding-bottom: 5px;
+.nav-bar a.active {
+  color: var(--brand);
+  border-bottom: 4px solid var(--accent);
+  padding-bottom: 2px;
+}
+
+/* MAIN CONTENT */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 20px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.card {
+  background-color: var(--card);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(16, 0, 107, 0.06);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+/* FILTER CONTROLS */
+.controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.date-filters {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.date-filters label {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.date-filters input[type="date"] {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  background-color: var(--brand);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.ghost {
+  background-color: transparent;
+  border: 1px solid #ddd;
+  color: #111;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* TABLE */
+.table-wrap {
+  overflow: auto;
+  border-radius: 8px;
+  border: 1px solid #e6e6ee;
+}
+
+.bids-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.bids-table thead {
+  background-color: #f7f7fb;
+  position: sticky;
+  top: 0;
+}
+
+.bids-table th,
+.bids-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.bids-table th {
+  font-weight: 700;
+}
+
+.bids-table tbody tr:hover {
+  background-color: #fcfcff;
+}
+
+.meta {
+  font-size: 13px;
+  color: #555;
+  margin-top: 8px;
+}
+
+/* FOOTER */
+.site-footer {
+  background-color: var(--brand);
+  color: #fff;
+  padding: 16px 20px;
+  margin-top: auto;
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-note {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .controls-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bids-table {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-bar {
+    overflow: auto;
+  }
+
+  .bids-table {
+    min-width: 600px;
+  }
 }

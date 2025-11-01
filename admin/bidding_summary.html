@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="bidding_sum.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PayBach — Bidding Summary</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="bidding_sum.css">
 </head>
 <body>
-    <header class="header">
+  <header class="header">
     <div class="header-top">
       <div class="logo-section">
         <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
@@ -30,17 +32,69 @@
       </div>
     </div>
 
-    <!-- NAVIGATION -->
     <nav class="nav-bar">
-      <a href="#" class="active">VALIDATE</a>
-      <a href="#">REPORT</a>
-      <a href="#">METRICS</a>
-      <a href="#">POLICIES</a>
+      <a href="validate_item.html">VALIDATE</a>
+      <a href="report.html">REPORT</a>
+      <a href="metrics.html">METRICS</a>
+      <a href="edit_policy.html">POLICIES</a>
+      <a href="bidding_summary.html" class="active">BIDDING</a>
     </nav>
   </header>
 
   <main>
+    <section class="card">
+      <div class="controls-row">
+        <div class="date-filters">
+          <label>
+            From
+            <input type="date" id="fromDate" />
+          </label>
+          <label>
+            To
+            <input type="date" id="toDate" />
+          </label>
+          <button id="filterBtn" class="btn">Filter</button>
+          <button id="resetBtn" class="btn ghost">Reset</button>
+        </div>
 
+        <div class="actions">
+          <button id="exportCsv" class="btn">Export CSV</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="bidsTable" class="bids-table">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Date</th>
+              <th>Starting Bid</th>
+              <th>Last Bid</th>
+              <th>Type of Transaction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- rows will be inserted here via JS later -->
+          </tbody>
+        </table>
+      </div>
+
+      <p id="noResults" class="meta" style="display:none">
+        No records found for the selected date range.
+      </p>
+    </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <h3>Contact Us</h3>
+        <p>2222@example.ph<br>Saint Louis University, Main/Higherlights Campus</p>
+      </div>
+      <div class="footer-note">Website made by Team Bach · ©2025</div>
+    </div>
+  </footer>
+
+  <script src="bidding_sum.js" defer></script>
 </body>
 </html>
