@@ -65,7 +65,7 @@ CREATE TABLE bids (
     start_bid DECIMAL(10,2),
     bid_increment DECIMAL(10,2),
     current_amount DECIMAL(10,2),
-    current_date DATETIME,
+    bid_datetime DATETIME,          -- FIXED: renamed from current_date
     current_user_id VARCHAR(20),
     FOREIGN KEY (user_idnum) REFERENCES users(user_idnum)
 );
@@ -113,7 +113,7 @@ INSERT INTO listing_categories (listing_id, category) VALUES
 (1, 'SAMCIS'),
 (1, 'Learning Material');
 
-INSERT INTO bids (user_idnum, transaction_id, autobuy_amount, start_bid, bid_increment, current_amount, current_date, current_user_id)
+INSERT INTO bids (user_idnum, transaction_id, autobuy_amount, start_bid, bid_increment, current_amount, bid_datetime, current_user_id)
 VALUES ('2241389', 't1000000', 5000, 1000, 100, 2500, '2025-10-18 10:30:00', '224123');
 
 INSERT INTO barters (user_idnum, requested_items, date_of_exchange)
