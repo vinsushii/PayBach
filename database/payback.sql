@@ -14,7 +14,7 @@ CREATE TABLE users (
     email VARCHAR(150) UNIQUE NOT NULL,
     school VARCHAR(100),
     program VARCHAR(100),
-    role ENUM('admin','student') NOT NULL DEFAULT 'student'  -- NEW: role column
+    role ENUM('admin','student') NOT NULL DEFAULT 'student'  -- role column
 );
 
 CREATE TABLE user_courses (
