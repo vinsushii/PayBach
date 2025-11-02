@@ -41,23 +41,31 @@
 
     </section>
 
-    <!-- REGISTER FORM -->
-    <section class="form-container" id="register-form">
-      <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
-      <form>
-        <input type="email" placeholder="Email" required>
-        <div class="password-wrapper">
-          <input type="password" id="reg-pass" placeholder="Password" required>
-          <span class="toggle-password" data-target="reg-pass"></span>
-        </div>
-        <div class="password-wrapper">
-          <input type="password" id="reg-confirm" placeholder="Confirm Password" required>
-          <span class="toggle-password" data-target="reg-confirm"></span>
-        </div>
-        <button type="submit" class="btn">Create Account</button>
-        <p class="bottom-text">Already Signed In? <a href="#" id="login-link">Login</a></p>
-      </form>
-    </section>
+   <!-- REGISTER FORM -->
+<section class="form-container" id="register-form">
+  <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
+  
+  <!-- Send data to signup.php -->
+  <form action="database/signup.php" method="POST">
+    <input type="text" name="user_idnum" placeholder="Student ID" required>
+
+    <input type="email" name="email" placeholder="Email" required>
+    
+    <div class="password-wrapper">
+      <input type="password" id="reg-pass" name="password" placeholder="Password" required>
+      <span class="toggle-password" data-target="reg-pass"></span>
+    </div>
+    
+    <div class="password-wrapper">
+      <input type="password" id="reg-confirm" name="cpassword" placeholder="Confirm Password" required>
+      <span class="toggle-password" data-target="reg-confirm"></span>
+    </div>
+    
+    <button type="submit" class="btn">Create Account</button>
+    <p class="bottom-text">Already Signed In? <a href="index.html" id="login-link">Login</a></p>
+  </form>
+</section>
+
 
     <!-- FORGOT PASSWORD FORM -->
     <section class="form-container" id="forgot-form">
