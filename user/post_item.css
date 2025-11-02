@@ -1,0 +1,109 @@
+body {
+  background-color: #f2f2f2;
+  font-family: "Poppins", sans-serif;
+}
+
+.post-item {
+  padding: 40px;
+}
+
+.back-btn {
+  text-decoration: none;
+  color: black;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.form-container {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 700px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+  background-color: #1e1e6a;
+  color: white;
+  display: inline-block;
+  padding: 5px 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.form-container label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="number"],
+.form-container textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.payment-buttons {
+  display: flex;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.payment-btn {
+  flex: 1;
+  padding: 10px 0;
+  background-color: #1e1e6a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.payment-btn.active {
+  background-color: #4b4be3;
+}
+
+.tag-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tag {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.tag.selected {
+  background-color: #1e1e6a;
+  color: white;
+  border-color: #1e1e6a;
+}
+
+#add-image-btn {
+  margin-top: 10px;
+  background-color: #1e1e6a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #1e1e6a;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}

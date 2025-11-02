@@ -54,6 +54,15 @@ body {
   margin: 5px 0;
 }
 
+.bid-link {
+  text-decoration: none;
+  color: inherit;
+}
+.bid-link:hover .bid-card {
+  transform: scale(1.02);
+  transition: 0.2s;
+}
+
 .price {
   font-size: 14px;
   color: #000;

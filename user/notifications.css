@@ -1,0 +1,33 @@
+.notifications-container {
+  background-color: #f0eeee;
+  min-height: 80vh;
+  padding: 30px 80px;
+}
+
+.back-section {
+  margin-bottom: 15px;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+}
+
+.notifications-box {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+}
+
+.empty-notif img {
+  width: 140px;
+  margin: 50px 0 10px;
+  opacity: 0.7;
+}
+
+.empty-notif p {
+  color: #333;
+  font-size: 1rem;
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayBach | Post an Item</title>
+  <link rel="stylesheet" href="../user/homepage.css" />
+  <link rel="stylesheet" href="../user/post_item.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="logo-section">
+        <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
+        <div class="logo-text">
+          <h1>PayBach</h1>
+          <p>We have your back 24/7.</p>
+        </div>
+      </div>
+      <div class="header-icons">
+        <a href="chats.html">Chats</a>
+        <a href="notifications.html">Notifications</a>
+        <a href="../index.html">Log in/Sign up</a>
+      </div>
+    </div>
+    
+    <!-- NAVIGATION -->
+  <nav class="navbar">
+    <a href="../user/ongoing_bids.html">BIDS</a>
+    <a href="../user/ongoing_trades.html">TRADES</a>
+    <a href="../user/view_listing.html">CATEGORIES</a>
+    <a href="#help">HELP</a>
+    <div class="search-bar">
+      <input type="text" placeholder="Search..." />
+        <button type="submit">
+            <img src="../images/search-icon.png" alt="Search" />
+        </button>
+    </div>
+  </nav>
+</header>
+
+
+  <!-- FORM SECTION -->
+  <section class="post-item">
+    <a href="../user/homepage.html" class="back-btn">← Go bach</a>
+    <div class="form-container">
+      <h2>Details</h2>
+
+      <form id="postForm">
+        <label>Condition:</label>
+        <input type="text" name="condition" required>
+
+        <label>Description:</label>
+        <textarea name="description" rows="3" required></textarea>
+
+        <label>Meet up:</label>
+        <input type="text" name="meetup" required>
+
+        <label>Payment:</label>
+        <div class="payment-buttons">
+          <button type="button" class="payment-btn" data-type="onsite">Onsite</button>
+          <button type="button" class="payment-btn" data-type="online">Online</button>
+        </div>
+
+        <label>Starting Bid:</label>
+        <input type="number" name="bid" min="1" required>
+
+        <label>Tags:</label>
+        <div class="tag-selection">
+          <button type="button" class="tag">Fashion</button>
+          <button type="button" class="tag">School Supplies</button>
+          <button type="button" class="tag">Technology</button>
+          <button type="button" class="tag">Tools & Home Materials</button>
+          <button type="button" class="tag">Automotive</button>
+          <button type="button" class="tag">Hobbies & Toys</button>
+          <button type="button" class="tag">Decoration</button>
+          <button type="button" class="tag">Sports & Recreation</button>
+          <button type="button" class="tag">Pet Supplies</button>
+          <button type="button" class="tag">Beauty</button>
+          <button type="button" class="tag">Others</button>
+        </div>
+
+        <label>Images:</label>
+        <div id="image-upload">
+          <input type="file" name="images[]" accept="image/*">
+        </div>
+        <button type="button" id="add-image-btn">+ Add another image</button>
+
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="contact">
+      <h3>Contact Us</h3>
+      <p>222222@slu.edu.ph</p>
+      <p>Saint Louis University, Maryheights Campus</p>
+      <p>Bakakeng Norte, Baguio City</p>
+    </div>
+    <p class="credits">Website made by Team Bach ©2025</p>
+  </footer>
+
+  <script src="../user/post_item.js"></script>
+</body>
+</html>
