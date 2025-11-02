@@ -13,7 +13,8 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
     school VARCHAR(100),
-    program VARCHAR(100)
+    program VARCHAR(100),
+    role ENUM('admin','student') NOT NULL DEFAULT 'student'  -- NEW: role column
 );
 
 CREATE TABLE user_courses (
@@ -93,8 +94,13 @@ CREATE TABLE barter_offers (
 -- =========================
 -- SAMPLE DATA
 -- =========================
-INSERT INTO users (user_idnum, first_name, middle_initial, last_name, password_hash, email, school, program)
-VALUES ('2241389', 'Juan', 'A', 'Dela Cruz', 'hashed_password_here', 'delaCruz@slu.edu.ph', 'SAMCIS', 'BSCS');
+-- Student account
+INSERT INTO users (user_idnum, first_name, middle_initial, last_name, password_hash, email, school, program, role)
+VALUES ('2241389', 'Juan', 'A', 'Dela Cruz', 'hashed_password_here', 'delaCruz@slu.edu.ph', 'SAMCIS', 'BSCS', 'student');
+
+-- Admin account
+INSERT INTO users (user_idnum, first_name, middle_initial, last_name, password_hash, email, school, program, role)
+VALUES ('999999', 'Admin', NULL, 'User', 'admin_hashed_password_here', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin');
 
 INSERT INTO user_courses (user_idnum, course_code) VALUES
 ('2241389', 'CS213'),
