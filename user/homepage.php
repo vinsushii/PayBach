@@ -72,54 +72,60 @@ if (!isset($_SESSION['user_idnum']) || $_SESSION['role'] !== 'student') {
   </section>
 
   <!-- ONGOING BIDS -->
-  <section class="bids">
+<section class="bids">
+  <div class="section-header">
     <h2>ONGOING BIDS</h2>
-    <div class="card-container">
-      <div class="card">
-        <img src="../images/iphone.png" alt="iPhone 17 Pro Max" />
-        <p>IPhone 17 Pro Max</p>
-        <span class="price">₱35000</span>
-      </div>
-      <div class="card">
-        <img src="../images/wallet.png" alt="Leather Wallet" />
-        <p>Leather Wallet</p>
-        <span class="price">₱170</span>
-      </div>
-      <div class="card">
-        <img src="../images/goggles.png" alt="Swimming Goggles" />
-        <p>Swimming Goggles</p>
-        <span class="price">₱50</span>
-      </div>
-      <div class="card">
-        <img src="../images/stanley.png" alt="Stanley Grey" />
-        <p>Stanley Grey</p>
-        <span class="price">₱550</span>
-      </div>
+    <button class="add-btn" onclick="window.location.href='post_item.html'">+</button>
+  </div>
+  <div class="card-container">
+    <div class="card">
+      <img src="../images/iphone.png" alt="iPhone 17 Pro Max" />
+      <p>IPhone 17 Pro Max</p>
+      <span class="price">₱35000</span>
     </div>
-  </section>
+    <div class="card">
+      <img src="../images/wallet.png" alt="Leather Wallet" />
+      <p>Leather Wallet</p>
+      <span class="price">₱170</span>
+    </div>
+    <div class="card">
+      <img src="../images/goggles.png" alt="Swimming Goggles" />
+      <p>Swimming Goggles</p>
+      <span class="price">₱50</span>
+    </div>
+    <div class="card">
+      <img src="../images/stanley.png" alt="Stanley Grey" />
+      <p>Stanley Grey</p>
+      <span class="price">₱550</span>
+    </div>
+  </div>
+</section>
 
-  <!-- ONGOING TRADES -->
-  <section class="trades">
+<!-- ONGOING TRADES -->
+<section class="trades">
+  <div class="section-header">
     <h2>ONGOING TRADES</h2>
-    <div class="card-container">
-      <div class="card">
-        <img src="../images/coding.png" alt="Coding for Dummies" />
-        <p>Coding for Dummies</p>
-      </div>
-      <div class="card">
-        <img src="../images/apple.png" alt="Apple" />
-        <p>Apple</p>
-      </div>
-      <div class="card">
-        <img src="../images/pliers.png" alt="Pliers" />
-        <p>Pliers</p>
-      </div>
-      <div class="card">
-        <img src="../images/stanleyblue.png" alt="Stanley Blue" />
-        <p>Stanley Blue</p>
-      </div>
+    <button class="add-btn" onclick="window.location.href='post_item.html'">+</button>
+  </div>
+  <div class="card-container">
+    <div class="card">
+      <img src="../images/coding.png" alt="Coding for Dummies" />
+      <p>Coding for Dummies</p>
     </div>
-  </section>
+    <div class="card">
+      <img src="../images/apple.png" alt="Apple" />
+      <p>Apple</p>
+    </div>
+    <div class="card">
+      <img src="../images/pliers.png" alt="Pliers" />
+      <p>Pliers</p>
+    </div>
+    <div class="card">
+      <img src="../images/stanleyblue.png" alt="Stanley Blue" />
+      <p>Stanley Blue</p>
+    </div>
+  </div>
+</section>
 
   <!-- CATEGORIES -->
   <section class="categories">
