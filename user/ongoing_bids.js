@@ -2,7 +2,7 @@ const container = document.querySelector(".bids-container");
 
 async function loadListings() {
   try {
-    const res = await fetch("../api/fetch_listings.php");
+    const res = await fetch("../database/fetch_listings.php");
     const json = await res.json();
 
     console.log("API response:", json); // Debug
@@ -31,7 +31,8 @@ async function loadListings() {
 
       const card = document.createElement("a");
       card.className = "bid-link";
-      card.href = "buy_item.html?id=" + l.listing_id;
+      card.href = "../user/buy_item.php?id=" + l.listing_id;
+
 
       card.innerHTML = `
         <div class="bid-card">

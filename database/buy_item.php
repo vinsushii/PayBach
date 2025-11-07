@@ -1,84 +1,62 @@
 <?php
 require_once("../database/db_connect.php");
 
+header("Content-Type: application/json");
+
 if (!isset($_GET["id"])) {
-    die("Missing listing ID");
+    echo json_encode(["success" => false, "message" => "Missing listing ID"]);
+    exit;
 }
 
 $listing_id = intval($_GET["id"]);
 
-// Fetch listing details & seller
+// Fetch listing + seller
 $stmt = $conn->prepare("
     SELECT l.*, CONCAT(u.first_name, ' ', u.last_name) AS seller_name, u.email
     FROM listings l
     JOIN users u ON l.user_idnum = u.user_idnum
     WHERE l.listing_id = ?
 ");
-$stmt->execute([$listing_id]);
-$listing = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$listing = $result->fetch_assoc();
 
 if (!$listing) {
-    die("Listing not found");
+    echo json_encode(["success" => false, "message" => "Listing not found"]);
+    exit;
 }
 
-// Fetch item info
-$stmt2 = $conn->prepare("
-    SELECT name, item_condition
-    FROM listing_items
-    WHERE listing_id = ?
-");
-$stmt2->execute([$listing_id]);
-$items = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+// Items
+$stmt2 = $conn->prepare("SELECT name, item_condition FROM listing_items WHERE listing_id = ?");
+$stmt2->bind_param("i", $listing_id);
+$stmt2->execute();
+$items = $stmt2->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Fetch categories
-$stmt3 = $conn->prepare("
-    SELECT category
-    FROM listing_categories
-    WHERE listing_id = ?
-");
-$stmt3->execute([$listing_id]);
-$categories = $stmt3->fetchAll(PDO::FETCH_COLUMN);
+// Categories
+$stmt3 = $conn->prepare("SELECT category FROM listing_categories WHERE listing_id = ?");
+$stmt3->bind_param("i", $listing_id);
+$stmt3->execute();
+$categories = array_column($stmt3->get_result()->fetch_all(MYSQLI_ASSOC), "category");
 
-// Fetch images
+// Images
 $stmt4 = $conn->prepare("SELECT image_path FROM listing_images WHERE listing_id = ?");
-$stmt4->execute([$listing_id]);
-$images = $stmt4->fetchAll(PDO::FETCH_COLUMN);
+$stmt4->bind_param("i", $listing_id);
+$stmt4->execute();
+$images = array_column($stmt4->get_result()->fetch_all(MYSQLI_ASSOC), "image_path");
 
-// Fetch current bid (from bids table)
+// Current bid
 $stmt5 = $conn->prepare("SELECT current_amount FROM bids WHERE transaction_id = ? LIMIT 1");
-$stmt5->execute([$listing_id]);
-$currentBid = $stmt5->fetch(PDO::FETCH_ASSOC);
+$stmt5->bind_param("i", $listing_id);
+$stmt5->execute();
+$currentBid = $stmt5->get_result()->fetch_assoc();
+$currentPrice = $currentBid["current_amount"] ?? $listing["start_bid"] ?? 0;
 
-$price = $currentBid["current_amount"] ?? 0;
-?>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Buy Item</title>
-  <link rel="stylesheet" href="../style.css">
-</head>
-<body>
-
-<h2><?= htmlspecialchars($items[0]["name"] ?? "Unnamed Item") ?></h2>
-
-<!-- MAIN IMAGE -->
-<img id="mainImg" src="<?= $images[0] ?? '../images/default.png' ?>" width="300">
-
-<!-- THUMBNAILS -->
-<div class="thumb-container">
-<?php foreach($images as $img): ?>
-  <img class="thumb" src="<?= $img ?>" width="70">
-<?php endforeach ?>
-</div>
-
-<p>Condition: <?= htmlspecialchars($items[0]["item_condition"] ?? "N/A") ?></p>
-<p><?= htmlspecialchars($listing["description"]) ?></p>
-
-<h3>Current bid: ₱<span id="currentPrice"><?= $price ?></span></h3>
-
-<input type="number" id="newPrice">
-<button onclick="updatePrice(<?= $listing_id ?>)">Top Up</button>
-
-<script src="buy_item.js"></script>
-</body>
-</html>
+echo json_encode([
+    "success" => true,
+    "listing" => $listing,
+    "items" => $items,
+    "categories" => $categories,
+    "images" => $images,
+    "currentPrice" => $currentPrice
+]);
