@@ -50,7 +50,7 @@ $stmt5 = $conn->prepare("SELECT current_amount FROM bids WHERE transaction_id = 
 $stmt5->bind_param("i", $listing_id);
 $stmt5->execute();
 $currentBid = $stmt5->get_result()->fetch_assoc();
-$currentPrice = $currentBid["current_amount"] ?? $listing["start_bid"] ?? 0;
+$currentPrice = $currentBid["current_amount"] ?? $listing["quantity"] ?? 0;
 
 echo json_encode([
     "success" => true,

@@ -3,35 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PayBach | IPhone 17 Pro Max</title>
+  <title>PayBach | Item</title>
   <link rel="stylesheet" href="buy_item.css" />
 </head>
-<body>
-  <!-- HEADER-->
-  <header class="header">
-    <div class="header-top">
-      <div class="logo-section">
-        <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
-        <div class="logo-text">
-          <h1>PayBach</h1>
-          <p>We have your back 24/7.</p>
-        </div>
-      </div>
 
-      <div class="header-icons">
-        <a href="chats.html" title="Chats">
-          <img src="../images/chat_bubble.png" alt="Chats" class="icon" /> Chats
-        </a>
-        <a href="notifications.html" title="Notifications">
-          <img src="../images/notif-bell.png" alt="Notifications" class="icon" /> Notifications
-        </a>
-        <a href="../index.html" class="profile-link" title="Profile">
-          <img src="../images/user-profile.png" alt="Profile" class="icon" /> Log in/Sign up
-        </a>
+<body>
+
+<!-- HEADER-->
+<header class="header">
+  <div class="header-top">
+    <div class="logo-section">
+      <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
+      <div class="logo-text">
+        <h1>PayBach</h1>
+        <p>We have your back 24/7.</p>
       </div>
     </div>
 
-     <!-- NAVIGATION -->
+    <div class="header-icons">
+      <a href="chats.html" title="Chats">
+        <img src="../images/chat_bubble.png" alt="Chats" class="icon" /> Chats
+      </a>
+      <a href="notifications.html" title="Notifications">
+        <img src="../images/notif-bell.png" alt="Notifications" class="icon" /> Notifications
+      </a>
+      <a href="../index.html" class="profile-link" title="Profile">
+        <img src="../images/user-profile.png" alt="Profile" class="icon" /> Log in/Sign up
+      </a>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
   <nav class="navbar">
     <a href="../user/ongoing_bids.html">BIDS</a>
     <a href="../user/ongoing_trades.html">TRADES</a>
@@ -39,104 +41,110 @@
     <a href="#help">HELP</a>
     <div class="search-bar">
       <input type="text" placeholder="Search..." />
-        <button type="submit">
-            <img src="../images/search-icon.png" alt="Search" />
-        </button>
+      <button type="submit">
+          <img src="../images/search-icon.png" alt="Search" />
+      </button>
     </div>
   </nav>
 </header>
 
-  <!-- MAIN CONTENT -->
-  <main class="product-page">
-    <a href="#" class="go-back">← Go back</a>
-    <h2>IPhone 17 Pro Max</h2>
+<!-- MAIN CONTENT -->
+<main class="product-page">
 
-    <section class="product-section">
-      <div class="image-gallery">
-        <button class="arrow left">‹</button>
-        <div class="main-image">
-          <img src="../images/iphone17.webp" alt="IPhone 17 Pro Max" />
-        </div>
-        <button class="arrow right">›</button>
-        <div class="thumbnail-row">
-          <img src="../images/iphone17.webp" alt="thumbnail1" class="thumb active" />
-          <img src="../images/iphone17-2.jpg" alt="thumbnail2" class="thumb" />
-          <img src="../images/iphone17.webp" alt="thumbnail3" class="thumb" />
+  <a href="javascript:history.back()" class="go-back">← Go back</a>
+
+  <h2 id="item-title">Loading...</h2>
+
+  <section class="product-section">
+
+    <div class="image-gallery">
+      <button class="arrow left">‹</button>
+
+      <div class="main-image">
+        <img src="../images/default.png" alt="Item image" />
+      </div>
+
+      <button class="arrow right">›</button>
+
+      <div class="thumbnail-row"></div>
+    </div>
+
+    <div class="product-details">
+
+      <div class="description">
+        <h3>Description <span class="time-left">Ongoing</span></h3>
+
+        <p><strong>Condition:</strong> <span id="item-condition"></span></p>
+
+        <div id="item-tags"></div>
+
+        <p class="lorem" id="item-description"></p>
+
+        <div class="favorite-btn" onclick="toggleFavorite(this)">
+          <i class="heart-icon"></i>
         </div>
       </div>
 
-      <div class="product-details">
-        <div class="description">
-          <h3>Description <span class="time-left">2 days left to bid</span></h3>
-          <p><strong>Condition:</strong> Like new</p>
-          <button class="tag">TECHNOLOGY</button>
-          <p class="lorem">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-            It has survived not only five centuries but also the leap into electronic 
-            typesetting, remaining essentially unchanged.
-          </p>
-            <div class="favorite-btn" onclick="toggleFavorite(this)">
-                    <i class="heart-icon">♡</i>
-            </div>
-        </div>
+      <div class="bid-box">
+        <p>Current bid is at:</p>
+        <h2 class="price">₱0</h2>
+        <button class="topup">TOP UP</button>
+        <button class="report">Report listing</button>
+      </div>
 
-        <div class="bid-box">
-          <p>Current bid is at:</p>
-          <h2 class="price">₱<?= number_format($currentPrice) ?></h2>
-          <button class="topup">TOP UP</button>
-          <button class="report">Report listing</button>
-        </div>
 
-        <!-- Popup Modal for Top Up -->
-        <div id="topupModal" class="modal">
+      <div id="topupModal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Top up price:</h3>
-            <input type="number" id="topupInput" placeholder="Enter new bid" />
-            <button id="confirmTopup">Confirm</button>
+          <span class="close">&times;</span>
+          <h3>Top up price:</h3>
+          <input type="number" id="topupInput" placeholder="Enter new bid" />
+          <button id="confirmTopup">Confirm</button>
         </div>
-        </div>
+      </div>
 
-        <!-- Report Listing Modal -->
-        <div id="reportModal" class="modal">
+      <div id="reportModal" class="modal">
         <div class="modal-content report-content">
-            <span class="close">&times;</span>
-            <h3>State your reason/s for <span class="highlight">reporting</span> this item:</h3>
-            <form id="reportForm">
+          <span class="close">&times;</span>
+          <h3>State your reason/s for reporting this item:</h3>
+          <form id="reportForm">
             <label><input type="checkbox" name="reason" value="Damaged item/s"> Damaged item/s</label><br>
             <label><input type="checkbox" name="reason" value="Missing component/s"> Missing component/s</label><br>
             <label><input type="checkbox" name="reason" value="Offensive item/s"> Offensive item/s</label><br>
             <label><input type="checkbox" name="reason" value="Fraudulent transaction"> Fraudulent transaction</label><br>
             <label><input type="checkbox" name="reason" value="Banned item/s"> Banned item/s</label><br>
             <button type="button" id="confirmReport">Confirm</button>
-            </form>
+          </form>
         </div>
-        </div>
-
       </div>
-    </section>
 
-    <section class="meetup">
-      <h3>Meet-up</h3>
-      <p>📍 Saint Louis University, Bakakeng Campus - Lobby</p>
-      <h3>Payment</h3>
-      <p>💳 Online payment (Gcash, Bank transfer)</p>
-      <h3>Seller</h3>
-      <p>👤 Vincent Rafael Fajardo<br>📧 222222@slu.edu.ph</p>
-    </section>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="contact">
-      <h3>Contact Us</h3>
-      <p>222222@slu.edu.ph</p>
-      <p>Saint Louis University, Maryheights Campus</p>
-      <p>Bakakeng Norte, Baguio City</p>
     </div>
-    <p class="credits">Website made by Team Bach ©2025</p>
-  </footer>
+  </section>
 
-    <script src="buy_item.js"></script>
+  <section class="meetup">
+    <h3>Meet-up</h3>
+    <p id="meetup-location"></p>
+
+    <h3>Payment</h3>
+    <p id="payment-method"></p>
+
+    <h3>Seller</h3>
+    <p id="seller-info"></p>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="contact">
+    <h3>Contact Us</h3>
+    <p>222222@slu.edu.ph</p>
+    <p>Saint Louis University, Maryheights Campus</p>
+    <p>Bakakeng Norte, Baguio City</p>
+  </div>
+  <p class="credits">Website made by Team Bach ©2025</p>
+</footer>
+
+<script src="buy_item.js"></script>
+
 </body>
 </html>

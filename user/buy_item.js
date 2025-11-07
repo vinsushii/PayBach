@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const itemId = params.get("id");
 
   // ===== FETCH LISTING DATA =====
-  fetch(`../api/buy_item.php?id=${itemId}`)
+  fetch(`../database/buy_item.php?id=${itemId}`)
     .then(res => res.json())
     .then(data => {
       if (!data.success) {
@@ -53,7 +53,13 @@ document.addEventListener("DOMContentLoaded", () => {
       // Current bid
       document.querySelector(".price").textContent =
         "₱" + currentPrice.toLocaleString();
-
+      
+        document.querySelector("#meetup-location").textContent =
+        listing.exchange_method || "N/A";
+      
+      document.querySelector("#payment-method").textContent =
+        listing.payment_method || "N/A";
+        
       // Seller info
       const sellerBlock = document.querySelector(".meetup p:nth-of-type(3)");
       sellerBlock.innerHTML =
