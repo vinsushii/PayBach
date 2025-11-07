@@ -31,7 +31,7 @@ async function loadListings() {
 
       const card = document.createElement("a");
       card.className = "bid-link";
-      card.href = "../user/buy_item.php?id=" + l.listing_id;
+      card.href = "../user/buy_item.html?id=" + l.listing_id;
 
 
       card.innerHTML = `
