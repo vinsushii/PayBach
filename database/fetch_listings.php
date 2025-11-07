@@ -4,11 +4,20 @@ require_once "db_connect.php";  // MySQLi connection
 header("Content-Type: application/json");
 
 try {
+    // Alias quantity as start_bid so frontend can use l.start_bid
     $stmt = $conn->prepare("
         SELECT 
-            l.*, 
+            l.listing_id,
+            l.user_idnum,
+            l.description,
+            l.exchange_method,
+            l.payment_method,
+            l.quantity AS start_bid,
+            l.start_date,
+            l.end_date,
             CONCAT(u.first_name, ' ', u.last_name) AS seller_name,
-            u.school, u.program
+            u.school, 
+            u.program
         FROM listings l
         JOIN users u ON l.user_idnum = u.user_idnum
         WHERE l.is_valid = TRUE
@@ -31,6 +40,7 @@ try {
         $stmtItems->execute();
         $resItems = $stmtItems->get_result();
         $l["items"] = $resItems->fetch_all(MYSQLI_ASSOC);
+        $stmtItems->close();
 
         // categories
         $stmtCats = $conn->prepare("
@@ -42,6 +52,19 @@ try {
         $stmtCats->execute();
         $resCats = $stmtCats->get_result();
         $l["categories"] = array_column($resCats->fetch_all(MYSQLI_ASSOC), "category");
+        $stmtCats->close();
+
+        // images
+        $stmtImgs = $conn->prepare("
+            SELECT image_path
+            FROM listing_images
+            WHERE listing_id = ?
+        ");
+        $stmtImgs->bind_param("i", $listing_id);
+        $stmtImgs->execute();
+        $resImgs = $stmtImgs->get_result();
+        $l["images"] = array_column($resImgs->fetch_all(MYSQLI_ASSOC), "image_path");
+        $stmtImgs->close();
     }
 
     echo json_encode([

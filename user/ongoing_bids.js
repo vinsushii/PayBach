@@ -1,5 +1,3 @@
-// ongoing_bids.js
-
 const container = document.querySelector(".bids-container");
 
 async function loadListings() {
@@ -7,18 +5,29 @@ async function loadListings() {
     const res = await fetch("../api/fetch_listings.php");
     const json = await res.json();
 
+    console.log("API response:", json); // Debug
+
     if (!json.success) {
       console.error("Fetch failed:", json.message);
       return;
     }
 
     const listings = json.data;
-
     container.innerHTML = ""; 
+
+    const pesoFormatter = new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+      minimumFractionDigits: 0
+    });
+
     listings.forEach(l => {
-      const title = l.items?.[0]?.name ?? "Untitled";
-      const price = l.start_bid ?? "N/A";
-      const img = l.items?.[0]?.image_path ?? "../images/default.png";
+      const title = l.items?.[0]?.name ?? l.description ?? "Untitled";
+      const price = l.start_bid ? pesoFormatter.format(l.start_bid) : "N/A";
+
+      const imagesHtml = (l.images && l.images.length > 0)
+        ? l.images.map(path => `<img src="${path}" alt="${title}" />`).join("")
+        : `<img src="../images/default.png" alt="${title}" />`;
 
       const card = document.createElement("a");
       card.className = "bid-link";
@@ -26,7 +35,9 @@ async function loadListings() {
 
       card.innerHTML = `
         <div class="bid-card">
-          <img src="${img}" alt="${title}" />
+          <div class="image-gallery">
+            ${imagesHtml}
+          </div>
           <p>${title}</p>
           <span class="price">${price}</span>
         </div>
