@@ -97,7 +97,6 @@ document.addEventListener("click", (e) => {
       return;
     }
 
-    // ✅ Update database
     fetch("../api/update_price.php", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },

@@ -14,8 +14,7 @@ async function loadListings() {
 
     const listings = json.data;
 
-    container.innerHTML = ""; // Clear existing hardcoded cards
-
+    container.innerHTML = ""; 
     listings.forEach(l => {
       const title = l.items?.[0]?.name ?? "Untitled";
       const price = l.start_bid ?? "N/A";
