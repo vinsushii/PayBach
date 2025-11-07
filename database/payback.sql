@@ -30,29 +30,49 @@ CREATE TABLE user_courses (
 CREATE TABLE listings (
     listing_id INT AUTO_INCREMENT PRIMARY KEY,
     user_idnum VARCHAR(20),
-    quantity INT,
-    start_date DATETIME,
-    end_date DATETIME,
+    quantity INT DEFAULT 1,
+    start_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    end_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     description TEXT,
     exchange_method VARCHAR(50),
     payment_method VARCHAR(50),
     is_valid BOOLEAN DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_idnum) REFERENCES users(user_idnum)
 );
 
+-- =========================
+-- LISTING ITEMS
+-- =========================
 CREATE TABLE listing_items (
     item_id INT AUTO_INCREMENT PRIMARY KEY,
     listing_id INT,
     name VARCHAR(100),
     item_condition VARCHAR(50),
-    FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (listing_id) REFERENCES listings(listing_id) ON DELETE CASCADE
 );
 
+-- =========================
+-- LISTING CATEGORIES
+-- =========================
 CREATE TABLE listing_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     listing_id INT,
     category VARCHAR(50),
-    FOREIGN KEY (listing_id) REFERENCES listings(listing_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (listing_id) REFERENCES listings(listing_id) ON DELETE CASCADE
+);
+
+-- =========================
+-- OPTIONAL: LISTING IMAGES
+-- =========================
+CREATE TABLE listing_images (
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
+    listing_id INT,
+    image_path VARCHAR(255),
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (listing_id) REFERENCES listings(listing_id) ON DELETE CASCADE
 );
 
 -- =========================
