@@ -1,12 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const mainImage = document.querySelector(".main-image img");
-  const thumbnails = document.querySelectorAll(".thumbnail-row .thumb");
+
+  /* ===== IMAGE GALLERY ===== */
+  const mainImage = document.getElementById("mainImg");
+  const thumbnails = document.querySelectorAll(".thumb");
   const leftArrow = document.querySelector(".arrow.left");
   const rightArrow = document.querySelector(".arrow.right");
 
   let currentIndex = 0;
 
-  // Function to update main image
   function updateImage(index) {
     thumbnails.forEach((thumb, i) => {
       thumb.classList.toggle("active", i === index);
@@ -14,106 +15,103 @@ document.addEventListener("DOMContentLoaded", () => {
     mainImage.src = thumbnails[index].src;
     currentIndex = index;
   }
+  
+  function updatePrice(listing_id) {
+    let newPrice = document.getElementById("newPrice").value;
 
-  // Left arrow click
+    fetch("../database/update_price.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            listing_id: listing_id,
+            new_price: newPrice
+        })
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            document.getElementById("currentPrice").textContent = newPrice;
+            alert("Bid updated!");
+        } else {
+            alert("Error updating bid.");
+        }
+    });
+}
+
+// swap images
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("thumb")) {
+        document.getElementById("mainImg").src = e.target.src;
+    }
+});
+
+
   leftArrow.addEventListener("click", () => {
-    const newIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-    updateImage(newIndex);
+    const next = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+    updateImage(next);
   });
 
-  // Right arrow click
   rightArrow.addEventListener("click", () => {
-    const newIndex = (currentIndex + 1) % thumbnails.length;
-    updateImage(newIndex);
+    const next = (currentIndex + 1) % thumbnails.length;
+    updateImage(next);
   });
 
-  // Clicking a thumbnail directly
   thumbnails.forEach((thumb, index) => {
     thumb.addEventListener("click", () => {
       updateImage(index);
     });
   });
-});
 
-document.addEventListener("DOMContentLoaded", () => {
+  /* ===== TOP UP ===== */
   const modal = document.getElementById("topupModal");
-  const closeBtn = document.querySelector(".modal-content .close");
+  const closeBtn = modal.querySelector(".close");
   const confirmBtn = document.getElementById("confirmTopup");
   const topupBtn = document.querySelector(".topup");
   const priceText = document.querySelector(".price");
   const input = document.getElementById("topupInput");
 
-  // Open modal
   topupBtn.addEventListener("click", () => {
     input.value = "";
     modal.style.display = "flex";
   });
 
-  // Close modal
   closeBtn.addEventListener("click", () => {
     modal.style.display = "none";
   });
 
-  // Close when clicking outside modal
   window.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
+    if (e.target === modal) modal.style.display = "none";
   });
 
-  // Confirm top up
   confirmBtn.addEventListener("click", () => {
     const currentPrice = parseFloat(priceText.textContent.replace(/[₱,]/g, ""));
     const newPrice = parseFloat(input.value);
 
     if (isNaN(newPrice)) {
-      alert("Please enter a valid number.");
+      alert("Enter valid number");
       return;
     }
 
-    if (newPrice > currentPrice) {
-      priceText.textContent = `₱${newPrice.toLocaleString()}`;
-      modal.style.display = "none";
-    } else {
-      alert("Top up price must be higher than the current bid.");
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  const reportModal = document.getElementById("reportModal");
-  const reportBtn = document.querySelector(".report");
-  const reportClose = reportModal.querySelector(".close");
-  const confirmReport = document.getElementById("confirmReport");
-  const reportForm = document.getElementById("reportForm");
-
-  // Open modal
-  reportBtn.addEventListener("click", () => {
-    reportModal.style.display = "flex";
-  });
-
-  // Close modal
-  reportClose.addEventListener("click", () => {
-    reportModal.style.display = "none";
-  });
-
-  // Close when clicking outside
-  window.addEventListener("click", (e) => {
-    if (e.target === reportModal) {
-      reportModal.style.display = "none";
-    }
-  });
-
-  // Confirm report
-  confirmReport.addEventListener("click", () => {
-    const checked = Array.from(reportForm.querySelectorAll("input[type='checkbox']:checked"))
-                         .map(cb => cb.value);
-    if (checked.length === 0) {
-      alert("Please select at least one reason before submitting.");
+    if (newPrice <= currentPrice) {
+      alert("New bid must be higher");
       return;
     }
-    alert("Report submitted successfully for: " + checked.join(", "));
-    reportModal.style.display = "none";
-    reportForm.reset();
+
+    // ✅ Update database
+    fetch("../api/update_price.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `id=${itemId}&price=${newPrice}`
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        priceText.textContent = "₱" + newPrice.toLocaleString();
+        modal.style.display = "none";
+      } else {
+        alert("Server error updating price");
+      }
+    });
   });
+
 });
