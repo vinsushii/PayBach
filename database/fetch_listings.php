@@ -1,5 +1,5 @@
 <?php
-require_once "db_connect.php";
+require_once "db_connect.php";  // MySQLi connection
 
 header("Content-Type: application/json");
 
@@ -15,7 +15,8 @@ try {
         ORDER BY l.start_date DESC
     ");
     $stmt->execute();
-    $listings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->get_result();
+    $listings = $result->fetch_all(MYSQLI_ASSOC);
 
     foreach ($listings as &$l) {
         $listing_id = $l["listing_id"];
@@ -26,8 +27,10 @@ try {
             FROM listing_items
             WHERE listing_id = ?
         ");
-        $stmtItems->execute([$listing_id]);
-        $l["items"] = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+        $stmtItems->bind_param("i", $listing_id);
+        $stmtItems->execute();
+        $resItems = $stmtItems->get_result();
+        $l["items"] = $resItems->fetch_all(MYSQLI_ASSOC);
 
         // categories
         $stmtCats = $conn->prepare("
@@ -35,8 +38,10 @@ try {
             FROM listing_categories
             WHERE listing_id = ?
         ");
-        $stmtCats->execute([$listing_id]);
-        $l["categories"] = array_column($stmtCats->fetchAll(PDO::FETCH_ASSOC), "category");
+        $stmtCats->bind_param("i", $listing_id);
+        $stmtCats->execute();
+        $resCats = $stmtCats->get_result();
+        $l["categories"] = array_column($resCats->fetch_all(MYSQLI_ASSOC), "category");
     }
 
     echo json_encode([
@@ -51,3 +56,4 @@ try {
         "error" => $e->getMessage()
     ]);
 }
+?>

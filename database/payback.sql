@@ -65,7 +65,7 @@ CREATE TABLE listing_categories (
 );
 
 -- =========================
--- OPTIONAL: LISTING IMAGES
+-- LISTING IMAGES
 -- =========================
 CREATE TABLE listing_images (
     image_id INT AUTO_INCREMENT PRIMARY KEY,

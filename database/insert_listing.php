@@ -1,5 +1,8 @@
 <?php
-require_once "db_connect.php";  
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+require_once "db_connect.php";  // this should return a MySQLi $conn
 
 header("Content-Type: application/json");
 
@@ -10,83 +13,75 @@ if (!$data) {
     exit;
 }
 
-$required = ["user_idnum", "quantity", "start_date", "end_date", "description"];
+// Required fields
+$required = ["user_idnum", "description", "exchange_method", "payment_method"];
 foreach ($required as $r) {
-    if (!isset($data[$r])) {
+    if (!isset($data[$r]) || empty($data[$r])) {
         echo json_encode(["success" => false, "message" => "Missing: " . $r]);
         exit;
     }
 }
 
-$user_idnum     = $data["user_idnum"];
-$quantity       = $data["quantity"];
-$start_date     = $data["start_date"];
-$end_date       = $data["end_date"];
-$description    = $data["description"];
-$exchange_method = $data["exchange_method"] ?? null;
-$payment_method  = $data["payment_method"] ?? null;
+// Extract values
+$user_idnum      = $data["user_idnum"];
+$description     = $data["description"];
+$exchange_method = $data["exchange_method"];
+$payment_method  = $data["payment_method"];
+$quantity        = $data["quantity"] ?? 1;
+$start_date      = $data["start_date"] ?? date("Y-m-d H:i:s");
+$end_date        = $data["end_date"] ?? date("Y-m-d H:i:s");
 
-// optional arrays
 $items      = $data["items"] ?? [];
 $categories = $data["categories"] ?? [];
 
 try {
-    $conn->beginTransaction();
+    $conn->begin_transaction();
 
+    // Insert into listings
     $stmt = $conn->prepare("
         INSERT INTO listings (user_idnum, quantity, start_date, end_date, description, exchange_method, payment_method)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
-    
-    $stmt->execute([
-        $user_idnum,
-        $quantity,
-        $start_date,
-        $end_date,
-        $description,
-        $exchange_method,
-        $payment_method
-    ]);
+    $stmt->bind_param("sisssss", $user_idnum, $quantity, $start_date, $end_date, $description, $exchange_method, $payment_method);
+    $stmt->execute();
 
-    $listing_id = $conn->lastInsertId();
+    $listing_id = $conn->insert_id;
 
-    // insert items
+    // Insert listing items
     if (!empty($items)) {
         $stmtItems = $conn->prepare("
             INSERT INTO listing_items (listing_id, name, item_condition)
             VALUES (?, ?, ?)
         ");
-
         foreach ($items as $i) {
-            $stmtItems->execute([
-                $listing_id,
-                $i["name"],
-                $i["item_condition"]
-            ]);
+            $name = $i["name"] ?? "Unnamed";
+            $condition = $i["item_condition"] ?? "Unknown";
+            $stmtItems->bind_param("iss", $listing_id, $name, $condition);
+            $stmtItems->execute();
         }
     }
 
-    // insert categories
+    // Insert listing categories
     if (!empty($categories)) {
         $stmtCat = $conn->prepare("
             INSERT INTO listing_categories (listing_id, category)
             VALUES (?, ?)
         ");
-
         foreach ($categories as $cat) {
-            $stmtCat->execute([$listing_id, $cat]);
+            $stmtCat->bind_param("is", $listing_id, $cat);
+            $stmtCat->execute();
         }
     }
 
     $conn->commit();
-
     echo json_encode(["success" => true, "listing_id" => $listing_id]);
 
 } catch (Exception $e) {
-    $conn->rollBack();
+    $conn->rollback();
     echo json_encode([
         "success" => false,
         "message" => "Insert failed",
         "error" => $e->getMessage()
     ]);
 }
+?>

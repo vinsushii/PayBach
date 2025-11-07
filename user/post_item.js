@@ -80,25 +80,30 @@ document.getElementById("postForm").addEventListener("submit", async (e) => {
 
   console.log("→ sending payload:", payload);
 
-  try {
-    const res = await fetch("../insert_listing.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+ try {
+  const res = await fetch("../database/insert_listing.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 
-    const data = await res.json();
-    console.log("Response:", data);
-
-    if (data.success) {
-      alert("Listing successfully submitted!");
-      window.location.href = "../user/homepage.html";
-    } else {
-      alert("Failed to submit listing.");
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert("Server error");
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
   }
+
+  const data = await res.json();
+  console.log("Response:", data);
+
+  if (data.success) {
+    alert("Listing successfully submitted!");
+    window.location.href = "../user/homepage.php";
+  } else {
+    alert("Failed to submit listing.\n" + (data.error || data.message));
+  }
+
+} catch (err) {
+  console.error("Fetch error:", err);
+  alert("Server error: " + err.message);
+}
+
 });
