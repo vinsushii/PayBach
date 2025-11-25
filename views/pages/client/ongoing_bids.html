@@ -4,69 +4,64 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PayBach | Ongoing Bids</title>
-  <!-- Header & Footer Styles -->
-  <link rel="stylesheet" href="homepage.css" />
-  <!-- Page-specific Styles -->
-  <link rel="stylesheet" href="ongoing_bids.css" />
+
+  <link rel="stylesheet" href="../../css/client/homepage.css" />
+  <link rel="stylesheet" href="../../css/client/ongoing_bids.css" />
 </head>
 <body>
-<!-- HEADER-->
-  <header class="header">
-    <div class="header-top">
-      <div class="logo-section">
-        <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
-        <div class="logo-text">
-          <h1>PayBach</h1>
-          <p>We have your back 24/7.</p>
-        </div>
-      </div>
 
-      <div class="header-icons">
-        <a href="chats.html" title="Chats">
-          <img src="../images/chat_bubble.png" alt="Chats" class="icon" /> Chats
-        </a>
-        <a href="notifications.html" title="Notifications">
-          <img src="../images/notif-bell.png" alt="Notifications" class="icon" /> Notifications
-        </a>
-        <a href="../index.html" class="profile-link" title="Profile">
-          <img src="../images/user-profile.png" alt="Profile" class="icon" /> Log in/Sign up
-        </a>
+<header class="header">
+  <div class="header-top">
+    <div class="logo-section">
+      <img src="../../images/payback-logo.png" class="logo" />
+      <div class="logo-text">
+        <h1>PayBach</h1>
+        <p>We have your back 24/7.</p>
       </div>
     </div>
 
-  <!-- NAVIGATION -->
+    <div class="header-icons">
+      <a href="chats.html">
+        <img src="../../images/chat_bubble.png" class="icon" /> Chats
+      </a>
+      <a href="notifications.html">
+        <img src="../../images/notif-bell.png" class="icon" /> Notifications
+      </a>
+      <a href="../../index.html" class="profile-link">
+        <img src="../../images/user-profile.png" class="icon" /> Log in/Sign up
+      </a>
+    </div>
+  </div>
+
   <nav class="navbar">
-    <a href="../user/ongoing_bids.html">BIDS</a>
-    <a href="../user/ongoing_trades.html">TRADES</a>
-    <a href="../user/view_listing.html">CATEGORIES</a>
-    <a href="#help">HELP</a>
+    <a href="ongoing_bids.html">BIDS</a>
+    <a href="ongoing_trades.html">TRADES</a>
+    <a href="view_listing.html">CATEGORIES</a>
+    <a href="#">HELP</a>
     <div class="search-bar">
       <input type="text" placeholder="Search..." />
-        <button type="submit">
-            <img src="../images/search-icon.png" alt="Search" />
-        </button>
+      <button type="submit">
+        <img src="../../images/search-icon.png" />
+      </button>
     </div>
   </nav>
 </header>
 
-  <!-- ONGOING BIDS SECTION -->
- <main class="bids-section">
+<main class="bids-section">
   <h2>ONGOING BIDS</h2>
   <div class="bids-container"></div>
 </main>
 
+<footer class="footer">
+  <div class="contact">
+    <h3>Contact Us</h3>
+    <p>222222@slu.edu.ph</p>
+    <p>Saint Louis University, Maryheights Campus</p>
+    <p>Bakakeng Norte, Baguio City</p>
+  </div>
+  <p class="credits">Website made by Team Bach ©2025</p>
+</footer>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="contact">
-      <h3>Contact Us</h3>
-      <p>222222@slu.edu.ph</p>
-      <p>Saint Louis University, Maryheights Campus</p>
-      <p>Bakakeng Norte, Baguio City</p>
-    </div>
-    <p class="credits">Website made by Team Bach ©2025</p>
-  </footer>
-  
-  <script src="../user/ongoing_bids.js"></script>
+<script src="../../js/ongoing_bids.js"></script>
 </body>
 </html>

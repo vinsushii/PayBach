@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PayBach | Login</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="views/css/client/style.css">
 </head>
 <body>
   <div class="app-container">
     <header class="header">
-      <img src="images/payback-logo.png" alt="PayBach Logo" class="logo">
+      <img src="views/images/payback-logo.png" alt="PayBach Logo" class="logo">
       <div class="brand">
         <h1>Pay<span>Bach</span></h1>
         <p>We have your back 24/7.</p>
@@ -18,84 +18,53 @@
 
     <!-- LOGIN FORM -->
     <section class="form-container active" id="login-form">
-      <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
-     <form action="database/login.php" method="POST">
-  <div class="input-group">
-    <img src="images/user-profile.png" alt="User Icon" class="icon">
-    <input type="email" name="email" placeholder="Email" required>
-  </div>
+      <img src="views/images/Generic-profile.png" alt="User Icon" class="avatar">
 
-  <div class="input-group">
-    <img src="images/lock.png" alt="Lock Icon" class="icon">
-    <input type="password" name="password" placeholder="Password" required>
-  </div>
+      <form action="model/api/client/login.php" method="POST">
+        <div class="input-group">
+          <img src="views/images/user-profile.png" alt="User Icon" class="icon">
+          <input type="email" name="email" placeholder="Email" required>
+        </div>
 
-  <div class="form-options">
-    <label><input type="checkbox"> Remember Me</label>
-    <a href="#" id="forgot-password-link">Forgot Password?</a>
-  </div>
+        <div class="input-group">
+          <img src="views/images/lock.png" alt="Lock Icon" class="icon">
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
 
-  <button type="submit" class="btn">LOGIN</button>
-  <p class="bottom-text">No Account? <a href="#" id="register-link">Register</a></p>
-</form>
+        <div class="form-options">
+          <label><input type="checkbox"> Remember Me</label>
+          <a href="#" id="forgot-password-link">Forgot Password?</a>
+        </div>
 
-    </section>
-
-   <!-- REGISTER FORM -->
-<section class="form-container" id="register-form">
-  <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
-  
-  <!-- Send data to signup.php -->
-  <form action="database/signup.php" method="POST">
-    <input type="text" name="user_idnum" placeholder="Student ID" required>
-
-    <input type="email" name="email" placeholder="Email" required>
-    
-    <div class="password-wrapper">
-      <input type="password" id="reg-pass" name="password" placeholder="Password" required>
-      <span class="toggle-password" data-target="reg-pass"></span>
-    </div>
-    
-    <div class="password-wrapper">
-      <input type="password" id="reg-confirm" name="cpassword" placeholder="Confirm Password" required>
-      <span class="toggle-password" data-target="reg-confirm"></span>
-    </div>
-    
-    <button type="submit" class="btn">Create Account</button>
-    <p class="bottom-text">Already Signed In? <a href="index.html" id="login-link">Login</a></p>
-  </form>
-</section>
-
-
-    <!-- FORGOT PASSWORD FORM -->
-    <section class="form-container" id="forgot-form">
-      <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
-      <form>
-        <p>You have been sent a code via email. Please enter the code to be redirected to change your password.</p>
-        <input type="text" placeholder="Enter code" required>
-        <button type="submit" class="btn">Change Password</button>
-        <p class="bottom-text">Already Signed In? <a href="#" id="login-link2">Login</a></p>
+        <button type="submit" class="btn">LOGIN</button>
+        <p class="bottom-text">No Account? <a href="#" id="register-link">Register</a></p>
       </form>
     </section>
 
-    <!-- CHANGE PASSWORD FORM -->
-    <section class="form-container" id="change-form">
-      <img src="images/Generic-profile.png" alt="User Icon" class="avatar">
-      <form>
+    <!-- REGISTER FORM -->
+    <section class="form-container" id="register-form">
+      <img src="views/images/Generic-profile.png" alt="User Icon" class="avatar">
+
+      <form action="model/api/client/signup.php" method="POST">
+        <input type="text" name="user_idnum" placeholder="Student ID" required>
+        <input type="email" name="email" placeholder="Email" required>
+
         <div class="password-wrapper">
-          <input type="password" id="new-pass" placeholder="New Password" required>
-          <span class="toggle-password" data-target="new-pass"></span>
+          <input type="password" id="reg-pass" name="password" placeholder="Password" required>
+          <span class="toggle-password" data-target="reg-pass"></span>
         </div>
+
         <div class="password-wrapper">
-          <input type="password" id="confirm-pass" placeholder="Confirm Password" required>
-          <span class="toggle-password" data-target="confirm-pass"></span>
+          <input type="password" id="reg-confirm" name="cpassword" placeholder="Confirm Password" required>
+          <span class="toggle-password" data-target="reg-confirm"></span>
         </div>
-        <button type="submit" class="btn">Change Password</button>
-        <p class="bottom-text"><a href="#" id="login-link3">Login</a></p>
+
+        <button type="submit" class="btn">Create Account</button>
+        <p class="bottom-text">Already Signed In? <a href="index.html" id="login-link">Login</a></p>
       </form>
     </section>
   </div>
 
-  <script src="index.js"></script>
+  <script src="controller/client/index.js"></script>
 </body>
 </html>
