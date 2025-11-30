@@ -1,3 +1,5 @@
+/* ====== homepage.css (merged & ready) ====== */
+
 /* GLOBAL STYLES */
 * {
   box-sizing: border-box;
@@ -10,13 +12,17 @@ html, body {
   padding: 0;
   font-family: Arial, sans-serif;
   background-color: #f1f1f1;
+  color: #222;
 }
 
-/* HEADER */
+/* ------------------------------- */
+/* HEADER (uses .header in header.html) */
+/* ------------------------------- */
 .header {
   background-color: #10006b;
   color: white;
   padding: 6px 20px;
+  position: relative;
 }
 
 .header-top {
@@ -41,6 +47,7 @@ html, body {
   align-items: center;
   gap: 15px;
 }
+
 .logo-text h1 {
   font-size: 22px; /* smaller text */
   margin: 0;
@@ -51,6 +58,7 @@ html, body {
   margin: 0;
   opacity: 0.9;
 }
+
 .icon-link img {
   width: 22px;
   height: 22px;
@@ -73,7 +81,7 @@ html, body {
   text-decoration: underline;
 }
 
-/* HEADER ICONS — Top Right */
+/* HEADER ICONS — Top Right (keeps them positioned) */
 .header-icons {
   display: flex;
   align-items: center;
@@ -99,7 +107,9 @@ html, body {
   vertical-align: middle;
 }
 
-/* NAVIGATION BAR */
+/* ------------------------------- */
+/* NAVIGATION BAR (class .navbar expected in header.html / client_nav.html) */
+/* ------------------------------- */
 .navbar {
   display: flex;
   justify-content: space-around;
@@ -177,15 +187,18 @@ html, body {
   box-shadow: 0 0 5px rgba(16, 0, 107, 0.5);
 }
 
-/* ====== CAROUSEL ====== */
+/* ------------------------------- */
+/* CAROUSEL (works with your JS that toggles .active on images) */
+/* - uses opacity transitions for smooth fading
+/* ------------------------------- */
+
 .carousel {
   width: 100%;
   overflow: hidden;
-  height: 480px;
+  height: 480px; /* original height you had */
   position: relative;
   margin: 0;
   padding: 0;
-  border: none;
 }
 
 .slides {
@@ -194,18 +207,26 @@ html, body {
   height: 100%;
 }
 
+/* Make all slides stacked absolutely, hidden by opacity */
 .slides img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity .8s ease-in-out;
+  z-index: 1;
 }
 
+/* active slide fades in */
 .slides img.active {
-  display: block;
+  opacity: 1;
+  z-index: 2;
 }
 
-/* Overlay Text */
+/* Optional overlay text area (kept from your old CSS) */
 .carousel-text {
   position: absolute;
   top: 0;
@@ -218,6 +239,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  z-index: 3;
 }
 
 .carousel-text h1 {
@@ -238,7 +260,7 @@ html, body {
   text-align: justify;
 }
 
-/* ====== ARROWS ====== */
+/* ARROWS (if you add them later) */
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -251,6 +273,7 @@ html, body {
   padding: 10px 15px;
   border-radius: 50%;
   transition: background 0.3s;
+  z-index: 4;
 }
 
 .carousel-arrow:hover {
@@ -265,7 +288,7 @@ html, body {
   right: 20px;
 }
 
-/* Dots */
+/* Dots (if you add later) */
 .carousel-dots {
   position: absolute;
   bottom: 15px;
@@ -273,6 +296,7 @@ html, body {
   transform: translateX(-50%);
   display: flex;
   gap: 8px;
+  z-index: 5;
 }
 
 .carousel-dots span {
@@ -288,7 +312,9 @@ html, body {
   background: #0055ff;
 }
 
-/* SECTIONS */
+/* ------------------------------- */
+/* SECTIONS & CARDS */
+/* ------------------------------- */
 section {
   padding: 30px;
   background-color: #f6f6f6;
@@ -299,6 +325,7 @@ h2 {
   margin-bottom: 10px;
 }
 
+/* Card container: horizontal scroll for many cards */
 .card-container {
   display: flex;
   gap: 15px;
@@ -307,52 +334,46 @@ h2 {
   max-width: 100%;
 }
 
+/* Card baseline (merged improvements) */
 .card {
   background: white;
   border-radius: 12px;
   padding: 10px;
-  width: 150px;
+  width: 220px; /* slightly larger than old to match merged design */
   text-align: center;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
   flex: 0 0 auto;
+  transition: transform .12s ease, box-shadow .12s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
 }
 
 .card img {
   width: 100%;
+  height: 110px;
+  object-fit: cover;
   border-radius: 8px;
 }
 
-.price {
-  color: green;
-  font-weight: bold;
+.card p {
+  margin: 6px 0 2px 0;
+  font-weight: 600;
 }
 
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 20px;
+.card span, .price {
+  margin-top: 6px;
+  font-weight: 700;
+  color: #111;
 }
 
-.section-header h2 {
-  font-size: 1.8rem;
-  color: #333;
-}
-
-.add-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.add-btn:hover {
-  background-color: #0056b3;
+/* small screen: make cards responsive */
+@media (max-width: 480px) {
+  .card { width: calc(50% - 12px); }
+  .card img { height: 90px; }
 }
 
 /* HELP BOX */
@@ -363,7 +384,69 @@ h2 {
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
+/* ------------------------------- */
+/* Section header / action buttons (your new styles) */
+/* ------------------------------- */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 16px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #2e2e2e;
+  letter-spacing: 0.2px;
+}
+
+/* action group to the right of the header */
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* button base */
+.btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform .08s ease, box-shadow .12s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus { outline: 3px solid rgba(0,0,0,0.08); }
+
+/* color variants */
+.post-bid {
+  background: #1976d2;
+  color: #fff;
+}
+.post-trade {
+  background: #388e3c;
+  color: #fff;
+}
+
+/* responsive rules: stack on small screens */
+@media (max-width: 640px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* ------------------------------- */
 /* FOOTER */
+/* ------------------------------- */
 .footer {
   background: #10006b;
   color: white;
@@ -377,7 +460,7 @@ h2 {
   text-align: right;
 }
 
-/* ====== RESPONSIVE ====== */
+/* ====== RESPONSIVE tweaks ====== */
 @media (max-width: 1024px) {
   .carousel {
     height: 400px;

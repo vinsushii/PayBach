@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayBach | Home</title>
+
+  <!-- PAGE CSS -->
+  <link rel="stylesheet" href="../../css/client/homepage.css">
+
+  <!-- LAYOUT CSS -->
+  <link rel="stylesheet" href="../../css/layout/header.css">
+  <link rel="stylesheet" href="../../css/layout/client_nav.css">
+  <link rel="stylesheet" href="../../css/layout/footer.css">
+</head>
+
+<body>
+
+  <!-- IMPORT HEADER -->
+  <div id="header"></div>
+
+  <!-- IMPORT NAVIGATION -->
+  <div id="client-nav"></div>
+
+  <!-- PAGE CONTENT -->
+  <section class="carousel">
+    <div class="slides">
+      <img src="../../images/SAMCIS.png" class="active" alt="slide 1">
+      <img src="../../images/SAS.png" alt="slide 2">
+      <img src="../../images/SEA.png" alt="slide 3">
+      <img src="../../images/SOL.png" alt="slide 4">
+      <img src="../../images/SOM.png" alt="slide 5">
+      <img src="../../images/SONAHBS.png" alt="slide 6">
+      <img src="../../images/STELA.png" alt="slide 7">
+    </div>
+  </section>
+
+  <section class="categories">
+    <h2>CATEGORIES</h2>
+    <div class="card-container">
+      <div class="card"><img src="../../images/fashion-main.jpg" alt=""><p>Fashion</p></div>
+      <div class="card"><img src="../../images/school supplies-main.jpg" alt=""><p>School Supplies</p></div>
+      <div class="card"><img src="../../images/technology-main.jpg" alt=""><p>Technology</p></div>
+      <div class="card"><img src="../../images/tools-main.jpg" alt=""><p>Tools & Home Materials</p></div>
+    </div>
+  </section>
+
+  <!-- ONGOING BIDS -->
+  <section class="bids">
+    <div class="section-header">
+      <h2>ONGOING BIDS</h2>
+      <!-- ONLY the Post an Item for Bid button here -->
+      <div class="header-actions" role="group" aria-label="bid actions">
+        <button class="btn post-bid" onclick="location.href='post_item.html?mode=bid'">Post an Item for Bid</button>
+      </div>
+    </div>
+
+    <div class="card-container" id="bids-list" aria-live="polite">
+      <!-- JS will inject bidding cards here -->
+    </div>
+  </section>
+
+  <!-- ONGOING TRADES -->
+  <section class="trades">
+    <div class="section-header">
+      <h2>ONGOING TRADES</h2>
+      <!-- ONLY the Post an Item for Trade button here -->
+      <div class="header-actions" role="group" aria-label="trade actions">
+        <button class="btn post-trade" onclick="location.href='post_item.html?mode=trade'">Post an Item for Trade</button>
+      </div>
+    </div>
+
+    <div class="card-container" id="trades-list" aria-live="polite">
+      <!-- JS will inject trade cards here -->
+    </div>
+  </section>
+
+  <section class="help" id="help">
+    <h2>HELP</h2>
+    <div class="help-box">
+      <p><strong>Don't know what to do? Let us help you.</strong></p>
+      <p><b>Bidding</b> means increasing your offer. <b>Bartering</b> means trading an item.</p>
+    </div>
+  </section>
+
+  <!-- IMPORT FOOTER -->
+  <div id="footer"></div>
+
+  <!-- SCRIPTS -->
+  <!-- Homepage script (controller) - path from this file to controller/client/homepage.js -->
+  <script src="../../../controller/client/homepage.js"></script>
+
+  <!-- Layout loader (fills #header, #client-nav, #footer) -->
+  <!-- IMPORTANT: path is relative to views/pages/client/homepage.html -> ../layout/load_layout.js -->
+  <script src="../layout/load_layout.js"></script>
+</body>
+</html>

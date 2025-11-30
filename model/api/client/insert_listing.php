@@ -1,8 +1,9 @@
 <?php
+// model/api/insert_listing.php
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once "db_connect.php";  // MySQLi connection
+require_once __DIR__ . "/../config/db_connect.php";  // MySQLi connection in $conn
 header("Content-Type: application/json");
 
 // Use $_POST instead of JSON
@@ -21,13 +22,13 @@ $user_idnum      = $data["user_idnum"];
 $description     = $data["description"];
 $exchange_method = $data["exchange_method"];
 $payment_method  = $data["payment_method"];
-$quantity        = $data["quantity"] ?? 1;
+$quantity        = isset($data["quantity"]) ? intval($data["quantity"]) : 1;
 $start_date      = $data["start_date"] ?? date("Y-m-d H:i:s");
 $end_date        = $data["end_date"] ?? date("Y-m-d H:i:s");
 
-// Items and categories from FormData
-$items      = $_POST["items"] ?? [];
-$categories = $_POST["categories"] ?? [];
+// Items and categories from FormData (expects arrays of JSON strings or form arrays)
+$items      = isset($_POST["items"]) ? json_decode($_POST["items"], true) : [];
+$categories = isset($_POST["categories"]) ? json_decode($_POST["categories"], true) : [];
 
 try {
     $conn->begin_transaction();
@@ -43,7 +44,7 @@ try {
     $listing_id = $conn->insert_id;
 
     // Insert listing items
-    if (!empty($items)) {
+    if (!empty($items) && is_array($items)) {
         $stmtItems = $conn->prepare("
             INSERT INTO listing_items (listing_id, name, item_condition)
             VALUES (?, ?, ?)
@@ -54,10 +55,11 @@ try {
             $stmtItems->bind_param("iss", $listing_id, $name, $condition);
             $stmtItems->execute();
         }
+        if (isset($stmtItems)) $stmtItems->close();
     }
 
     // Insert listing categories
-    if (!empty($categories)) {
+    if (!empty($categories) && is_array($categories)) {
         $stmtCat = $conn->prepare("
             INSERT INTO listing_categories (listing_id, category)
             VALUES (?, ?)
@@ -66,11 +68,12 @@ try {
             $stmtCat->bind_param("is", $listing_id, $cat);
             $stmtCat->execute();
         }
+        if (isset($stmtCat)) $stmtCat->close();
     }
 
     // Insert listing images
     if (!empty($_FILES["images"]["name"][0])) {
-        $uploadDir = "../uploads/";
+        $uploadDir = __DIR__ . "/../../uploads/"; // uploads folder at project root/uploads
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0777, true);
         }
@@ -85,10 +88,13 @@ try {
             $targetPath = $uploadDir . time() . "_" . $fileName;
 
             if (move_uploaded_file($tmpName, $targetPath)) {
-                $stmtImg->bind_param("is", $listing_id, $targetPath);
+                // store path relative to pages (optional) or absolute: use ../uploads/filename for consistency
+                $dbPath = "../uploads/" . basename($targetPath);
+                $stmtImg->bind_param("is", $listing_id, $dbPath);
                 $stmtImg->execute();
             }
         }
+        if (isset($stmtImg)) $stmtImg->close();
     }
 
     $conn->commit();
