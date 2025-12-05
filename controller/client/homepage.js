@@ -102,7 +102,7 @@ function renderCards(containerId, items, showPrice = true) {
 async function loadListings() {
   try {
     // Path from views/pages/client/homepage.html -> model/api/fetch_listing.php
-    const res = await fetch('../../../model/api/fetch_listing.php', { cache: "no-store" });
+    const res = await fetch('../../../model/api/client/fetch_listings.php', { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const payload = await res.json();
     if (!payload || payload.success !== true || !Array.isArray(payload.data)) {
@@ -128,14 +128,14 @@ async function loadListings() {
     console.warn("Failed to load listings:", err);
     // fallback demo cards
     const demoBids = [
-      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../../images/iphone17.webp"] },
-      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../../images/Generic-profile.png"] },
-      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", images: ["../../images/auto-image.jpg"] }
+      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"] },
+      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../images/Generic-profile.png"] },
+      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", images: ["../images/auto-image.jpg"] }
     ];
     const demoTrades = [
-      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../../images/beauty-main.jpg"] },
-      { listing_id: "demo-5", description: "Pliers", images: ["../../images/tools-main.jpg"] },
-      { listing_id: "demo-6", description: "Stanley Blue", images: ["../../images/stanley.jpg"] }
+      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../images/beauty-main.jpg"] },
+      { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"] },
+      { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"] }
     ];
     renderCards('bids-list', demoBids, true);
     renderCards('trades-list', demoTrades, false);
