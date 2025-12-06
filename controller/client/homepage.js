@@ -48,23 +48,39 @@ function createCardElement(item, showPrice = true) {
     imgSrc = item.image_path.startsWith("../") ? item.image_path.replace("../", "../../") : item.image_path;
   }
 
-  // title: try items[] name, then description
+  // title
   let title = item.title || item.description || "";
   if ((!title || title.trim() === "") && Array.isArray(item.items) && item.items.length > 0) {
     title = item.items[0].name || item.items[0].item_name || title;
   }
 
-  // price: try start_bid alias, or price fields
+  // price
   let price = item.start_bid || item.price || item.current_amount || "";
   if (price !== "" && typeof price !== "string") price = String(price);
 
+  // determine card type for label
+  let typeText = "";
+  let typeClass = "";
+  if (item.exchange_method) {
+    const ex = item.exchange_method.toLowerCase();
+    if (ex.includes("bid") || ex.includes("bidding") || ex.includes("auction")) {
+      typeText = "for Bid";
+      typeClass = "bid";
+    } else {
+      typeText = "for Trade";
+      typeClass = "trade";
+    }
+  }
+
   const titleHtml = `<p>${escapeHtml(title || "Untitled")}</p>`;
-  const priceHtml = (showPrice && price) ? `<span>₱${escapeHtml(price)}</span>` : "";
+  const priceHtml = (showPrice && price) ? `<p class="price">₱${escapeHtml(price)}</p>` : "";
+  const typeLabelHtml = typeText ? `<p class="item-tag ${typeClass}">${typeText}</p>` : "";
 
   div.innerHTML = `
     <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}">
     ${titleHtml}
     ${priceHtml}
+    ${typeLabelHtml}
   `;
 
   // click => details page
@@ -121,6 +137,7 @@ async function loadListings() {
       }
     });
 
+    renderCards('bargains-list', listings, true);
     renderCards('bids-list', bids, true);
     renderCards('trades-list', trades, false);
 
@@ -128,15 +145,17 @@ async function loadListings() {
     console.warn("Failed to load listings:", err);
     // fallback demo cards
     const demoBids = [
-      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"] },
-      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../images/Generic-profile.png"] },
-      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", images: ["../images/auto-image.jpg"] }
+      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"], exchange_method: "bid" },
+      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../images/Generic-profile.png"], exchange_method: "bid"},
+      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", images: ["../images/auto-image.jpg"], exchange_method: "bid" }
     ];
     const demoTrades = [
-      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../images/beauty-main.jpg"] },
-      { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"] },
-      { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"] }
+      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../images/beauty-main.jpg"], exchange_method: "trade" },
+      { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"], exchange_method: "trade" },
+      { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"], exchange_method: "trade" }
     ];
+
+    renderCards('bargains-list', [...demoBids, ...demoTrades], true);
     renderCards('bids-list', demoBids, true);
     renderCards('trades-list', demoTrades, false);
   }

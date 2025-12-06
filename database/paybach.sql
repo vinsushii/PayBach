@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   KEY `user_idnum` (`user_idnum`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+ALTER TABLE listings ADD item_type ENUM('Bid','Trade') DEFAULT 'Bid';
 
 INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `end_date`, `description`, `exchange_method`, `payment_method`, `is_valid`, `created_at`) VALUES
 (1, '2241389', 3, '2025-10-18 00:00:00', '2025-10-25 00:00:00', '3 sets of textbooks for exchange', 'In person', 'Gcash', 1, '2025-11-08 00:33:20'),

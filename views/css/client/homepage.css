@@ -347,6 +347,29 @@ h2 {
   cursor: pointer;
 }
 
+/* Bid or Trade Tag */
+.item-tag {
+  display: inline-block;
+  margin-top: 6px;  /* space below price */
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 6px;
+  color: white;
+}
+
+.item-tag.bid {
+  background-color: #1976d2;
+}
+
+.item-tag.trade {
+  background-color: #28a745;
+}
+
+.card {
+  position: relative;
+}
+
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 14px 30px rgba(0,0,0,0.08);
