@@ -7,107 +7,139 @@
 
   <link rel="stylesheet" href="../../css/client/homepage.css" />
   <link rel="stylesheet" href="../../css/client/post_item.css" />
+
+  <style>
+    /* TYPE BUTTONS */
+    .type-btn {
+      padding: 8px 18px;
+      margin-right: 10px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #f3f3f3;
+    }
+    .type-btn.active {
+      background: #333;
+      color: white;
+    }
+
+    /* PAYMENT BUTTON */
+    .payment-btn {
+      padding: 6px 15px;
+      border: 1px solid #333;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .payment-btn.active {
+      background: #333;
+      color: #fff;
+    }
+
+    /* TAGS */
+    .tag {
+      padding: 6px 12px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 3px;
+    }
+    .tag.selected {
+      background: #444;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-top">
-      <div class="logo-section">
-        <img src="../../images/payback-logo.png" class="logo" />
-        <div class="logo-text">
-          <h1>PayBach</h1>
-          <p>We have your back 24/7.</p>
-        </div>
+
+<header class="header">
+  <!-- (YOUR HEADER CONTENT HERE) -->
+</header>
+
+<section class="post-item">
+  <a href="homepage.html" class="back-btn">← Go bach</a>
+
+  <div class="form-container">
+    <h2>Details</h2>
+
+    <form id="postForm">
+      
+      <label>Item Name:</label>
+      <input type="text" name="item_name" required>
+
+      <label>Condition:</label>
+      <input type="text" name="condition" required>
+
+      <label>Description:</label>
+      <textarea name="description" rows="3" required></textarea>
+
+      <label>Meet up:</label>
+      <input type="text" name="meetup" required>
+
+      <!-- TYPE OF LISTING -->
+      <label>Type of Listing:</label>
+      <div class="listing-type">
+        <button type="button" class="type-btn" data-type="bid">Bid</button>
+        <button type="button" class="type-btn" data-type="trade">Trade</button>
       </div>
 
-      <div class="header-icons">
-        <a href="chats.html">Chats</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="../../index.html">Log in/Sign up</a>
-      </div>
-    </div>
-
-    <!-- NAVIGATION -->
-    <nav class="navbar">
-      <a href="ongoing_bids.html">BIDS</a>
-      <a href="ongoing_trades.html">TRADES</a>
-      <a href="view_listing.html">CATEGORIES</a>
-      <a href="#help">HELP</a>
-      <div class="search-bar">
-        <input type="text" placeholder="Search..." />
-        <button type="submit">
-          <img src="../../images/search-icon.png" alt="Search" />
-        </button>
-      </div>
-    </nav>
-  </header>
-
-  <!-- FORM SECTION -->
-  <section class="post-item">
-    <a href="homepage.html" class="back-btn">← Go bach</a>
-
-    <div class="form-container">
-      <h2>Details</h2>
-
-      <form id="postForm">
-        <label>Item Name:</label>
-        <input type="text" name="item_name" required>
-
-        <label>Condition:</label>
-        <input type="text" name="condition" required>
-
-        <label>Description:</label>
-        <textarea name="description" rows="3" required></textarea>
-
-        <label>Meet up:</label>
-        <input type="text" name="meetup" required>
-
-        <label>Payment:</label>
-        <div class="payment-buttons">
-          <button type="button" class="payment-btn" data-type="onsite">Onsite</button>
-          <button type="button" class="payment-btn" data-type="online">Online</button>
-        </div>
-
+      <!-- BID SECTION -->
+      <div id="bid-section">
         <label>Starting Bid:</label>
-        <input type="number" name="bid" min="1" required>
+        <input type="number" name="bid" min="1">
+      </div>
 
-        <label>Tags:</label>
-        <div class="tag-selection">
-          <button type="button" class="tag">Fashion</button>
-          <button type="button" class="tag">School Supplies</button>
-          <button type="button" class="tag">Technology</button>
-          <button type="button" class="tag">Tools & Home Materials</button>
-          <button type="button" class="tag">Automotive</button>
-          <button type="button" class="tag">Hobbies & Toys</button>
-          <button type="button" class="tag">Decoration</button>
-          <button type="button" class="tag">Sports & Recreation</button>
-          <button type="button" class="tag">Pet Supplies</button>
-          <button type="button" class="tag">Beauty</button>
-          <button type="button" class="tag">Others</button>
-        </div>
+      <!-- TRADE SECTION -->
+      <div id="trade-section" style="display:none;">
+        <label>Your Offered Item:</label>
+        <input type="text" name="trade_item" placeholder="What item are you offering?">
 
-        <label>Images:</label>
-        <div id="image-upload">
-          <input type="file" name="images[]" accept="image/*">
-        </div>
-        <button type="button" id="add-image-btn">+ Add another image</button>
+        <label>Estimated Value of Your Item:</label>
+        <input type="number" name="trade_value" min="1" placeholder="₱">
 
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
-    </div>
-  </section>
+        <label>Desired Barter Item:</label>
+        <input type="text" name="desired_barter_item" placeholder="What item do you want in exchange?">
+      </div>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="contact">
-      <h3>Contact Us</h3>
-      <p>222222@slu.edu.ph</p>
-      <p>Saint Louis University, Maryheights Campus</p>
-      <p>Bakakeng Norte, Baguio City</p>
-    </div>
-    <p class="credits">Website made by Team Bach ©2025</p>
-  </footer>
+      <!-- PAYMENT BUTTONS -->
+      <label>Payment:</label>
+      <div class="payment-buttons">
+        <button type="button" class="payment-btn" data-type="onsite">Onsite</button>
+        <button type="button" class="payment-btn" data-type="online">Online</button>
+      </div>
 
-  <script src="../../js/post_item.js"></script>
+      <!-- TAG SELECTION -->
+      <label>Tags:</label>
+      <div class="tag-selection">
+        <button type="button" class="tag">Fashion</button>
+        <button type="button" class="tag">School Supplies</button>
+        <button type="button" class="tag">Technology</button>
+        <button type="button" class="tag">Tools & Home Materials</button>
+        <button type="button" class="tag">Automotive</button>
+        <button type="button" class="tag">Hobbies & Toys</button>
+        <button type="button" class="tag">Decoration</button>
+        <button type="button" class="tag">Sports & Recreation</button>
+        <button type="button" class="tag">Pet Supplies</button>
+        <button type="button" class="tag">Beauty</button>
+        <button type="button" class="tag">Others</button>
+      </div>
+
+      <!-- IMAGES -->
+      <label>Images:</label>
+      <div id="image-upload">
+        <input type="file" name="images[]" accept="image/*">
+      </div>
+      <button type="button" id="add-image-btn">+ Add another image</button>
+
+      <button type="submit" class="submit-btn">Submit</button>
+
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <!-- (YOUR FOOTER CONTENT HERE) -->
+</footer>
+
+<script src="../../js/post_item.js"></script>
 </body>
 </html>
