@@ -1,11 +1,25 @@
 // ====================
+// SAFE QUERY HELPER
+// ====================
+function qs(selector) {
+  return document.querySelector(selector);
+}
+function qsa(selector) {
+  return document.querySelectorAll(selector);
+}
+
+// ====================
 // LISTING TYPE SWITCH
 // ====================
-const typeButtons = document.querySelectorAll('.type-btn');
+const typeButtons = qsa('.type-btn');
 let listingType = "bid";
 
-const bidSection = document.getElementById("bid-section");
-const tradeSection = document.getElementById("trade-section");
+const bidSection = qs("#bid-section");
+const tradeSection = qs("#trade-section");
+
+// Default state
+bidSection.style.display = "block";
+tradeSection.style.display = "none";
 
 typeButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -27,8 +41,8 @@ typeButtons.forEach(btn => {
 // ====================
 // PAYMENT BUTTONS
 // ====================
-const paymentButtons = document.querySelectorAll('.payment-btn');
-let selectedPayment = null;
+const paymentButtons = qsa('.payment-btn');
+let selectedPayment = "onsite"; // default
 
 paymentButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -38,10 +52,13 @@ paymentButtons.forEach(btn => {
   });
 });
 
+// Activate default payment
+qs('.payment-btn[data-type="onsite"]').classList.add('active');
+
 // ====================
 // TAG SELECTION
 // ====================
-const tags = document.querySelectorAll('.tag');
+const tags = qsa('.tag');
 tags.forEach(tag => {
   tag.addEventListener('click', () => {
     tag.classList.toggle('selected');
@@ -51,14 +68,14 @@ tags.forEach(tag => {
 // ====================
 // ADD IMAGE INPUT
 // ====================
-const addImageBtn = document.getElementById('add-image-btn');
-const imageUpload = document.getElementById('image-upload');
+const addImageBtn = qs('#add-image-btn');
+const imageUpload = qs('#image-upload');
 
 addImageBtn.addEventListener('click', () => {
   const inputs = imageUpload.querySelectorAll('input[type="file"]');
-  const lastInput = inputs[inputs.length - 1];
+  const last = inputs[inputs.length - 1];
 
-  if (!lastInput.value) {
+  if (!last.value) {
     alert("Upload the previous image first.");
     return;
   }
@@ -73,57 +90,43 @@ addImageBtn.addEventListener('click', () => {
 // ====================
 // FORM SUBMIT
 // ====================
-document.getElementById("postForm").addEventListener("submit", async (e) => {
+qs("#postForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-
-  const itemName = document.querySelector("[name='item_name']").value;
-  const condition = document.querySelector("[name='condition']").value;
-  const description = document.querySelector("[name='description']").value;
-  const meetup = document.querySelector("[name='meetup']").value;
-
-  const selectedTags = Array.from(document.querySelectorAll('.tag.selected'))
-                            .map(tag => tag.textContent.trim());
 
   const formData = new FormData();
 
   // Basic data
-  formData.append("item_name", itemName);
-  formData.append("condition", condition);
-  formData.append("description", description);
-  formData.append("meetup", meetup);
-  formData.append("payment_method", selectedPayment ?? "onsite");
+  formData.append("item_name", qs("[name='item_name']").value);
+  formData.append("condition", qs("[name='condition']").value);
+  formData.append("description", qs("[name='description']").value);
+  formData.append("meetup", qs("[name='meetup']").value);
+  formData.append("payment_method", selectedPayment);
 
-  // Listing type
+  // Type of listing
   formData.append("listing_type", listingType);
 
-  // Bid
   if (listingType === "bid") {
-    formData.append("bid", document.querySelector("[name='bid']").value);
-  }
-
-  // Trade
-  if (listingType === "trade") {
-    formData.append("trade_item", document.querySelector("[name='trade_item']").value);
-    formData.append("trade_value", document.querySelector("[name='trade_value']").value);
-    formData.append("desired_barter_item", document.querySelector("[name='desired_barter_item']").value);
+    formData.append("bid", qs("[name='bid']").value);
+  } else {
+    formData.append("trade_item", qs("[name='trade_item']").value);
+    formData.append("trade_value", qs("[name='trade_value']").value);
+    formData.append("desired_barter_item", qs("[name='desired_barter_item']").value);
   }
 
   // Tags
-  selectedTags.forEach((tag, i) => {
-    formData.append(`categories[${i}]`, tag);
-  });
+  const selectedTags = [...qsa('.tag.selected')].map(t => t.textContent.trim());
+  selectedTags.forEach((tag, i) => formData.append(`categories[${i}]`, tag));
 
   // Images
-  document.querySelectorAll("#image-upload input[type='file']").forEach((input) => {
-    if (input.files[0]) {
-      formData.append("images[]", input.files[0]);
-    }
+  imageUpload.querySelectorAll("input[type='file']").forEach(input => {
+    if (input.files.length > 0) formData.append("images[]", input.files[0]);
   });
 
+  // Submit to backend
   try {
     const res = await fetch("../database/insert_listing.php", {
       method: "POST",
-      body: formData
+      body: formData,
     });
 
     const data = await res.json();
@@ -134,7 +137,6 @@ document.getElementById("postForm").addEventListener("submit", async (e) => {
     } else {
       alert("Failed: " + data.message);
     }
-
   } catch (err) {
     alert("Server error: " + err.message);
   }
