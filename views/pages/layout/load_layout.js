@@ -12,3 +12,8 @@ fetch('../layout/client_nav.html')
 fetch('../layout/footer.html')
     .then(res => res.text())
     .then(data => document.getElementById('footer').innerHTML = data);
+
+// Load sidebar
+fetch('../layout/admin_sidebar.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('sidebar').innerHTML = data);
