@@ -1,12 +1,19 @@
 <?php
-$host = "localhost";
-$user = "root";   // default WAMP user
-$pass = "";       // default WAMP password is empty
-$db   = "paybach_db";
-
-$conn = new mysqli($host, $user, $pass, $db);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-} 
+date_default_timezone_set('Asia/Manila');
+class Database {
+    private static $instance = null;
+    private $conn;
+    private function __construct() {
+        $this->conn = new mysqli("localhost", "root", "", "paybach_db");
+    }
+    public static function getInstance() {
+        if (self::$instance == null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
+    public function getConnection() {
+        return $this->conn;
+    }
+}
 ?>
