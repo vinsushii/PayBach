@@ -57,8 +57,8 @@ $_SESSION["UserType"]  = $user["role"]; // admin / student
 
 // Role-based redirect
 $redirect = ($user["role"] === "admin")
-    ? "/views/pages/admin/validate_listing.html"
-    : "/views/pages/client/homepage.html";
+    ? "/Paybach/views/pages/admin/validate_listing.html"
+    : "/Paybach/views/pages/client/homepage.html";
 
 echo json_encode([
     "success"  => true,

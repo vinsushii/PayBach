@@ -117,13 +117,16 @@ function renderCards(containerId, items, showPrice = true) {
 // Fetch listings and separate bids/trades
 async function loadListings() {
   try {
-    // Path from views/pages/client/homepage.html -> model/api/fetch_listing.php
-    const res = await fetch('../../../model/api/client/fetch_listings.php', { cache: "no-store" });
+    // FIXED PATH ✔
+    const res = await fetch("../../model/api/client/fetch_listings.php", { cache: "no-store" });
+
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const payload = await res.json();
+
     if (!payload || payload.success !== true || !Array.isArray(payload.data)) {
       throw new Error("Invalid payload");
     }
+
     const listings = payload.data;
 
     const bids = [];
@@ -143,6 +146,7 @@ async function loadListings() {
 
   } catch (err) {
     console.warn("Failed to load listings:", err);
+
     // fallback demo cards
     const demoBids = [
       { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"], exchange_method: "bid" },
