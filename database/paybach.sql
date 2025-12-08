@@ -137,26 +137,39 @@ INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_
 (2, 3, '../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11');
 
 
-
 DROP TABLE IF EXISTS `listing_items`;
 CREATE TABLE IF NOT EXISTS `listing_items` (
   `item_id` int NOT NULL AUTO_INCREMENT,
   `listing_id` int DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `item_condition` varchar(50) DEFAULT NULL,
+  `categories` ENUM(
+    'Fashion',
+    'School Supplies',
+    'Technology',
+    'Tools & Home Materials',
+    'Automotive',
+    'Hobbies & Toys',
+    'Decoration',
+    'Sports & Recreation',
+    'Pet Supplies',
+    'Beauty',
+    'Others'
+  ) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, `created_at`) VALUES
-(1, 1, 'Math Book', 'Good', '2025-11-08 00:33:20'),
-(2, 1, 'English Book', 'Fair', '2025-11-08 00:33:20'),
-(3, 1, 'History Book', 'Excellent', '2025-11-08 00:33:20'),
-(4, 2, '123', '123', '2025-11-08 00:38:48'),
-(5, 3, 'Labubu', 'so good', '2025-11-08 01:18:11');
-
+INSERT INTO `listing_items`
+(`item_id`, `listing_id`, `name`, `item_condition`, `categories`, `created_at`)
+VALUES
+(1, 1, 'Math Book', 'Good', 'School Supplies', '2025-11-08 00:33:20'),
+(2, 1, 'English Book', 'Fair', 'School Supplies', '2025-11-08 00:33:20'),
+(3, 1, 'History Book', 'Excellent', 'School Supplies', '2025-11-08 00:33:20'),
+(4, 2, '123', '123', 'Technology', '2025-11-08 00:38:48'),
+(5, 3, 'Labubu', 'so good', 'Hobbies & Toys', '2025-11-08 01:18:11');
 
 
 DROP TABLE IF EXISTS `users`;
