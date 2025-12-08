@@ -118,7 +118,7 @@ function renderCards(containerId, items, showPrice = true) {
 async function loadListings() {
   try {
     // FIXED PATH ✔
-    const res = await fetch("../../model/api/client/fetch_listings.php", { cache: "no-store" });
+    const res = await fetch("../../../model/api/client/fetch_listings.php", { cache: "no-store" });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const payload = await res.json();

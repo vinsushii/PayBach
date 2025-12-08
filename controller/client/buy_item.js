@@ -10,7 +10,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===== Fetch Listing Data (Async/Await) =====
   let data;
   try {
-    const res = await fetch(`../../../model/api/client/buy_item.php?listing_id=${listingId}`);
+      const res = await fetch("../../../model/api/client/buy_item.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `listing_id=${listingId}`
+      });
     if(!res.ok){
       alert("Server error: " + res.status);
       return;
@@ -145,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (newPrice <= oldPrice) return alert("New bid must be higher.");
 
     try {
-      const res = await fetch("../../model/api/client/update_price.php", {
+      const res = await fetch("../../../model/api/client/update_price.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id=${listingId}&price=${newPrice}`

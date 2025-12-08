@@ -3,7 +3,7 @@
 header("Content-Type: application/json");
 
 // adjust path to config file (model/config/db_connect.php)
-require_once __DIR__ . "/../config/db_connect.php";  // MySQLi connection in $conn
+require_once __DIR__ . "/../../config/db_connect.php";  // MySQLi connection in $conn
 
 try {
     // Alias quantity as start_bid so frontend can use l.start_bid

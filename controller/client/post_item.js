@@ -122,9 +122,9 @@ qs("#postForm").addEventListener("submit", async (e) => {
     if (input.files.length > 0) formData.append("images[]", input.files[0]);
   });
 
-  // Submit to backend
+  // Submit to backend (FIXED PATH)
   try {
-    const res = await fetch("../database/insert_listing.php", {
+    const res = await fetch("/PayBach/model/api/client/insert_listing.php", {
       method: "POST",
       body: formData,
     });
@@ -133,7 +133,7 @@ qs("#postForm").addEventListener("submit", async (e) => {
 
     if (data.success) {
       alert("Listing submitted!");
-      window.location.href = "../user/homepage.php";
+      window.location.href = "../../../model/api/client/homepage.php";
     } else {
       alert("Failed: " + data.message);
     }

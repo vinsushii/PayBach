@@ -1,82 +1,108 @@
 <?php
-// model/api/insert_listing.php
+// model/api/client/insert_listing.php
+session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-require_once __DIR__ . "/../config/db_connect.php";  // MySQLi connection in $conn
 header("Content-Type: application/json");
 
-// Use $_POST instead of JSON
-$data = $_POST;
+// USE SESSION USER ID
+if (!isset($_SESSION['user_idnum'])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "User not logged in (missing session user_idnum)"
+    ]);
+    exit;
+}
 
-// Required fields
-$required = ["user_idnum", "description", "exchange_method", "payment_method"];
+$user_idnum = $_SESSION['user_idnum'];
+
+// DB CONNECTION
+require_once __DIR__ . "/../../config/db_connect.php";
+$conn = Database::getInstance()->getConnection();
+
+// REQUIRED FIELDS
+$required = ["description", "exchange_method", "payment_method"];
+
 foreach ($required as $r) {
-    if (!isset($data[$r]) || empty($data[$r])) {
+    if (empty($_POST[$r])) {
         echo json_encode(["success" => false, "message" => "Missing: " . $r]);
         exit;
     }
 }
 
-$user_idnum      = $data["user_idnum"];
-$description     = $data["description"];
-$exchange_method = $data["exchange_method"];
-$payment_method  = $data["payment_method"];
-$quantity        = isset($data["quantity"]) ? intval($data["quantity"]) : 1;
-$start_date      = $data["start_date"] ?? date("Y-m-d H:i:s");
-$end_date        = $data["end_date"] ?? date("Y-m-d H:i:s");
+$description     = $_POST["description"];
+$exchange_method = $_POST["exchange_method"];
+$payment_method  = $_POST["payment_method"];
 
-// Items and categories from FormData (expects arrays of JSON strings or form arrays)
+$quantity   = isset($_POST["quantity"]) ? intval($_POST["quantity"]) : 1;
+$start_date = $_POST["start_date"] ?? date("Y-m-d H:i:s");
+$end_date   = $_POST["end_date"]   ?? date("Y-m-d H:i:s");
+
+// Arrays sent as JSON strings
 $items      = isset($_POST["items"]) ? json_decode($_POST["items"], true) : [];
 $categories = isset($_POST["categories"]) ? json_decode($_POST["categories"], true) : [];
 
 try {
     $conn->begin_transaction();
 
-    // Insert into listings
+    // INSERT LISTING
     $stmt = $conn->prepare("
-        INSERT INTO listings (user_idnum, quantity, start_date, end_date, description, exchange_method, payment_method)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO listings (
+            user_idnum, quantity, start_date, end_date,
+            description, exchange_method, payment_method
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
-    $stmt->bind_param("sisssss", $user_idnum, $quantity, $start_date, $end_date, $description, $exchange_method, $payment_method);
-    $stmt->execute();
 
+    $stmt->bind_param(
+        "sisssss",
+        $user_idnum,
+        $quantity,
+        $start_date,
+        $end_date,
+        $description,
+        $exchange_method,
+        $payment_method
+    );
+
+    $stmt->execute();
     $listing_id = $conn->insert_id;
 
-    // Insert listing items
+    // INSERT ITEMS
     if (!empty($items) && is_array($items)) {
         $stmtItems = $conn->prepare("
             INSERT INTO listing_items (listing_id, name, item_condition)
             VALUES (?, ?, ?)
         ");
+
         foreach ($items as $i) {
-            $name = $i["name"] ?? "Unnamed";
+            $name      = $i["name"] ?? "Unnamed";
             $condition = $i["item_condition"] ?? "Unknown";
+
             $stmtItems->bind_param("iss", $listing_id, $name, $condition);
             $stmtItems->execute();
         }
-        if (isset($stmtItems)) $stmtItems->close();
+        $stmtItems->close();
     }
 
-    // Insert listing categories
+    // INSERT CATEGORIES
     if (!empty($categories) && is_array($categories)) {
         $stmtCat = $conn->prepare("
             INSERT INTO listing_categories (listing_id, category)
             VALUES (?, ?)
         ");
+
         foreach ($categories as $cat) {
             $stmtCat->bind_param("is", $listing_id, $cat);
             $stmtCat->execute();
         }
-        if (isset($stmtCat)) $stmtCat->close();
+        $stmtCat->close();
     }
 
-    // Insert listing images
+    // INSERT IMAGES
     if (!empty($_FILES["images"]["name"][0])) {
-        $uploadDir = __DIR__ . "/../../uploads/"; // uploads folder at project root/uploads
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
-        }
+        $uploadDir = __DIR__ . "/../../../uploads/";
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
         $stmtImg = $conn->prepare("
             INSERT INTO listing_images (listing_id, image_path, uploaded_at)
@@ -84,21 +110,25 @@ try {
         ");
 
         foreach ($_FILES["images"]["tmp_name"] as $index => $tmpName) {
-            $fileName = basename($_FILES["images"]["name"][$index]);
-            $targetPath = $uploadDir . time() . "_" . $fileName;
+            $fileName = time() . "_" . basename($_FILES["images"]["name"][$index]);
+            $targetPath = $uploadDir . $fileName;
 
             if (move_uploaded_file($tmpName, $targetPath)) {
-                // store path relative to pages (optional) or absolute: use ../uploads/filename for consistency
-                $dbPath = "../uploads/" . basename($targetPath);
+                $dbPath = $fileName; // store filename only
                 $stmtImg->bind_param("is", $listing_id, $dbPath);
                 $stmtImg->execute();
             }
         }
-        if (isset($stmtImg)) $stmtImg->close();
+        $stmtImg->close();
     }
 
+    // SUCCESS
     $conn->commit();
-    echo json_encode(["success" => true, "listing_id" => $listing_id]);
+    echo json_encode([
+        "success" => true,
+        "listing_id" => $listing_id
+    ]);
+    exit;
 
 } catch (Exception $e) {
     $conn->rollback();
@@ -107,5 +137,6 @@ try {
         "message" => "Insert failed",
         "error" => $e->getMessage()
     ]);
+    exit;
 }
 ?>

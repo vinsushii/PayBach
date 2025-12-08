@@ -32,7 +32,7 @@ if ($result && $row = $result->fetch_assoc()) {
         $_SESSION['email'] = $row['email'];
         $_SESSION['role']  = strtolower($row['role']);
         $_SESSION['username'] = $row['first_name'] . " " . $row['last_name'];
-
+        $_SESSION['user_idnum'] = $row['user_idnum'];
         // CORRECT PATH
         $redirect = $row['role'] === 'admin'
             ? "/PayBach/views/pages/admin/bidding_summary.html"

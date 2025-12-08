@@ -1,74 +1,98 @@
 <?php
 header("Content-Type: application/json");
-include("../../db_connect.php");
+require_once __DIR__ . "/../../config/db_connect.php";
 
-if (!isset($_GET["listing_id"])) {
-    echo json_encode(["success" => false, "message" => "Missing ID"]);
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo json_encode(["success" => false, "message" => "Use POST"]);
     exit;
 }
 
-$listing_id = intval($_GET["listing_id"]);
+$listing_id = $_POST["listing_id"] ?? null;
+if (!$listing_id) {
+    echo json_encode(["success" => false, "message" => "Missing listing_id"]);
+    exit;
+}
 
-/* =============================
-   GET LISTING + SELLER INFO
-   ============================= */
-$sql = "
-SELECT 
-    l.*, 
-    u.first_name, 
-    u.last_name, 
-    u.email
-FROM listings l
-JOIN users u ON l.user_idnum = u.user_idnum
-WHERE l.listing_id = ?
-";
-
-$stmt = $conn->prepare($sql);
+// ===== GET LISTING DETAILS =====
+$stmt = $conn->prepare("
+    SELECT 
+        l.listing_id,
+        l.user_idnum,
+        l.description,
+        l.exchange_method,
+        l.payment_method,
+        l.quantity AS start_bid,
+        l.start_date,
+        l.end_date,
+        CONCAT(u.first_name, ' ', u.last_name) AS seller_name,
+        u.school,
+        u.program
+    FROM listings l
+    JOIN users u ON l.user_idnum = u.user_idnum
+    WHERE l.listing_id = ? AND l.is_valid = TRUE
+    LIMIT 1
+");
 $stmt->bind_param("i", $listing_id);
 $stmt->execute();
-$listing = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$listing = $result->fetch_assoc();
+$stmt->close();
 
 if (!$listing) {
-    echo json_encode(["success" => false]);
+    echo json_encode(["success" => false, "message" => "Listing not found"]);
     exit;
 }
 
-/* =============================
-   GET ITEMS
-   ============================= */
-$items = [];
-$res = $conn->query("SELECT * FROM listing_items WHERE listing_id = $listing_id");
-while ($row = $res->fetch_assoc()) {
-    $items[] = $row;
-}
+// ===== GET ITEMS =====
+$stmtItems = $conn->prepare("
+    SELECT name, item_condition
+    FROM listing_items
+    WHERE listing_id = ?
+");
+$stmtItems->bind_param("i", $listing_id);
+$stmtItems->execute();
+$items = $stmtItems->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmtItems->close();
 
-/* =============================
-   GET CATEGORIES
-   ============================= */
-$categories = [];
-$res = $conn->query("SELECT category FROM listing_categories WHERE listing_id = $listing_id");
-while ($row = $res->fetch_assoc()) {
-    $categories[] = $row;
-}
+// ===== GET CATEGORIES =====
+$stmtCats = $conn->prepare("
+    SELECT category
+    FROM listing_categories
+    WHERE listing_id = ?
+");
+$stmtCats->bind_param("i", $listing_id);
+$stmtCats->execute();
+$categories = array_column(
+    $stmtCats->get_result()->fetch_all(MYSQLI_ASSOC),
+    "category"
+);
+$stmtCats->close();
 
-/* =============================
-   GET IMAGES
-   ============================= */
-$images = [];
-$res = $conn->query("SELECT image_path FROM listing_images WHERE listing_id = $listing_id");
-while ($row = $res->fetch_assoc()) {
-    $images[] = $row["image_path"];
-}
+// ===== GET IMAGES =====
+$stmtImgs = $conn->prepare("
+    SELECT image_path
+    FROM listing_images
+    WHERE listing_id = ?
+");
+$stmtImgs->bind_param("i", $listing_id);
+$stmtImgs->execute();
+$images = array_column(
+    $stmtImgs->get_result()->fetch_all(MYSQLI_ASSOC),
+    "image_path"
+);
+$stmtImgs->close();
 
-/* =============================
-   GET CURRENT PRICE (via bids)
-   ============================= */
-$currentPrice = 0;
-
-$res = $conn->query("SELECT current_amount FROM bids WHERE transaction_id = $listing_id");
-if ($row = $res->fetch_assoc()) {
-    $currentPrice = floatval($row["current_amount"]);
-}
+// ===== GET CURRENT PRICE =====
+$stmtPrice = $conn->prepare("
+    SELECT MAX(price) AS current_price
+    FROM listing_bids
+    WHERE listing_id = ?
+");
+$stmtPrice->bind_param("i", $listing_id);
+$stmtPrice->execute();
+$priceRes = $stmtPrice->get_result()->fetch_assoc();
+$currentPrice = $priceRes["current_price"] ?? $listing["start_bid"];
+$stmtPrice->close();
 
 echo json_encode([
     "success" => true,
@@ -78,4 +102,3 @@ echo json_encode([
     "images" => $images,
     "currentPrice" => $currentPrice
 ]);
-?>
