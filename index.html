@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="views/css/client/style.css">
 </head>
 <body>
+
+  <!-- NOTIFICATION BOX -->
+  <div id="notification"></div>
+
   <div class="app-container">
     <header class="header">
       <img src="views/images/payback-logo.png" alt="PayBach Logo" class="logo">
@@ -20,7 +24,7 @@
     <section class="form-container active" id="login-form">
       <img src="views/images/Generic-profile.png" alt="User Icon" class="avatar">
 
-      <form id="loginForm" action="model/api/client/login.php" method="POST">
+      <form id="loginForm">
         <div class="input-group">
           <img src="views/images/user-profile.png" alt="User Icon" class="icon">
           <input type="email" name="email" placeholder="Email" required>
@@ -64,9 +68,6 @@
       </form>
     </section>
   </div>
-  
-  <!-- Toast Notification -->
-  <div id="notify" class="notify"></div>
 
   <script src="controller/client/index.js"></script>
 </body>

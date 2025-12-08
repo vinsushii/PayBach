@@ -1,23 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Toast Notificatoin
-  function notify(message, type = "info"){
-    const box = document.getElementById("notify");
-    box.textContent = message;
-    box.className = "notify ${type} show";
-
-    setTimeout(() =>{
-      box.classList.remove("show");
-      setTimeout(() => {
-        box.style.display = "none";
-      }, 400);
-    }, 3000);
-  }
 
   const loginFormSection = document.getElementById('login-form');
   const registerFormSection = document.getElementById('register-form');
 
   const registerLink = document.getElementById('register-link');
   const loginLink = document.getElementById('login-link');
+
+  function showNotification(message, type = "success") {
+    const notif = document.getElementById("notification");
+    notif.textContent = message;
+    notif.className = type;
+    notif.style.display = "block";
+
+    setTimeout(() => {
+      notif.style.display = "none";
+    }, 3000);
+  }
 
   // SWITCH TO REGISTER
   if (registerLink) {
@@ -59,20 +57,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const result = await response.json();
 
         if (result.success) {
-          notify("Login successful!", "success");
-          setTimeout(() =>{
-            // redirect from backend already has /PayBach now
-          window.location.href = result.redirect;
-          }, 800);
+          showNotification("Login successful!", "success");
+          setTimeout(() => {
+            window.location.href = result.redirect;
+          }, 1000);
         } else {
-          notify(result.error, "error");
+          showNotification(result.error, "error");
         }
 
       } catch (error) {
         console.error("Error:", error);
-        notify("Server error. Try again later.", "error");
+        showNotification("Server error. Try again later.", "error");
       }
     });
   }
-  
+
 });
