@@ -1,11 +1,16 @@
-const container = document.querySelector(".bids-container");
+const yourContainer = document.querySelector("#your-bids");
+const biddingContainer = document.querySelector("#bidding-for");
+const availableContainer = document.querySelector("#available-bids");
+
+// to be replaced ng SESSION ID (from PHP)
+const CURRENT_USER_ID = localStorage.getItem("user_id");
 
 async function loadListings() {
   try {
     const res = await fetch("../database/fetch_listings.php");
     const json = await res.json();
 
-    console.log("API response:", json); // Debug
+    console.log("API response:", json); // debug
 
     if (!json.success) {
       console.error("Fetch failed:", json.message);
@@ -13,7 +18,10 @@ async function loadListings() {
     }
 
     const listings = json.data;
-    container.innerHTML = ""; 
+
+    yourContainer.innerHTML = "";
+    biddingContainer.innerHTML = "";
+    availableContainer.innerHTML = "";
 
     const pesoFormatter = new Intl.NumberFormat("en-PH", {
       style: "currency",
@@ -33,19 +41,31 @@ async function loadListings() {
       card.className = "bid-link";
       card.href = "../user/buy_item.html?id=" + l.listing_id;
 
-
       card.innerHTML = `
         <div class="bid-card">
-          <div class="image-gallery">
-            ${imagesHtml}
-          </div>
+          <div class="image-gallery">${imagesHtml}</div>
           <p>${title}</p>
           <span class="price">${price}</span>
         </div>
       `;
 
-      container.appendChild(card);
+      // Sorting logic
+      if (l.user_id == CURRENT_USER_ID) {
+        yourContainer.appendChild(card);
+      } else if (l.user_participating == true) {
+        biddingContainer.appendChild(card);
+      } else {
+        availableContainer.appendChild(card);
+      }
     });
+
+    // Empty state messages
+    if (!yourContainer.children.length)
+      yourContainer.innerHTML = `<p class="empty">None</p>`;
+    if (!biddingContainer.children.length)
+      biddingContainer.innerHTML = `<p class="empty">None</p>`;
+    if (!availableContainer.children.length)
+      availableContainer.innerHTML = `<p class="empty">None</p>`;
 
   } catch (err) {
     console.error("Error:", err);

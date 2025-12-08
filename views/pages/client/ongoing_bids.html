@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="../../css/client/ongoing_bids.css" />
 
   <!-- LAYOUT CSS -->
-   <link rel="stylesheet" href="../../css/layout/header.css">
-   <link rel="stylesheet" href="../../css/layout/client_nav.css">
-   <link rel="stylesheet" href="../../css/layout/footer.css">
+  <link rel="stylesheet" href="../../css/layout/header.css">
+  <link rel="stylesheet" href="../../css/layout/client_nav.css">
+  <link rel="stylesheet" href="../../css/layout/footer.css">
 </head>
 <body>
 
@@ -20,16 +20,40 @@
   <div id="header"></div>
   <!-- IMPORT NAVIGATION -->
   <div id="client-nav"></div>
+
   <!-- PAGE CONTENT -->
-<main class="bids-section">
-  <h2>ONGOING BIDS</h2>
-  <div class="bids-container"></div>
-</main>
+  <main class="bids-section">
+    <h2>ONGOING BIDS</h2>
+
+    <div class="bids-wrapper">
+
+      <!-- 1. USER'S OWN LISTINGS -->
+      <div class="bids-column">
+        <h3>Your Bids</h3>
+        <div class="bids-container" id="your-bids"></div>
+      </div>
+
+      <!-- 2. LISTINGS USER IS BIDDING ON -->
+      <div class="bids-column">
+        <h3>Bidding For</h3>
+        <div class="bids-container" id="bidding-for"></div>
+      </div>
+
+      <!-- 3. ALL OTHERS -->
+      <div class="bids-column">
+        <h3>Available Bids</h3>
+        <div class="bids-container" id="available-bids"></div>
+      </div>
+
+    </div>
+  </main>
 
   <!-- IMPORT FOOTER -->
   <div id="footer"></div>
-<!-- SCRIPTS -->
-<script src="../../js/ongoing_bids.js"></script>
-<script src="../layout/load_layout.js"></script>
+
+  <!-- SCRIPTS -->
+  <script src="../../js/ongoing_bids.js"></script>
+  <script src="../layout/load_layout.js"></script>
+
 </body>
 </html>

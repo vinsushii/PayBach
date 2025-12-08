@@ -5,6 +5,9 @@ header("Content-Type: application/json");
 // adjust path to config file (model/config/db_connect.php)
 require_once __DIR__ . "/../../config/db_connect.php";  // MySQLi connection in $conn
 
+session_start();
+$current_user_id = $_SESSION["user_idnum"] ?? 0;
+
 try {
     // Alias quantity as start_bid so frontend can use l.start_bid
     $stmt = $conn->prepare("
@@ -32,7 +35,7 @@ try {
     foreach ($listings as &$l) {
         $listing_id = $l["listing_id"];
 
-        // items
+        // Fetch items
         $stmtItems = $conn->prepare("
             SELECT name, item_condition
             FROM listing_items
@@ -44,7 +47,7 @@ try {
         $l["items"] = $resItems->fetch_all(MYSQLI_ASSOC);
         $stmtItems->close();
 
-        // categories
+        // Fetch categories
         $stmtCats = $conn->prepare("
             SELECT category
             FROM listing_categories
@@ -56,7 +59,7 @@ try {
         $l["categories"] = array_column($resCats->fetch_all(MYSQLI_ASSOC), "category");
         $stmtCats->close();
 
-        // images
+        // Fetch images
         $stmtImgs = $conn->prepare("
             SELECT image_path
             FROM listing_images
@@ -67,6 +70,20 @@ try {
         $resImgs = $stmtImgs->get_result();
         $l["images"] = array_column($resImgs->fetch_all(MYSQLI_ASSOC), "image_path");
         $stmtImgs->close();
+
+        // -----------------------------------------
+        // CHECK IF CURRENT USER IS PARTICIPATING
+        // -----------------------------------------
+        $stmtBid = $conn->prepare("
+            SELECT 1 FROM bids 
+            WHERE listing_id = ? AND user_idnum = ? 
+            LIMIT 1
+        ");
+        $stmtBid->bind_param("ii", $listing_id, $current_user_id);
+        $stmtBid->execute();
+        $resBid = $stmtBid->get_result();
+        $l["user_participating"] = $resBid->num_rows > 0;
+        $stmtBid->close();
     }
 
     echo json_encode([
