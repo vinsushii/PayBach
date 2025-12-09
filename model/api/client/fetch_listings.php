@@ -76,7 +76,7 @@ try {
         // -----------------------------------------
         $stmtBid = $conn->prepare("
             SELECT 1 FROM bids 
-            WHERE listing_id = ? AND user_idnum = ? 
+            WHERE bid_id = ? AND user_idnum = ? 
             LIMIT 1
         ");
         $stmtBid->bind_param("ii", $listing_id, $current_user_id);

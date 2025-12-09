@@ -7,7 +7,8 @@ const CURRENT_USER_ID = localStorage.getItem("user_id");
 
 async function loadListings() {
   try {
-    const res = await fetch("../database/fetch_listings.php");
+    //relative path is calculated from ongoing_bids.html and not ongoing_bids.js
+    const res = await fetch("../../../model/api/client/fetch_listings.php");
     const json = await res.json();
 
     console.log("API response:", json); // debug

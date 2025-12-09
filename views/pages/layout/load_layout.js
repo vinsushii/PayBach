@@ -14,6 +14,10 @@ fetch('../layout/footer.html')
     .then(data => document.getElementById('footer').innerHTML = data);
 
 // Load sidebar
-fetch('../layout/admin_sidebar.html')
-  .then(res => res.text())
-  .then(data => document.getElementById('sidebar').innerHTML = data);
+// added a check kasi not all pages have a sidebar. and apparently some errors caused by this going unchecked can cause promise runs to break?
+const sidebarEl = document.getElementById('sidebar');
+if (sidebarEl) {
+    fetch('../layout/admin_sidebar.html')
+        .then(res => res.text())
+        .then(data => sidebarEl.innerHTML = data);
+}
