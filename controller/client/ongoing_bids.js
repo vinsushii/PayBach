@@ -36,11 +36,11 @@ async function loadListings() {
 
       const imagesHtml = (l.images && l.images.length > 0)
         ? l.images.map(path => `<img src="${path}" alt="${title}" />`).join("")
-        : `<img src="../images/default.png" alt="${title}" />`;
+        : `<img src="../../images/default.png" alt="${title}" />`;
 
       const card = document.createElement("a");
       card.className = "bid-link";
-      card.href = "../user/buy_item.html?id=" + l.listing_id;
+      card.href = "../client/buy_item.html?listing_id=" + l.listing_id;
 
       card.innerHTML = `
         <div class="bid-card">
