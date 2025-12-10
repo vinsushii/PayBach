@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const listingId = params.get("listing_id");
+  const listingId = params.get('listing_id');
+  console.log(listingId);
 
   if (!listingId) {
     alert("Missing listing ID");

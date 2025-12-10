@@ -4,8 +4,6 @@ header("Content-Type: application/json");
 
 require_once __DIR__ . "/../../config/db_connect.php";
 
-$conn = Database::getInstance()->getConnection();
-
 // Read JSON body from fetch()
 $data = json_decode(file_get_contents("php://input"), true);
 
