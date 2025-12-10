@@ -83,6 +83,7 @@ $images = array_column(
 $stmtImgs->close();
 
 // ===== GET CURRENT PRICE =====
+// NOTE: listing_bids table does not exist in database and is causing this .php to not return anything
 $stmtPrice = $conn->prepare("
     SELECT MAX(price) AS current_price
     FROM listing_bids
