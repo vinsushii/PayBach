@@ -32,59 +32,51 @@ body {
   margin-bottom: 20px;
 }
 
-.form-container label {
+label {
   display: block;
-  margin: 10px 0 5px;
+  margin-top: 12px;
 }
 
-.form-container input[type="text"],
-.form-container input[type="number"],
-.form-container textarea {
+input[type="text"],
+input[type="number"],
+textarea {
   width: 100%;
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
 
-.payment-buttons {
-  display: flex;
-  gap: 15px;
-  margin: 10px 0;
-}
-
-.payment-btn {
-  flex: 1;
-  padding: 10px 0;
-  background-color: #1e1e6a;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.payment-btn.active {
-  background-color: #4b4be3;
-}
-
-.tag-selection {
+.listing-type, .payment-buttons, .tag-selection {
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
+}
+
+.type-btn, .payment-btn {
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #f3f3f3;
+  cursor: pointer;
+}
+
+.type-btn.active, .payment-btn.active {
+  background-color: #1e1e6a;
+  color: white;
 }
 
 .tag {
   background-color: #eee;
   border: 1px solid #ccc;
-  border-radius: 5px;
   padding: 6px 10px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 .tag.selected {
   background-color: #1e1e6a;
   color: white;
-  border-color: #1e1e6a;
 }
 
 #add-image-btn {
@@ -100,9 +92,9 @@ body {
 .submit-btn {
   margin-top: 20px;
   width: 100%;
-  padding: 10px;
-  border: none;
+  padding: 12px;
   background-color: #1e1e6a;
+  border: none;
   color: white;
   border-radius: 6px;
   cursor: pointer;
