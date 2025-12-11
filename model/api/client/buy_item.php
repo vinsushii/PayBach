@@ -83,11 +83,10 @@ $images = array_column(
 $stmtImgs->close();
 
 // ===== GET CURRENT PRICE =====
-// NOTE: listing_bids table does not exist in database and is causing this .php to not return anything
 $stmtPrice = $conn->prepare("
-    SELECT MAX(price) AS current_price
-    FROM listing_bids
-    WHERE listing_id = ?
+    SELECT MAX(price_offered) AS current_price
+    FROM bid_offers
+    WHERE bid_id = ?
 ");
 $stmtPrice->bind_param("i", $listing_id);
 $stmtPrice->execute();
