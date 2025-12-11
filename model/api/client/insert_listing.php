@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 header("Content-Type: application/json");
 
 // USE SESSION USER ID
-if (!isset($_SESSION['user_idnum'])) {
+if (!isset($_SESSION['UserID'])) {
     echo json_encode([
         "success" => false,
         "message" => "User not logged in (missing session user_idnum)"
@@ -15,11 +15,10 @@ if (!isset($_SESSION['user_idnum'])) {
     exit;
 }
 
-$user_idnum = $_SESSION['user_idnum'];
+$user_idnum = $_SESSION['UserID'];
 
 // DB CONNECTION
 require_once __DIR__ . "/../../config/db_connect.php";
-$conn = Database::getInstance()->getConnection();
 
 // REQUIRED FIELDS
 $required = ["description", "exchange_method", "payment_method"];
@@ -55,7 +54,6 @@ try {
     ");
 
     $stmt->bind_param(
-        "sisssss",
         $user_idnum,
         $quantity,
         $start_date,
@@ -79,7 +77,7 @@ try {
             $name      = $i["name"] ?? "Unnamed";
             $condition = $i["item_condition"] ?? "Unknown";
 
-            $stmtItems->bind_param("iss", $listing_id, $name, $condition);
+            $stmtItems->bind_param($listing_id, $name, $condition);
             $stmtItems->execute();
         }
         $stmtItems->close();
@@ -93,7 +91,7 @@ try {
         ");
 
         foreach ($categories as $cat) {
-            $stmtCat->bind_param("is", $listing_id, $cat);
+            $stmtCat->bind_param($listing_id, $cat);
             $stmtCat->execute();
         }
         $stmtCat->close();
@@ -115,7 +113,7 @@ try {
 
             if (move_uploaded_file($tmpName, $targetPath)) {
                 $dbPath = $fileName; // store filename only
-                $stmtImg->bind_param("is", $listing_id, $dbPath);
+                $stmtImg->bind_param($listing_id, $dbPath);
                 $stmtImg->execute();
             }
         }

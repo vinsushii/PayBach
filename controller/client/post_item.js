@@ -99,7 +99,7 @@ qs("#postForm").addEventListener("submit", async (e) => {
   formData.append("item_name", qs("[name='item_name']").value);
   formData.append("condition", qs("[name='condition']").value);
   formData.append("description", qs("[name='description']").value);
-  formData.append("meetup", qs("[name='meetup']").value);
+  formData.append("exchange_method", qs("[name='exchange_method']").value);
   formData.append("payment_method", selectedPayment);
 
   // Type of listing
