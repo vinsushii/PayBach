@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 10, 2025 at 02:08 PM
+-- Generation Time: Dec 13, 2025 at 12:01 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
@@ -194,8 +194,8 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
 --
 
 INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_at`) VALUES
-(1, 2, '../uploads/1762533528_bird.png', '2025-11-08 00:38:48'),
-(2, 3, '../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11');
+(1, 2, '../../../uploads/1762533528_bird.jpg', '2025-11-08 00:38:48'),
+(2, 3, '../../../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11');
 
 -- --------------------------------------------------------
 
