@@ -7,52 +7,11 @@
 
   <link rel="stylesheet" href="../../css/client/homepage.css" />
   <link rel="stylesheet" href="../../css/client/post_item.css" />
-
-  <style>
-    /* TYPE BUTTONS */
-    .type-btn {
-      padding: 8px 18px;
-      margin-right: 10px;
-      border: 1px solid #333;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #f3f3f3;
-    }
-    .type-btn.active {
-      background: #333;
-      color: white;
-    }
-
-    /* PAYMENT BUTTON */
-    .payment-btn {
-      padding: 6px 15px;
-      border: 1px solid #333;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .payment-btn.active {
-      background: #333;
-      color: #fff;
-    }
-
-    /* TAGS */
-    .tag {
-      padding: 6px 12px;
-      border: 1px solid #444;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 3px;
-    }
-    .tag.selected {
-      background: #444;
-      color: white;
-    }
-  </style>
 </head>
 <body>
 
 <header class="header">
-  <!-- (YOUR HEADER CONTENT HERE) -->
+  <!-- HELP -->
 </header>
 
 <section class="post-item">
@@ -64,16 +23,16 @@
     <form id="postForm">
       
       <label>Item Name:</label>
-      <input type="text" name="item_name" placeholder="ex. Laptop, T-Square Ruler" required>
+      <input type="text" name="item_name" required>
 
       <label>Condition:</label>
-      <input type="text" name="condition" placeholder="ex. Lightly used, Worn down" required>
+      <input type="text" name="condition" required>
 
       <label>Description:</label>
       <textarea name="description" rows="3" required></textarea>
 
       <label>Exchange method:</label>
-      <input type="text" name="exchange_method" placeholder="ex. In-person, Grab carrier" required>
+      <input type="text" name="exchange_method" required>
 
       <!-- TYPE OF LISTING -->
       <label>Type of Listing:</label>
@@ -84,20 +43,31 @@
 
       <!-- BID SECTION -->
       <div id="bid-section">
+
+        <label>Item Price:</label>
+        <input type="number" name="item_price" step="0.01" placeholder="e.g. 100.00" required>
+
         <label>Starting Bid:</label>
-        <input type="number" name="bid" min="1">
+        <input type="number" name="bid" step="0.01" min="1" required>
+
+        <label>Max Bid:</label>
+        <input type="number" name="max_bid" step="0.01" placeholder="e.g. 150.00" required>
+
+        <label>Max Price:</label>
+        <input type="number" name="max_price" step="0.01" placeholder="e.g. 200.00" required>
+
       </div>
 
       <!-- TRADE SECTION -->
       <div id="trade-section" style="display:none;">
         <label>Your Offered Item:</label>
-        <input type="text" name="trade_item" placeholder="What item are you offering?">
+        <input type="text" name="trade_item">
 
         <label>Estimated Value of Your Item:</label>
-        <input type="number" name="trade_value" min="1" placeholder="₱">
+        <input type="number" name="trade_value">
 
         <label>Desired Barter Item:</label>
-        <input type="text" name="desired_barter_item" placeholder="What item do you want in exchange?">
+        <input type="text" name="desired_barter_item">
       </div>
 
       <!-- PAYMENT BUTTONS -->
@@ -137,7 +107,7 @@
 </section>
 
 <footer class="footer">
-  <!-- (YOUR FOOTER CONTENT HERE) -->
+  <!-- FOOTER -->
 </footer>
 
 <script src="../../../controller/client/post_item.js"></script>

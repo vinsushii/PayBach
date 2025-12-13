@@ -1,5 +1,5 @@
 // ====================
-// SAFE QUERY HELPER
+// SAFE QUERY HELPERS
 // ====================
 function qs(selector) {
   return document.querySelector(selector);
@@ -93,21 +93,81 @@ addImageBtn.addEventListener('click', () => {
 qs("#postForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  // ====================
+  // VALIDATIONS START
+  // ====================
+  const itemPrice = qs("[name='item_price']").value.trim();
+  const maxPrice = qs("[name='max_price']").value.trim();
+  const startingBid = qs("[name='bid']").value.trim();
+  const maxBid = qs("[name='max_bid']").value.trim();
+
+  // ONLY DECIMALS: 00, 25, 50, 75
+  const decimalCheck = val => {
+    if (!val.includes(".")) return true;
+    const dec = val.split(".")[1];
+    return ["00", "25", "50", "75"].includes(dec);
+  };
+
+  // RULE 1: No empty inputs allowed
+  if (!itemPrice || !maxPrice || !startingBid || !maxBid) {
+    alert("All fields must be filled. Whitespaces are not allowed.");
+    return;
+  }
+
+  // RULE 2: Decimal format validation
+  if (!decimalCheck(itemPrice) || !decimalCheck(maxPrice) || !decimalCheck(startingBid) || !decimalCheck(maxBid)) {
+    alert("Decimal values must be only 00, 25, 50, or 75.");
+    return;
+  }
+
+  const itemP = parseFloat(itemPrice);
+  const maxP = parseFloat(maxPrice);
+  const startB = parseFloat(startingBid);
+  const maxBVal = parseFloat(maxBid);
+
+  // RULE 3: Item Price ≤ Max Price
+  if (itemP > maxP) {
+    alert("Item Price must not be greater than Max Price.");
+    return;
+  }
+
+  // RULE 4: Starting bid ≤ max price AND Max bid ≤ max price
+  if (startB > maxP || maxBVal > maxP) {
+    alert("Starting Bid and Max Bid must NOT exceed Max Price.");
+    return;
+  }
+
+  // RULE 5: Max bid must not equal starting bid
+  if (startB === maxBVal) {
+    alert("Max Bid must not be equal to Starting Bid.");
+    return;
+  }
+  // ====================
+  // VALIDATIONS END
+  // ====================
+
   const formData = new FormData();
 
-  // Basic data
+  // Basic Data
   formData.append("item_name", qs("[name='item_name']").value);
   formData.append("condition", qs("[name='condition']").value);
   formData.append("description", qs("[name='description']").value);
   formData.append("exchange_method", qs("[name='exchange_method']").value);
   formData.append("payment_method", selectedPayment);
 
-  // Type of listing
+  // Listing type
   formData.append("listing_type", listingType);
 
+  // BID FIELDS
   if (listingType === "bid") {
+    formData.append("item_price", itemPrice);
+    formData.append("max_price", maxPrice);
+    formData.append("max_bid", maxBid);
+
     formData.append("bid", qs("[name='bid']").value);
-  } else {
+  } 
+  // TRADE FIELDS
+  else {
     formData.append("trade_item", qs("[name='trade_item']").value);
     formData.append("trade_value", qs("[name='trade_value']").value);
     formData.append("desired_barter_item", qs("[name='desired_barter_item']").value);
@@ -121,10 +181,9 @@ qs("#postForm").addEventListener("submit", async (e) => {
   imageUpload.querySelectorAll("input[type='file']").forEach(input => {
     if (input.files.length > 0) formData.append("images[]", input.files[0]);
   });
-
   console.log("Data added to formData object.")
 
-  // Submit to backend (FIXED PATH)
+  // Submit to backend
   try {
     const res = fetch("/PayBach/model/api/client/insert_listing.php", {
       method: "POST",
