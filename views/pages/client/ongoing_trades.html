@@ -16,47 +16,58 @@
 </head>
 <body>
 
-  <!-- IMPORT HEADER -->
+  <!-- HEADER -->
   <div id="header"></div>
-  <!-- IMPORT NAVIGATION -->
   <div id="client-nav"></div>
 
   <!-- PAGE CONTENT -->
   <main class="trades-section">
-    <h2>ONGOING TRADES</h2>
+  <h2>ONGOING TRADES</h2>
 
-    <div class="trades-wrapper">
-      <!-- 1. YOUR TRADES - With incoming offers list -->
-      <div class="trades-column">
+  <div class="trades-wrapper">
+
+    <!-- YOUR TRADES -->
+    <div class="trades-column">
+      <div class="trades-header">
+        <button
+          class="action-add-btn"
+          id="add-trade-btn"
+          title="Post a new trade"
+          aria-label="Post a new trade">
+          +
+        </button>
         <h3>Your Trades</h3>
-        <div class="trades-container" id="your-trades">
-          <div class="no-offers">Loading your trade offers...</div>
-        </div>
       </div>
-      
-      <!-- 2. COMPLETED TRADES -->
-      <div class="trades-column">
-        <h3>Completed Trades</h3>
-        <div class="trades-container" id="completed-trades">
-          <div class="no-offers">No completed trades yet</div>
-        </div>
-      </div>
-      
-      <!-- 3. AVAILABLE TRADES -->
-      <div class="trades-column">
-        <h3>Available Trades</h3>
-        <div class="trades-container" id="available-trades">
-          <div class="no-offers">Loading available trades...</div>
-        </div>
-      </div>
+      <div class="trades-container"></div>
     </div>
-  </main>
 
-  <!-- IMPORT FOOTER -->
+    <!-- COMPLETED TRADES -->
+    <div class="trades-column">
+      <div class="trades-header">
+        <span class="header-spacer"></span>
+        <h3>Completed Trades</h3>
+      </div>
+      <div class="trades-container"></div>
+    </div>
+
+    <!-- AVAILABLE TRADES -->
+    <div class="trades-column">
+      <div class="trades-header">
+        <span class="header-spacer"></span>
+        <h3>Available Trades</h3>
+      </div>
+      <div class="trades-container"></div>
+    </div>
+
+  </div>
+</main>
+
+  <!-- FOOTER -->
   <div id="footer"></div>
 
   <!-- SCRIPTS -->
   <script src="../../../controller/client/ongoing_trades.js"></script>
   <script src="../layout/load_layout.js"></script>
+
 </body>
 </html>

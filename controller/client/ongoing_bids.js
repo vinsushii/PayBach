@@ -4,7 +4,14 @@ const availableContainer = document.querySelector("#available-bids");
 
 // to be replaced ng SESSION ID (from PHP)
 const CURRENT_USER_ID = localStorage.getItem("user_id");
-
+// ADD BUTTON LOGIC
+const addBtn = document.getElementById("add-bid-btn"); // updated ID for bids
+if (addBtn) {
+    addBtn.addEventListener("click", () => {
+        // Navigate to the page to post a new bid
+        window.location.href = "../client/post_item.html";
+    });
+}
 async function loadListings() {
   try {
     //relative path is calculated from ongoing_bids.html and not ongoing_bids.js
