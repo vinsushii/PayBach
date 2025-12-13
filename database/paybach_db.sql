@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 13, 2025 at 12:01 AM
+-- Generation Time: Dec 13, 2025 at 11:51 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -252,8 +252,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`user_idnum`, `first_name`, `middle_initial`, `last_name`, `password_hash`, `email`, `school`, `program`, `role`) VALUES
-('2241389', 'Juan', 'A', 'Dela Cruz', 'hashed_password_here', 'delaCruz@slu.edu.ph', 'SAMCIS', 'BSCS', 'student'),
-('999999', 'Admin', NULL, 'User', 'admin_hashed_password_here', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin'),
+('2241389', '', NULL, '', '$2y$10$HbMJVZ3w7PQd03foT5OIi.TCG0kQInwAgwE.kxsJRc42Zrsc6wot6', '2241389@slu.edu.ph', NULL, NULL, 'student'),
+('ADMIN001', 'Admin', NULL, 'Account', '$2y$10$GwRDdoMlYKAJ6f1KLN4jKuaRcWyK6Mcu1zU5vg1yyTEUsuGskDlzy', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin'),
 ('2241901', '', NULL, '', '$2y$10$DHjHhaCi7W23I6pl1B/ORuWxQ/IZ259HHuKui/NMmkzKUQwLZxa6W', '2241901@slu.edu.ph', NULL, NULL, 'student'),
 ('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student');
 
