@@ -39,7 +39,7 @@ $quantity   = isset($_POST["quantity"]) ? intval($_POST["quantity"]) : 1;
 $start_date = $_POST["start_date"] ?? date("Y-m-d H:i:s");
 $end_date   = $_POST["end_date"]   ?? date("Y-m-d H:i:s");
 
-echo '<script>console.log("DESCRIPTION: ",' $description, "ECHANGE METHOD: ", $exchange_method, "PAYMENT METHOD: ", $payment_method, "QUANTITY: ", $quantity, "START DATE: ", $start_date, "END DATE: ", $end_date);
+echo '<script>console.log("DESCRIPTION: ",' ($description, "ECHANGE METHOD: ", $exchange_method, "PAYMENT METHOD: ", $payment_method, "QUANTITY: ", $quantity, "START DATE: ", $start_date, "END DATE: ", $end_date);
 // Arrays sent as JSON strings
 $items      = isset($_POST["items"]) ? json_decode($_POST["items"], true) : [];
 $categories = isset($_POST["categories"]) ? json_decode($_POST["categories"], true) : [];
