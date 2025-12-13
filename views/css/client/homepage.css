@@ -476,6 +476,22 @@ h2 {
   color: #fff;
 }
 
+.logout-btn {
+    margin-top: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    background-color: #c62828;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #b71c1c;
+}
+
+
 /* responsive rules: stack on small screens */
 @media (max-width: 640px) {
   .section-header {
