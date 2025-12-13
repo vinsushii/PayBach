@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 13, 2025 at 11:51 AM
+-- Generation Time: Dec 13, 2025 at 02:31 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -229,6 +229,54 @@ INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `platform_metrics`
+--
+
+DROP TABLE IF EXISTS `platform_metrics`;
+CREATE TABLE IF NOT EXISTS `platform_metrics` (
+  `metric_id` int NOT NULL AUTO_INCREMENT,
+  `metric_date` date NOT NULL,
+  `total_users` int DEFAULT '0',
+  `active_users` int DEFAULT '0',
+  `new_users` int DEFAULT '0',
+  `total_listings` int DEFAULT '0',
+  `active_listings` int DEFAULT '0',
+  `completed_transactions` int DEFAULT '0',
+  `total_sales` decimal(12,2) DEFAULT '0.00',
+  `avg_transaction_value` decimal(10,2) DEFAULT '0.00',
+  PRIMARY KEY (`metric_id`),
+  UNIQUE KEY `metric_date` (`metric_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transactions`
+--
+
+DROP TABLE IF EXISTS `transactions`;
+CREATE TABLE IF NOT EXISTS `transactions` (
+  `transaction_id` varchar(20) NOT NULL,
+  `listing_id` int DEFAULT NULL,
+  `seller_id` varchar(20) DEFAULT NULL,
+  `buyer_id` varchar(20) DEFAULT NULL,
+  `transaction_type` enum('auction','barter','sale') NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `starting_bid` decimal(10,2) DEFAULT NULL,
+  `final_price` decimal(10,2) DEFAULT NULL,
+  `transaction_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pending','completed','cancelled','active') DEFAULT 'pending',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`transaction_id`),
+  KEY `seller_id` (`seller_id`),
+  KEY `buyer_id` (`buyer_id`),
+  KEY `transaction_date` (`transaction_date`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -279,6 +327,24 @@ CREATE TABLE IF NOT EXISTS `user_courses` (
 INSERT INTO `user_courses` (`id`, `user_idnum`, `course_code`) VALUES
 (1, '2241389', 'CS213'),
 (2, '2241389', 'CS211');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_sessions`
+--
+
+DROP TABLE IF EXISTS `user_sessions`;
+CREATE TABLE IF NOT EXISTS `user_sessions` (
+  `session_id` int NOT NULL AUTO_INCREMENT,
+  `user_idnum` varchar(20) NOT NULL,
+  `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_activity` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `logout_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `user_idnum` (`user_idnum`),
+  KEY `last_activity` (`last_activity`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
