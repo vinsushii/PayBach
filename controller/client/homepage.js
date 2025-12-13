@@ -1,6 +1,4 @@
 // controller/client/homepage.js
-
-// ----------------------------
 // Carousel (auto)
 let index = 0;
 const slidesContainer = document.querySelector(".slides");

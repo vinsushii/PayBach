@@ -431,6 +431,28 @@ h2 {
   align-items: center;
 }
 
+.profile-link {
+    display: flex;
+    flex-direction: column;   /* stack icon and name */
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-size: 12px;
+}
+
+.profile-link .icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+.profile-name {
+    font-size: 11px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+
 /* button base */
 .btn {
   padding: 8px 14px;

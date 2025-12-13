@@ -1,7 +1,37 @@
 // Load header
 fetch('../layout/header.html')
     .then(res => res.text())
-    .then(data => document.getElementById('header').innerHTML = data);
+    .then(data => {
+        document.getElementById('header').innerHTML = data;
+
+        //Check session AFTER header loads
+        fetch('../../../model/config/check_session.php')
+            .then(res => {
+                if (!res.ok) throw new Error('check_session.php not found');
+                return res.json();
+            })
+            .then(session => {
+                console.log('SESSION:', session); // DEBUG
+            
+                const authText = document.getElementById('auth-text');
+                const authLink = document.getElementById('auth-link');
+            
+                if (!authText || !authLink) return;
+            
+                if (session.loggedIn && session.username && session.username.trim() !== "") {
+                    authText.textContent = session.username;
+                
+                    authLink.href =
+                        session.role === 'admin'
+                            ? '../../../views/pages/admin/bidding_summary.html'
+                            : '../../../views/pages/client/homepage.html';
+                } else {
+                    authText.textContent = "Account";
+                    authLink.href = '../../../index.html';
+                }
+            })
+        });
+
 
 // Load navigation
 fetch('../layout/client_nav.html')
