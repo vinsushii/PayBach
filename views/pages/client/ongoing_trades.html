@@ -7,29 +7,47 @@
 
   <!-- PAGE CSS -->
   <link rel="stylesheet" href="../../css/client/homepage.css" />
-  <link rel="stylesheet" href="../../css/client/ongoing_bids.css" />
+  <link rel="stylesheet" href="../../css/client/ongoing_trades.css" />
 
   <!-- LAYOUT CSS -->
-   <link rel="stylesheet" href="../../css/layout/header.css">
-   <link rel="stylesheet" href="../../css/layout/client_nav.css">
-   <link rel="stylesheet" href="../../css/layout/footer.css">
+  <link rel="stylesheet" href="../../css/layout/header.css">
+  <link rel="stylesheet" href="../../css/layout/client_nav.css">
+  <link rel="stylesheet" href="../../css/layout/footer.css">
 </head>
 <body>
 
-    <!-- IMPORT HEADER -->
-    <div id="header"></div>
-    <!-- IMPORT NAVIGATION -->
-    <div id="client-nav"></div>
-    <!-- PAGE CONTENT -->
-  <main class="bids-section">
+  <!-- IMPORT HEADER -->
+  <div id="header"></div>
+  <!-- IMPORT NAVIGATION -->
+  <div id="client-nav"></div>
+
+  <!-- PAGE CONTENT -->
+  <main class="trades-section">
     <h2>ONGOING TRADES</h2>
-    <div class="bids-container"></div>
+
+    <div class="trades-wrapper">
+      <div class="trades-column">
+        <h3>Your Trades</h3>
+        <div class="trades-container" id="your-trades"></div>
+      </div>
+      <div class="trades-column">
+        <h3>Completed Trades</h3>
+        <div class="trades-container" id="completed-trades"></div>
+      </div>
+      <div class="trades-column">
+        <h3>Available Trades</h3>
+        <div class="trades-container" id="available-trades"></div>
+      </div>
+
+    </div>
   </main>
 
   <!-- IMPORT FOOTER -->
   <div id="footer"></div>
-    <!-- SCRIPTS -->
-    <script src="../../controller/client/ongoing_bids.js"></script>
-    <script src="../layout/load_layout.js"></script>
+
+  <!-- SCRIPTS -->
+  <script src="../../../controller/client/ongoing_trades.js"></script>
+  <script src="../layout/load_layout.js"></script>
+
 </body>
 </html>
