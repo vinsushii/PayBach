@@ -52,7 +52,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   margin-left: 120px; 
   width: calc(100% - 120px);
 }

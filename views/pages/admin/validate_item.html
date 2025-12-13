@@ -1,98 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PayBach | Validate Item</title>
-  <link rel="stylesheet" href="validate_item.css">
-</head>
-<body>
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-top">
-      <div class="logo-section">
-        <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
-        <div class="logo-text">
-          <h1>PayBach</h1>
-          <p>We have your back 24/7.</p>
-        </div>
+  <head>
+      <meta charset="UTF-8">
+      <title>Admin Homepage</title>
+
+        <!-- PAGE CSS -->
+      <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="../../css/admin/validate_item.css">
+
+        <!-- LAYOUT CSS -->
+      <link rel="stylesheet" href="../../css/layout/admin_sidebar.css">
+  </head>
+  <body>
+      <div id="sidebar" class="sidebar"></div>
+
+      <div class="content">
+          <div class="d-flex justify-content-end align-items-center mb-4 admin-header">
+              <span class="text-muted me-2">Welcome, Admin</span>
+          </div>
+
+          <div class="row mb-5">
+              <div class="col-12 d-flex justify-content-center">
+                  <div class="validate-card-large"> 
+                      <h6 class="fw-bold">TO VALIDATE</h6>
+                      <h1 id="validateCount">0</h1>
+                      <small>items</small>
+                  </div>
+              </div>
+          </div>
+
+          <div class="filter-controls mb-4 d-flex align-items-center">
+              <select id="itemFilter" class="form-select custom-select filter-bids-margin">
+                  <option value="ALL">ALL</option>
+                  <option value="BID">BIDS</option>
+                  <option value="TRADE">TRADES</option>
+              </select>
+          </div>
+
+          <div class="row g-4 mb-5 item-row">
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+                  <div class="dashboard-card item-card-content">
+                      <img src="../../images/default.png" alt="iPhone" class="img-fluid item-image">
+                      <p class="item-name">iPhone 13 Pro Max</p>
+                      <p class="item-price">P35000</p>
+                  </div>
+              </div>
+              
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+                  <div class="dashboard-card item-card-content">
+                      <img src="../../images/default.png" alt="Wallet" class="img-fluid item-image">
+                      <p class="item-name">Leather Wallet</p>
+                      <p class="item-price">P170</p>
+                  </div>
+              </div>
+              
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="TRADE">
+                  <div class="dashboard-card item-card-content">
+                      <img src="../../images/default.png" alt="Goggles" class="img-fluid item-image">
+                      <p class="item-name">Swimming Goggles</p>
+                  </div>
+              </div>
+              
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+                  <div class="dashboard-card item-card-content">
+                      <img src="../../images/default.png" alt="Stanley Cup" class="img-fluid item-image">
+                      <p class="item-name">Stanley Grey</p>
+                      <p class="item-price">P550</p>
+                  </div>
+              </div>
+          </div>
       </div>
 
-      <div class="header-icons">
-        <a href="chats.html" title="Chats">
-          <img src="../images/chat_bubble.png" alt="Chats" class="icon" /> Chats
-        </a>
-        <a href="notifications.html" title="Notifications">
-          <img src="../images/notif-bell.png" alt="Notifications" class="icon" /> Notifications
-        </a>
-        <a href="../index.html" class="profile-link" title="Profile">
-          <img src="../images/user-profile.png" alt="Profile" class="icon" /> Log in/Sign up
-        </a>
-      </div>
-    </div>
-
-    <nav>
-      <a href="validate_listing.html" class="active">VALIDATE</a>
-      <a href="#">REPORT</a>
-      <a href="#">METRICS</a>
-      <a href="edit_policy.html">POLICIES</a>
-    </nav>
-  </header>
-
-  <!-- MAIN CONTENT -->
-  <main class="validate-container">
-    <div class="product-header">
-      <button class="back-btn" onclick="history.back()">← Go back</button>
-      <h2>IPhone 17 Pro Max</h2>
-    </div>
-    <section class="product-section">
-      <div class="image-gallery">
-        <button class="arrow left">‹</button>
-        <div class="main-image">
-          <img src="../images/iphone17.webp" alt="IPhone 17 Pro Max" />
-        </div>
-        <button class="arrow right">›</button>
-        <div class="thumbnail-row">
-          <img src="../images/iphone17.webp" alt="thumbnail1" class="thumb active" />
-          <img src="../images/iphone17-2.jpg" alt="thumbnail2" class="thumb" />
-          <img src="../images/iphone17.webp" alt="thumbnail3" class="thumb" />
-        </div>
-      </div>
-
-      <div class="product-details">
-        <div class="description">
-          <h3>Description <span class="time-left">2 days left to bid</span></h3>
-          <p><strong>Condition:</strong> Like new</p>
-          <button class="tag">TECHNOLOGY</button>
-          <p class="lorem">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. 
-            It has survived not only five centuries but also the leap into electronic 
-            typesetting, remaining essentially unchanged.
-          </p>
-        </div>
-    </section>
-  </main>
-
-    <div class="product-details">
-        <p class="current-bid">Current bid is at: <span>₱35,000</span></p>
-        <div class="button-group">
-          <button class="approve">Approve listing</button>
-          <button class="reject">Reject listing</button>
-        </div>
-      </div>
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-left">
-      <p><strong>Contact Us</strong></p>
-      <p>2222221@slu.edu.ph<br>
-      Saint Louis University, Maryheights Campus<br>
-      Bakakeng Norte, Baguio City</p>
-    </div>
-    <div class="footer-right">
-      <p>Website made by Team Bach ©2025</p>
-    </div>
-  </footer>
-
-  <script src="validate_item.js"></script>
-</body>
+      <div id="footer" class="footer"></div>
+      
+      <script src="../layout/load_layout.js"></script>
+      <script src="/controller/admin/validate_item.js"></script>
+  </body>
 </html>
