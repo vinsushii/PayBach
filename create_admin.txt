@@ -1,0 +1,21 @@
+INSERT INTO `users` (
+    `user_idnum`, 
+    `first_name`, 
+    `middle_initial`, 
+    `last_name`, 
+    `password_hash`, 
+    `email`, 
+    `school`, 
+    `program`, 
+    `role`
+) VALUES (
+    'ADMIN001',  
+    'Admin', 
+    NULL, 
+    'Account', 
+    '$2y$10$GwRDdoMlYKAJ6f1KLN4jKuaRcWyK6Mcu1zU5vg1yyTEUsuGskDlzy',  
+    'admin@paybach.com', 
+    'SAMCIS', 
+    'BSCS', 
+    'admin'
+);
