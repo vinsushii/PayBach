@@ -26,19 +26,29 @@
     <h2>ONGOING TRADES</h2>
 
     <div class="trades-wrapper">
+      <!-- 1. YOUR TRADES - With incoming offers list -->
       <div class="trades-column">
         <h3>Your Trades</h3>
-        <div class="trades-container" id="your-trades"></div>
+        <div class="trades-container" id="your-trades">
+          <div class="no-offers">Loading your trade offers...</div>
+        </div>
       </div>
+      
+      <!-- 2. COMPLETED TRADES -->
       <div class="trades-column">
         <h3>Completed Trades</h3>
-        <div class="trades-container" id="completed-trades"></div>
+        <div class="trades-container" id="completed-trades">
+          <div class="no-offers">No completed trades yet</div>
+        </div>
       </div>
+      
+      <!-- 3. AVAILABLE TRADES -->
       <div class="trades-column">
         <h3>Available Trades</h3>
-        <div class="trades-container" id="available-trades"></div>
+        <div class="trades-container" id="available-trades">
+          <div class="no-offers">Loading available trades...</div>
+        </div>
       </div>
-
     </div>
   </main>
 
@@ -48,6 +58,5 @@
   <!-- SCRIPTS -->
   <script src="../../../controller/client/ongoing_trades.js"></script>
   <script src="../layout/load_layout.js"></script>
-
 </body>
 </html>

@@ -39,6 +39,18 @@ body {
   font-size: 20px;
   font-weight: bold;
   color: #333;
+  position: relative;
+}
+
+.offer-count-badge {
+  display: inline-block;
+  background: #2ecc71;
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-left: 8px;
+  font-weight: normal;
 }
 
 /* Scrollable Area */
@@ -48,7 +60,198 @@ body {
   padding-right: 5px;
 }
 
-/* Card */
+/* Trade Offer Card - matches your trade-card style */
+.trade-offer-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.trade-offer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.your-item-info {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-left: 4px solid #3498db;
+}
+
+.your-item-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.your-item-condition {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Offer Item Card */
+.offer-item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.offer-user {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.offer-time {
+  font-size: 13px;
+  color: #888;
+}
+
+.offer-details {
+  margin-bottom: 15px;
+}
+
+.offer-item-name {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.offer-item-condition {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+/* Trade Actions */
+.trade-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.accept-btn, .reject-btn, .make-offer-btn {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.accept-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-1px);
+}
+
+.reject-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+}
+
+.make-offer-btn {
+  background-color: #3498db;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.make-offer-btn:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+/* Status Badges */
+.trade-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+.status-pending {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-accepted {
+  background-color: #27ae60;
+  color: white;
+}
+
+.status-completed {
+  background-color: #3498db;
+  color: white;
+}
+
+.status-rejected {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* Empty State */
+.no-offers {
+  text-align: center;
+  color: #95a5a6;
+  font-style: italic;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+/* Available Trade Card */
+.available-trade-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.available-trade-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.trade-owner {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Original trade-card styles (keep these) */
 .trade-card {
   background-color: #fff;
   border-radius: 20px;
@@ -97,6 +300,12 @@ body {
     flex-direction: column;
   }
   .trades-column {
+    width: 100%;
+  }
+  .trade-actions {
+    flex-direction: column;
+  }
+  .accept-btn, .reject-btn {
     width: 100%;
   }
 }
