@@ -44,3 +44,22 @@
 .sidebar a.active {
     background-color: #1a1250;
 }
+
+.sidebar-logout {
+    padding-top: 80%;
+}
+
+.sidebar-logout .logout-btn {
+    display: block;
+    background-color: #ff4d4f;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.sidebar-logout .logout-btn:hover {
+    background-color: #d9363e;
+}

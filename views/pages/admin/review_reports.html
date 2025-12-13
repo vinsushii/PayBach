@@ -2,11 +2,11 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8">
-      <title>Validate Item</title>
+      <title>Review Reports</title>
 
         <!-- PAGE CSS -->
       <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
-      <link rel="stylesheet" href="../../css/admin/validate_item.css">
+      <link rel="stylesheet" href="../../css/admin/review_reports.css">
 
         <!-- LAYOUT CSS -->
       <link rel="stylesheet" href="../../css/layout/admin_sidebar.css">
@@ -22,50 +22,53 @@
           <div class="row mb-5">
               <div class="col-12 d-flex justify-content-center">
                   <div class="validate-card-large"> 
-                      <h6 class="fw-bold">TO VALIDATE</h6>
+                      <h6 class="fw-bold">TO REVIEW</h6>
                       <h1 id="validateCount">0</h1>
-                      <small>items</small>
+                      <small>reports</small>
                   </div>
               </div>
           </div>
 
           <div class="filter-controls mb-4 d-flex align-items-center">
               <select id="itemFilter" class="form-select custom-select filter-bids-margin">
-                  <option value="ALL">ALL</option>
-                  <option value="BID">BIDS</option>
-                  <option value="TRADE">TRADES</option>
+                  <option value="ITEM">ITEMS</option>
+                  <option value="USER">USERS</option>
               </select>
           </div>
 
           <div class="row g-4 mb-5 item-row">
-              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="ITEM">
                   <div class="dashboard-card item-card-content">
                       <img src="../../images/default.png" alt="iPhone" class="img-fluid item-image">
                       <p class="item-name">iPhone 13 Pro Max</p>
-                      <p class="item-price">P35000</p>
                   </div>
               </div>
               
-              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="ITEM">
                   <div class="dashboard-card item-card-content">
                       <img src="../../images/default.png" alt="Wallet" class="img-fluid item-image">
                       <p class="item-name">Leather Wallet</p>
-                      <p class="item-price">P170</p>
                   </div>
               </div>
               
-              <div class="col-md-3 col-sm-6 item-filter-card" data-type="TRADE">
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="ITEM">
                   <div class="dashboard-card item-card-content">
                       <img src="../../images/default.png" alt="Goggles" class="img-fluid item-image">
                       <p class="item-name">Swimming Goggles</p>
                   </div>
               </div>
               
-              <div class="col-md-3 col-sm-6 item-filter-card" data-type="BID">
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="ITEM">
                   <div class="dashboard-card item-card-content">
                       <img src="../../images/default.png" alt="Stanley Cup" class="img-fluid item-image">
                       <p class="item-name">Stanley Grey</p>
-                      <p class="item-price">P550</p>
+                  </div>
+              </div>
+
+              <div class="col-md-3 col-sm-6 item-filter-card" data-type="USER">
+                  <div class="dashboard-card item-card-content">
+                      <img src="../../images/Generic-profile.png" alt="Charles Pecos" class="img-fluid item-image">
+                      <p class="item-name">Charles Pecos</p>
                   </div>
               </div>
           </div>
@@ -74,6 +77,6 @@
       <div id="footer" class="footer"></div>
       
       <script src="../layout/load_layout.js"></script>
-      <script src="/controller/admin/validate_item.js"></script>
+      <script src="/controller/admin/review_reports.js"></script>
   </body>
 </html>
