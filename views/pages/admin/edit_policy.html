@@ -1,86 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PayBach — Policies</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <head>
+      <meta charset="UTF-8">
+      <title>Edit Policy</title>
 
-  
-  <link rel="stylesheet" href="edit_policy.css">
-</head>
-<body>
+      <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="../../css/admin/edit_policy.css">
 
-  <header class="header">
-    <div class="header-top">
-      <div class="logo-section">
-        <img src="../images/payback-logo.png" alt="PayBach Logo" class="logo" />
-        <div class="logo-text">
-          <h1>PayBach</h1>
-          <p>We have your back 24/7.</p>
-        </div>
+      <link rel="stylesheet" href="../../css/layout/admin_sidebar.css">
+  </head>
+  <body>
+      <div id="sidebar" class="sidebar"></div>
+
+      <div class="content">
+          <div class="d-flex justify-content-end align-items-center mb-4 admin-header">
+              <span class="text-muted me-2">Welcome, Admin</span>
+          </div>
+
+          <h2 class="page-title">POLICIES & GUIDELINES</h2>
+
+          <div class="policy-container">
+              <div id="policyText" class="policy-text-block" contenteditable="true">
+                  <p class="fw-bold">1. POLICY STATEMENT</p>
+                  <p>As provided in Section 17.4 of the Implementing Rules and Regulations (IRR) of Republic Act 9184, bidders may be asked to pay for bidding documents to recover the cost of their preparation and development. The BAC shall issue the bidding documents to the prospective bidder/s upon payment of the corresponding cost thereof to the collecting/disbursing officer of the procuring entity concerned.</p>
+
+                  <p class="fw-bold">2. PURPOSE</p>
+                  <p>These guidelines are formulated to provide standard rates for the sale of bidding documents to rationalize the fees primarily to regulate its price and to lessen the exercise of discretion of procuring entities so as not to discourage market participation and competition.</p>
+
+                  <p class="fw-bold">3. SCOPE AND APPLICATION</p>
+                  <p>These guidelines shall apply to the national government, its branches, constitutional offices, departments, bureaus, offices and agencies, including state universities and colleges, government-owned and/or -controlled corporations, government financial institutions, and local government units.</p>
+
+                  <p class="fw-bold">4. GENERAL GUIDELINES</p>
+                  <p>4.1. Procuring entities shall make the bidding documents available on the same date the advertisement and/or posting of the Invitation to Bid was made pursuant to Section 17.3 of the IRR of RA 9184.</p>
+                  <p>4.2. As required in Section 21.1(f) of the IRR of RA 9184, the price of the bidding documents must be included in the Invitation to Bid/Request for Expression of Interest in order to inform all prospective bidders of the cost of its acquisition.</p>
+                  <p>4.3. The BAC shall issue the bidding documents to any prospective bidder upon payment of the standard rate of the bidding documents.</p>
+                  <p>4.4. The standard rate for the sale of bidding documents shall be based on the fixed rate on a fixed range approach and shall be applicable in the procurement of goods, consulting services, and the construction for infrastructure projects by the procuring entity, whether procured by way of public bidding or any of the alternative methods of procurement that utilize processes and procedures in competitive bidding.</p>
+                  <p>4.5. Procuring entities are precluded to adopt any internal rule or practice that establish fees that are inconsistent or beyond the standard rate for the sale of bidding documents set forth in these guidelines.</p>
+                  <p>4.6. The proceeds from the sale of the bidding documents shall continue to be used for the payment of honoraria as provided for in Budget Circular No. 2004-5A dated 7 October 2005, or to augment the funds for the procuring entity's legal assistance and indemnification package as provided in the Guidelines for Legal Assistance and Indemnification of Bids and Awards Committee Members and its Support Staff.</p>
+              </div>
+          </div>
+
+          <div class="action-buttons mt-5 d-flex justify-content-center">
+              <button class="btn btn-secondary me-3">cancel</button>
+              <button class="btn btn-primary">confirm changes</button>
+          </div>
       </div>
 
-      <div class="header-icons">
-        <a href="chats.html" title="Chats">
-          <img src="../images/chat_bubble.png" alt="Chats" class="icon" /> Chats
-        </a>
-        <a href="notifications.html" title="Notifications">
-          <img src="../images/notif-bell.png" alt="Notifications" class="icon" /> Notifications
-        </a>
-        <a href="../index.html" class="profile-link" title="Profile">
-          <img src="../images/user-profile.png" alt="Profile" class="icon" /> Log in / Sign up
-        </a>
-      </div>
-    </div>
-
-    <nav class="nav-bar" aria-label="Main navigation">
-      <a href="validate_item.html" class="active">VALIDATE</a>
-      <a href="#">REPORT</a>
-      <a href="#">METRICS</a>
-      <a href="edit_policy.html">POLICIES</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="card" aria-labelledby="policies-title">
-      <div class="page-title">
-        <h2 id="policies-title">Website Policies</h2>
-
-        <div class="controls">
-        
-          <button id="editBtn" class="btn primary" style="display:none">Edit Policies</button>
-          <button id="previewToggle" class="btn ghost" title="Toggle source/preview">Toggle Preview</button>
-        </div>
-      </div>
-
-      <!-- formatting toolbar (visible in edit mode) -->
-      <div id="toolbar" class="toolbar" style="display:none" aria-hidden="true">
-        <button data-cmd="bold" title="Bold (Ctrl/Cmd+B)">Bold</button>
-        <button data-cmd="italic" title="Italic (Ctrl/Cmd+I)">Italic</button>
-        <button data-cmd="underline" title="Underline">Underline</button>
-        <button data-cmd="insertUnorderedList" title="Bullet list">Bullets</button>
-        <button data-cmd="insertOrderedList" title="Numbered">Numbered</button>
-        <button id="linkBtn" title="Add / edit link">Link</button>
-        <button data-cmd="removeFormat" title="Remove formatting">Clear</button>
-      </div>
-
-      <!-- policy display / editor -->
-      <div id="policyView" class="policy-view" tabindex="0" aria-live="polite"></div>
-      <textarea id="policyEditor" aria-label="Policy source (HTML)"></textarea>
-
-      <!-- actions -->
-      <div id="editorActions" class="editor-actions" style="display:none" aria-hidden="true">
-        <button id="saveBtn" class="btn primary">Save</button>
-        <button id="cancelBtn" class="btn ghost">Cancel</button>
-        <button id="deleteBtn" class="btn warn" title="Reset to default policy">Reset</button>
-      </div>
-
-      <p class="meta">Last saved: <span id="lastSaved">never</span></p>
-    </section>
-  </main>
-
-
-  <script src="edit_policy.js" defer></script>
-</body>
+      <div id="footer" class="footer"></div>
+      
+      <script src="../layout/load_layout.js"></script>
+      <script src="../../js/admin/policies.js"></script> 
+  </body>
 </html>
