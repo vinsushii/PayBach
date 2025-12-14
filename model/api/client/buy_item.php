@@ -24,7 +24,9 @@ $stmt = $conn->prepare("
         l.quantity AS start_bid,
         l.start_date,
         l.end_date,
-        CONCAT(u.first_name, ' ', u.last_name) AS seller_name,
+        u.first_name,
+        u.last_name,
+        u.email,
         u.school,
         u.program
     FROM listings l

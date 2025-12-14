@@ -47,7 +47,9 @@ body {
   font-weight: 500;
   color: #333;
 }
-
+.item-card {
+  cursor: pointer;
+}
 /* Responsive adjustment */
 @media (max-width: 768px) {
   .categories-container {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 13, 2025 at 02:31 PM
+-- Generation Time: Dec 14, 2025 at 03:22 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -113,6 +113,38 @@ CREATE TABLE IF NOT EXISTS `bid_offers` (
   PRIMARY KEY (`offer_id`),
   KEY `bid_id` (`bid_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `image` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `image`) VALUES
+(1, 'Fashion', 'fashion-main.jpg'),
+(2, 'School Supplies', 'school supplies-main.jpg'),
+(3, 'Technology', 'technology-main.jpg'),
+(4, 'Tools & Home Materials', 'tools-main.jpg'),
+(5, 'Automotive', 'auto-image.jpg'),
+(6, 'Hobbies & Toys', 'toys-image.jpg'),
+(7, 'Decoration', 'decoration-main.jpg'),
+(8, 'Sports & Recreation', 'sports-main.jpg'),
+(9, 'Pet Supplies', 'pet-main.jpg'),
+(10, 'Beauty', 'beauty-main.jpg'),
+(11, 'Others', 'others-main.jpg');
 
 -- --------------------------------------------------------
 
@@ -303,7 +335,9 @@ INSERT INTO `users` (`user_idnum`, `first_name`, `middle_initial`, `last_name`, 
 ('2241389', '', NULL, '', '$2y$10$HbMJVZ3w7PQd03foT5OIi.TCG0kQInwAgwE.kxsJRc42Zrsc6wot6', '2241389@slu.edu.ph', NULL, NULL, 'student'),
 ('ADMIN001', 'Admin', NULL, 'Account', '$2y$10$GwRDdoMlYKAJ6f1KLN4jKuaRcWyK6Mcu1zU5vg1yyTEUsuGskDlzy', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin'),
 ('2241901', '', NULL, '', '$2y$10$DHjHhaCi7W23I6pl1B/ORuWxQ/IZ259HHuKui/NMmkzKUQwLZxa6W', '2241901@slu.edu.ph', NULL, NULL, 'student'),
-('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student');
+('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student'),
+('111', '', NULL, '', '$2y$10$qw51KY/CnqOhOhPvK2C.m.UbQuVOv26fdwgFfPmkpydFpqvPnjL2K', '111@sample.com', NULL, NULL, 'student'),
+('222', '', NULL, '', '$2y$10$1FUIf3wWhuOHYT3QUN5yq.HpN0H0Y8Rjrw3ZwwmGbAXCmO5qZ/LbW', '222@sample.com', NULL, NULL, 'student');
 
 -- --------------------------------------------------------
 

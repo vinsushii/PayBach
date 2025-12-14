@@ -20,6 +20,7 @@ $category = mysqli_real_escape_string($conn, $_GET['category']);
 $sql = "
     SELECT 
         li.item_id, 
+        li.listing_id,
         li.name, 
         li.item_condition,
         l.description,
