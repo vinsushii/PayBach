@@ -9,36 +9,6 @@ function qsa(selector) {
 }
 
 // ====================
-// LISTING TYPE SWITCH
-// ====================
-const typeButtons = qsa('.type-btn');
-let listingType = "bid";
-
-const bidSection = qs("#bid-section");
-const tradeSection = qs("#trade-section");
-
-// Default state
-bidSection.style.display = "block";
-tradeSection.style.display = "none";
-
-typeButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    typeButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    listingType = btn.dataset.type;
-
-    if (listingType === "bid") {
-      bidSection.style.display = "block";
-      tradeSection.style.display = "none";
-    } else {
-      bidSection.style.display = "none";
-      tradeSection.style.display = "block";
-    }
-  });
-});
-
-// ====================
 // PAYMENT BUTTONS
 // ====================
 const paymentButtons = qsa('.payment-btn');
@@ -110,7 +80,7 @@ qs("#postForm").addEventListener("submit", async (e) => {
 
   // RULE 1: No empty inputs allowed
   if (!itemPrice || !maxPrice || !startingBid || !maxBid) {
-    alert("All fields must be filled. Whitespaces are not allowed.");
+    alert("All bid fields must be filled. Whitespaces are not allowed.");
     return;
   }
 
@@ -146,61 +116,101 @@ qs("#postForm").addEventListener("submit", async (e) => {
   // VALIDATIONS END
   // ====================
 
+  // Validate required basic fields
+  const itemName = qs("[name='item_name']").value.trim();
+  const condition = qs("[name='condition']").value.trim();
+  const description = qs("[name='description']").value.trim();
+  const exchangeMethod = qs("[name='exchange_method']").value.trim();
+
+  if (!itemName || !condition || !description || !exchangeMethod) {
+    alert("Item Name, Condition, Description, and Exchange Method are required.");
+    return;
+  }
+
+  // Validate tags
+  const selectedTags = [...qsa('.tag.selected')].map(t => t.textContent.trim());
+  if (selectedTags.length === 0) {
+    alert("Please select at least one tag/category.");
+    return;
+  }
+
+  // Validate images
+  const imageInputs = imageUpload.querySelectorAll("input[type='file']");
+  let hasImage = false;
+  imageInputs.forEach(input => {
+    if (input.files.length > 0) {
+      hasImage = true;
+    }
+  });
+  
+  if (!hasImage) {
+    alert("Please upload at least one image.");
+    return;
+  }
+
   const formData = new FormData();
 
   // Basic Data
-  formData.append("item_name", qs("[name='item_name']").value);
-  formData.append("condition", qs("[name='condition']").value);
-  formData.append("description", qs("[name='description']").value);
-  formData.append("exchange_method", qs("[name='exchange_method']").value);
+  formData.append("item_name", itemName);
+  formData.append("condition", condition);
+  formData.append("description", description);
+  formData.append("exchange_method", exchangeMethod);
   formData.append("payment_method", selectedPayment);
 
-  // Listing type
-  formData.append("listing_type", listingType);
+  // ALWAYS bid for this form (no type selection needed)
+  formData.append("listing_type", "bid");
 
   // BID FIELDS
-  if (listingType === "bid") {
-    formData.append("item_price", itemPrice);
-    formData.append("max_price", maxPrice);
-    formData.append("max_bid", maxBid);
-
-    formData.append("bid", qs("[name='bid']").value);
-  } 
-  // TRADE FIELDS
-  else {
-    formData.append("trade_item", qs("[name='trade_item']").value);
-    formData.append("trade_value", qs("[name='trade_value']").value);
-    formData.append("desired_barter_item", qs("[name='desired_barter_item']").value);
-  }
+  formData.append("item_price", itemPrice);
+  formData.append("max_price", maxPrice);
+  formData.append("max_bid", maxBid);
+  formData.append("bid", startingBid);
 
   // Tags
-  const selectedTags = [...qsa('.tag.selected')].map(t => t.textContent.trim());
   selectedTags.forEach((tag, i) => formData.append(`categories[${i}]`, tag));
 
   // Images
-  imageUpload.querySelectorAll("input[type='file']").forEach(input => {
-    if (input.files.length > 0) formData.append("images[]", input.files[0]);
+  imageInputs.forEach(input => {
+    if (input.files.length > 0) {
+      formData.append("images[]", input.files[0]);
+    }
   });
-  console.log("Data added to formData object.")
+
+  console.log("FormData contents:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+  }
 
   // Submit to backend
   try {
-    const res = fetch("/PayBach/model/api/client/insert_listing.php", {
+    console.log("Submitting to server...");
+    const res = await fetch("/PayBach/model/api/client/insert_listing.php", {
       method: "POST",
       body: formData,
-    })
+    });
 
-    console.log("Fetch insert_listing.php successful")
-    console.log(res)
-    const data = res.json();
+    console.log("Response status:", res.status);
+    
+    // Check if response is JSON
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      console.error("Server returned non-JSON:", text.substring(0, 200));
+      alert("Server error - check console for details");
+      return;
+    }
+
+    const data = await res.json();
+    console.log("Server response:", data);
 
     if (data.success) {
-      alert("Listing submitted!");
-      window.location.href = "../../../model/api/client/homepage.php";
+      alert(data.message || "Listing submitted successfully!");
+      window.location.href = "/PayBach/views/pages/client/homepage.html";
     } else {
       alert("Failed: " + data.message);
     }
   } catch (err) {
+    console.error("Fetch error:", err);
     alert("Server error: " + err.message);
   }
 });

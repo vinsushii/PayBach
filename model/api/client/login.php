@@ -47,11 +47,11 @@ if (!password_verify($password, $user["password_hash"])) {
     exit;
 }
 
-// SESSION VALUES (unified format)
-$_SESSION["UserID"]   = $user["user_idnum"];
-$_SESSION["UserEmail"] = $user["email"];
-$_SESSION["UserName"]  = $user["first_name"] . " " . $user["last_name"];
-$_SESSION["UserType"]  = $user["role"]; // admin / student
+// SESSION VALUES
+$_SESSION["user_idnum"] = $user["user_idnum"]; 
+$_SESSION["email"]      = $user["email"];
+$_SESSION["name"]       = $user["first_name"] . " " . $user["last_name"];
+$_SESSION["role"]       = $user["role"];
 
 // Role-based redirect
 $redirect = ($user["role"] === "admin")

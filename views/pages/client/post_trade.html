@@ -23,16 +23,16 @@
     <form id="postForm">
       
       <label>Item Name:</label>
-      <input type="text" name="item_name" placeholder="ex. Laptop, Safety goggles" required>
+      <input type="text" name="item_name" required>
 
       <label>Condition:</label>
-      <input type="text" name="condition" placeholder="ex. Lightly used, Worn down" required>
+      <input type="text" name="condition" required>
 
       <label>Description:</label>
       <textarea name="description" rows="3" required></textarea>
 
       <label>Exchange method:</label>
-      <input type="text" name="exchange_method" placeholder="ex. In-person, Drop off" required>
+      <input type="text" name="exchange_method" required>
 
       <!-- BID SECTION -->
       <div id="bid-section">
@@ -49,6 +49,18 @@
         <label>Max Price:</label>
         <input type="number" name="max_price" step="0.01" placeholder="e.g. 200.00" required>
 
+      </div>
+
+      <!-- TRADE SECTION -->
+      <div id="trade-section" style="display:none;">
+        <label>Your Offered Item:</label>
+        <input type="text" name="trade_item">
+
+        <label>Estimated Value of Your Item:</label>
+        <input type="number" name="trade_value">
+
+        <label>Desired Barter Item:</label>
+        <input type="text" name="desired_barter_item">
       </div>
 
       <!-- PAYMENT BUTTONS -->

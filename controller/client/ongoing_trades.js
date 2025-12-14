@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addBtn = document.getElementById("add-trade-btn");
     if (addBtn) {
         addBtn.addEventListener("click", () => {
-            window.location.href = "../client/post_item.html";
+            window.location.href = "../client/post_trade.html";
         });
     }
 });
