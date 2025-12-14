@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 14, 2025 at 05:18 PM
+-- Generation Time: Dec 14, 2025 at 04:28 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -30,12 +30,27 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `barters`;
 CREATE TABLE IF NOT EXISTS `barters` (
   `barter_id` int NOT NULL AUTO_INCREMENT,
-  `user_idnum` varchar(20) DEFAULT NULL,
-  `requested_items` text,
-  `date_of_exchange` datetime DEFAULT NULL,
+  `listing_id` int NOT NULL,
+  `user_idnum` varchar(20) NOT NULL,
+  `offered_item_name` varchar(100) DEFAULT NULL,
+  `offered_item_condition` varchar(50) DEFAULT NULL,
+  `offered_item_description` text,
+  `exchange_method` varchar(50) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `requested_items_text` text,
+  `max_additional_cash` decimal(10,2) DEFAULT '0.00',
+  `trade_tags` text,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`barter_id`),
-  KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `listing_id` (`listing_id`),
+  KEY `user_idnum` (`user_idnum`),
+  KEY `offered_item_name` (`offered_item_name`),
+  KEY `exchange_method` (`exchange_method`),
+  KEY `payment_method` (`payment_method`),
+  KEY `is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -46,13 +61,22 @@ CREATE TABLE IF NOT EXISTS `barters` (
 DROP TABLE IF EXISTS `barter_offers`;
 CREATE TABLE IF NOT EXISTS `barter_offers` (
   `offer_id` int NOT NULL AUTO_INCREMENT,
-  `barter_id` int DEFAULT NULL,
-  `name` varchar(100) DEFAULT NULL,
+  `listing_id` int NOT NULL,
+  `barter_id` int NOT NULL,
+  `offerer_idnum` varchar(20) NOT NULL,
+  `offered_item_name` varchar(100) DEFAULT NULL,
   `item_condition` varchar(50) DEFAULT NULL,
-  `nagoffer` varchar(20) DEFAULT NULL,
+  `offered_item_description` text,
+  `additional_cash` decimal(10,2) DEFAULT '0.00',
+  `status` enum('pending','accepted','rejected','cancelled') DEFAULT 'pending',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`offer_id`),
-  KEY `barter_id` (`barter_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `barter_id` (`barter_id`),
+  KEY `offerer_idnum` (`offerer_idnum`),
+  KEY `listing_id` (`listing_id`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -72,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `bids` (
   `current_highest_bidder` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `bids`
@@ -96,8 +120,8 @@ CREATE TABLE IF NOT EXISTS `bid_offers` (
   `user_id` varchar(20) NOT NULL,
   `price_offered` decimal(10,2) NOT NULL,
   PRIMARY KEY (`offer_id`),
-  KEY `bid_id` (`listing_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `bid_id` (`bid_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -112,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `image` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `categories`
@@ -152,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
@@ -176,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
   `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_categories`
@@ -184,9 +208,9 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
 
 INSERT INTO `listing_categories` (`id`, `listing_id`, `category`) VALUES
 (26, 23, 'Hobbies & Toys'),
-(25, 22, 'School Supplies'),
+(23, 21, 'Technology'),
 (24, 21, 'Hobbies & Toys'),
-(23, 21, 'Technology');
+(25, 22, 'School Supplies');
 
 -- --------------------------------------------------------
 
@@ -202,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`image_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_images`
@@ -211,13 +235,9 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
 INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_at`) VALUES
 (13, 21, '../../../uploads/1765709169_693e9571673c0_GPD-Win-Max-2-review-a-surprisingly-competent-tiny-laptop-1014x1024-703694246.jpeg', '2025-12-14 18:46:09'),
 (18, 23, '../../../uploads/1765725454_693ed50e30fb2_1_【25年5月21日情報解禁】Tamagotchi+Paradise+-+Blue+Water_メインカット-2804856157.jpeg', '2025-12-14 23:17:34'),
-(17, 22, '../../../uploads/1765709820_693e97fc73d1b_Pentel-Graphgear-1000-Mechanical-Pencil-Pentel-1683965778-4237365079.jpg', '2025-12-14 18:57:00'),
 (14, 21, '../../../uploads/1765709169_693e95716778f_winmax.jpg', '2025-12-14 18:46:09'),
 (15, 22, '../../../uploads/1765709820_693e97fc737ce_61G56dooF5L._AC_SL1500_-1668775032.jpg', '2025-12-14 18:57:00'),
-(16, 22, '../../../uploads/1765709820_693e97fc73a5d_547b90f571476b17e7c5576d4df30a52-4153913507.jpg', '2025-12-14 18:57:00'),
-(19, 23, '../../../uploads/1765725454_693ed50e313fa_ogp-104305863.jpg', '2025-12-14 23:17:34'),
-(20, 23, '../../../uploads/1765725454_693ed50e31844_Tamagotchi_Tamagotchi_Paradise_Blue_Water_4_1024x-3525195295.png', '2025-12-14 23:17:34'),
-(21, 23, '../../../uploads/1765725454_693ed50e31ba3_Tamagotchi-Paradise_Blue-Water_02-2405293686.jpeg', '2025-12-14 23:17:34');
+(16, 22, '../../../uploads/1765709820_693e97fc73a5d_547b90f571476b17e7c5576d4df30a52-4153913507.jpg', '2025-12-14 18:57:00');
 
 -- --------------------------------------------------------
 
@@ -234,16 +254,16 @@ CREATE TABLE IF NOT EXISTS `listing_items` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_items`
 --
 
 INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, `created_at`) VALUES
+(20, 21, 'GPD win max 2', 'lightly used', '2025-12-14 18:46:09'),
 (22, 23, 'Tamagotchi', 'loved', '2025-12-14 23:17:34'),
-(21, 22, 'Mechanical pencil', 'Well loved', '2025-12-14 18:57:00'),
-(20, 21, 'GPD win max 2', 'lightly used', '2025-12-14 18:46:09');
+(21, 22, 'Mechanical pencil', 'Well loved', '2025-12-14 18:57:00');
 
 -- --------------------------------------------------------
 
@@ -265,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `platform_metrics` (
   `avg_transaction_value` decimal(10,2) DEFAULT '0.00',
   PRIMARY KEY (`metric_id`),
   UNIQUE KEY `metric_date` (`metric_date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -291,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   KEY `buyer_id` (`buyer_id`),
   KEY `transaction_date` (`transaction_date`),
   KEY `status` (`status`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -312,20 +332,21 @@ CREATE TABLE IF NOT EXISTS `users` (
   `role` enum('admin','student') NOT NULL DEFAULT 'student',
   PRIMARY KEY (`user_idnum`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_idnum`, `first_name`, `middle_initial`, `last_name`, `password_hash`, `email`, `school`, `program`, `role`) VALUES
+('111', '', NULL, '', '$2y$10$qw51KY/CnqOhOhPvK2C.m.UbQuVOv26fdwgFfPmkpydFpqvPnjL2K', '111@sample.com', NULL, NULL, 'student'),
+('222', '', NULL, '', '$2y$10$1FUIf3wWhuOHYT3QUN5yq.HpN0H0Y8Rjrw3ZwwmGbAXCmO5qZ/LbW', '222@sample.com', NULL, NULL, 'student'),
+('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student'),
 ('2241389', '', NULL, '', '$2y$10$HbMJVZ3w7PQd03foT5OIi.TCG0kQInwAgwE.kxsJRc42Zrsc6wot6', '2241389@slu.edu.ph', NULL, NULL, 'student'),
-('ADMIN001', 'Admin', NULL, 'Account', '$2y$10$GwRDdoMlYKAJ6f1KLN4jKuaRcWyK6Mcu1zU5vg1yyTEUsuGskDlzy', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin'),
 ('2241901', '', NULL, '', '$2y$10$DHjHhaCi7W23I6pl1B/ORuWxQ/IZ259HHuKui/NMmkzKUQwLZxa6W', '2241901@slu.edu.ph', NULL, NULL, 'student'),
 ('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student'),
 ('111', '', NULL, '', '$2y$10$qw51KY/CnqOhOhPvK2C.m.UbQuVOv26fdwgFfPmkpydFpqvPnjL2K', '111@sample.com', NULL, NULL, 'student'),
-('222', '', NULL, '', '$2y$10$1FUIf3wWhuOHYT3QUN5yq.HpN0H0Y8Rjrw3ZwwmGbAXCmO5qZ/LbW', '222@sample.com', NULL, NULL, 'student'),
-('2230137', '', NULL, '', '$2y$10$E7YTcschnrUECbEaLmW3AeZiiA3fgnG0ZhikwIRaWtiBHzt0YLv5C', '2230137@slu.edu.ph', NULL, NULL, 'student');
+('222', '', NULL, '', '$2y$10$1FUIf3wWhuOHYT3QUN5yq.HpN0H0Y8Rjrw3ZwwmGbAXCmO5qZ/LbW', '222@sample.com', NULL, NULL, 'student');
 
 -- --------------------------------------------------------
 
@@ -340,7 +361,7 @@ CREATE TABLE IF NOT EXISTS `user_courses` (
   `course_code` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `user_courses`
@@ -366,7 +387,26 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   PRIMARY KEY (`session_id`),
   KEY `user_idnum` (`user_idnum`),
   KEY `last_activity` (`last_activity`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `barters`
+--
+ALTER TABLE `barters`
+  ADD CONSTRAINT `fk_barters_listings` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`listing_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_barters_users` FOREIGN KEY (`user_idnum`) REFERENCES `users` (`user_idnum`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `barter_offers`
+--
+ALTER TABLE `barter_offers`
+  ADD CONSTRAINT `fk_barter_offers_barters` FOREIGN KEY (`barter_id`) REFERENCES `barters` (`barter_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_barter_offers_listings` FOREIGN KEY (`listing_id`) REFERENCES `listings` (`listing_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_barter_offers_users` FOREIGN KEY (`offerer_idnum`) REFERENCES `users` (`user_idnum`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

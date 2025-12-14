@@ -152,8 +152,101 @@ try {
     $stmt_bid->close();
     
     }
-    
-    // 4. HANDLE BID-SPECIFIC DATA
+    // 4. HANDLE TRADE-SPECIFIC DATA
+    if ($listing_type === 'trade') {
+        // Get trade-specific data
+        $requested_items = $_POST['requested_items'] ?? '';
+        $max_price = $_POST['max_price'] ?? 0;
+        $trade_tags = isset($_POST['trade_tags']) ? json_decode($_POST['trade_tags'], true) : [];
+        
+        // Note: $item_name, $condition, $description, and $exchange_method are already captured
+        
+        // Insert into barters table with offered item info
+        $stmt_barter = $conn->prepare("
+            INSERT INTO barters (
+                listing_id,
+                user_idnum, 
+                offered_item_name,
+                offered_item_condition,
+                offered_item_description,
+                exchange_method,
+                payment_method,
+                requested_items_text,
+                max_additional_cash,
+                trade_tags
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+        ");
+        
+        $tags_json = !empty($trade_tags) ? json_encode($trade_tags) : null;
+        
+        $stmt_barter->bind_param(
+        "isssssssds",  
+            $listing_id,
+            $user_idnum,
+            $item_name,           
+            $condition,           
+            $description,         
+            $exchange_method,    
+            $payment_method,
+            $requested_items,
+            $max_price,
+            $tags_json
+        );
+        
+        if (!$stmt_barter->execute()) {
+            throw new Exception("Failed to insert barter: " . $stmt_barter->error);
+        }
+        
+        $barter_id = $conn->insert_id;
+        $stmt_barter->close();
+        
+        // If max_price is set and greater than 0, update payment method
+        if ($max_price > 0) {
+            // Determine payment method text
+            $payment_text = '';
+            if ($payment_method === 'none') {
+                $payment_text = 'Trade with cash option';
+            } else if ($payment_method === 'onsite') {
+                $payment_text = 'Trade + onsite cash';
+            } else if ($payment_method === 'online') {
+                $payment_text = 'Trade + online payment';
+            } else {
+                $payment_text = $payment_method;
+            }
+            
+            $stmt_update_payment = $conn->prepare("
+                UPDATE listings 
+                SET payment_method = CONCAT(?, ' (Max cash: ₱', ?, ')')
+                WHERE listing_id = ?
+            ");
+            $stmt_update_payment->bind_param("sdi", $payment_text, $max_price, $listing_id);
+            $stmt_update_payment->execute();
+            $stmt_update_payment->close();
+        } else if ($payment_method === 'none') {
+            // Update payment method to indicate pure trade
+            $stmt_update_payment = $conn->prepare("
+                UPDATE listings 
+                SET payment_method = 'Trade only'
+                WHERE listing_id = ?
+            ");
+            $stmt_update_payment->bind_param("i", $listing_id);
+            $stmt_update_payment->execute();
+            $stmt_update_payment->close();
+        }
+        
+        // Set appropriate dates for trade listings
+        $stmt_update_date = $conn->prepare("
+            UPDATE listings 
+            SET start_date = NOW(),
+                end_date = DATE_ADD(NOW(), INTERVAL 30 DAY) -- Trades active for 30 days
+            WHERE listing_id = ?
+        ");
+        $stmt_update_date->bind_param("i", $listing_id);
+        $stmt_update_date->execute();
+        $stmt_update_date->close();
+    }
+
+    // 5. HANDLE BID-SPECIFIC DATA
     if ($listing_type === 'bid') {
         
         // You might want to store this in a bids table or listings table
@@ -169,7 +262,7 @@ try {
         $stmt_update->close();
     }
     
-    // 5. HANDLE IMAGE UPLOADS
+    // 6. HANDLE IMAGE UPLOADS
     if (!empty($_FILES['images'])) {
         $uploadDir = __DIR__ . "/../../../uploads/";
         if (!is_dir($uploadDir)) {
@@ -198,7 +291,7 @@ try {
         $stmt_img->close();
     }
     
-    // 6. COMMIT TRANSACTION
+    // 7. COMMIT TRANSACTION
     $conn->commit();
     
     echo json_encode([

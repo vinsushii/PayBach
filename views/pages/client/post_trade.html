@@ -3,14 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PayBach | Post an Item</title>
+  <title>PayBach | Post a Trade Item</title>
 
   <link rel="stylesheet" href="../../css/client/homepage.css" />
   <link rel="stylesheet" href="../../css/client/post_item.css" />
+  <link rel="stylesheet" href="../../css/client/trade_form.css" />
 </head>
 <body>
 
+<header class="header">
+  <!-- HELP -->
+</header>
 
+<section class="post-item">
+  <a href="homepage.html" class="back-btn">← Go bach</a>
+
+  <div class="form-container">
+    <h2>Trade Details</h2>
+
+    <form id="postTradeForm" enctype="multipart/form-data">
+      
+      <label>Item Name:</label>
+      <input type="text" id="item_name" name="item_name" placeholder="ex. Laptop, Safety goggles" required>
+
+      <label>Condition:</label>
+      <select id="condition" name="condition" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+        <option value="" disabled selected>Select condition</option>
+        <option value="New">Brand New</option>
+        <option value="Like New">Like New</option>
+        <option value="Good">Good</option>
+        <option value="Well loved">Well Loved</option>
+        <option value="Fair">Fair</option>
+        <option value="Poor">Poor</option>
+      </select>
+
+      <label>Description:</label>
+      <textarea id="description" name="description" rows="3" required></textarea>
+
+      <label>Exchange method:</label>
+      <select id="exchange_method" name="exchange_method" required style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+        <option value="" disabled selected>Select exchange method</option>
+        <option value="in person">In Person (Meetup)</option>
+        <option value="drop off">Drop Off</option>
+        <option value="campus">On Campus</option>
+        <option value="shipping">Shipping (Both pay)</option>
+      </select>
+
+      <!-- TRADE-SPECIFIC SECTION -->
+      <div id="trade-section">
+        <label>What are you looking for?:</label>
+        <textarea id="requested_items" name="requested_items" rows="3" placeholder="Describe what you want in exchange (e.g., 'School supplies', 'Tech accessories', 'Sports equipment')" required></textarea>
+
+        <label>Trade Tags:</label>
+        <div class="trade-tags-input">
+          <input type="text" id="tagInput" placeholder="Add tags (e.g., textbooks, calculator, headphones)" style="width: 70%;">
+          <button type="button" id="addTagBtn" class="tag" style="width: 25%;">Add Tag</button>
+        </div>
+        <div id="requestedTags" class="requested-items-list"></div>
+        <input type="hidden" name="trade_tags[]" id="tradeTagsInput">
+
+        <label>Maximum Additional Cash (if any):</label>
+        <input type="number" id="max_price" name="max_price" step="0.01" placeholder="e.g. 0.00" min="0">
+      </div>
+
+      <!-- PAYMENT BUTTONS -->
+      <label>Payment:</label>
+      <div class="payment-buttons">
+        <button type="button" class="payment-btn" data-type="none">No Payment (Pure Trade)</button>
+        <button type="button" class="payment-btn" data-type="onsite">Onsite</button>
+        <button type="button" class="payment-btn" data-type="online">Online</button>
+      </div>
+      <input type="hidden" id="payment_method" name="payment_method" value="none">
+
+      <!-- TAG SELECTION (Categories) -->
+      <label>Categories:</label>
+      <div class="tag-selection">
+        <button type="button" class="tag" data-category="Fashion">Fashion</button>
+        <button type="button" class="tag" data-category="School Supplies">School Supplies</button>
+        <button type="button" class="tag" data-category="Technology">Technology</button>
+        <button type="button" class="tag" data-category="Tools & Home Materials">Tools & Home Materials</button>
+        <button type="button" class="tag" data-category="Automotive">Automotive</button>
+        <button type="button" class="tag" data-category="Hobbies & Toys">Hobbies & Toys</button>
+        <button type="button" class="tag" data-category="Decoration">Decoration</button>
+        <button type="button" class="tag" data-category="Sports & Recreation">Sports & Recreation</button>
+        <button type="button" class="tag" data-category="Pet Supplies">Pet Supplies</button>
+        <button type="button" class="tag" data-category="Beauty">Beauty</button>
+        <button type="button" class="tag" data-category="Others">Others</button>
+      </div>
+      <input type="hidden" name="categories[]" id="categoriesInput">
+
+      <!-- IMAGES -->
+      <label>Images:</label>
+      <div id="image-upload">
+        <input type="file" name="images[]" accept="image/*" multiple required>
+      </div>
+      <div id="imagePreview" class="image-preview-container"></div>
+
+      <!-- Hidden Fields -->
+      <input type="hidden" name="listing_type" value="trade">
+      <input type="hidden" name="quantity" value="1">
+
+      <button type="submit" class="submit-btn">Post Trade Item</button>
+
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <!-- FOOTER -->
+</footer>
 
 <script src="../../../controller/client/post_trade.js"></script>
 </body>
