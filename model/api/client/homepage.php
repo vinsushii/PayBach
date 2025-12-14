@@ -18,9 +18,23 @@ if (!$conn) {
 }
 
 // Get Bids (FIXED TABLE NAMES - use your actual table names)
-$sqlBids = "SELECT listing_id, description, start_date, end_date, exchange_method, 'Bid' AS item_type 
-            FROM listings 
-            WHERE listing_type='bid' AND is_valid=1";
+$sqlBids = "SELECT 
+        l.listing_id,
+        l.description,
+        l.start_date,
+        l.end_date,
+        l.exchange_method,
+        'Bid' AS item_type,
+    
+        -- CURRENT BID PRICE
+        COALESCE(
+            (SELECT current_amount FROM bids b WHERE b.listing_id = l.listing_id),
+            0
+        ) AS current_price
+    
+    FROM listings l
+    WHERE l.listing_type='bid' AND l.is_valid=1
+    ";
 
 $bids = $conn->query($sqlBids)->fetch_all(MYSQLI_ASSOC);
 

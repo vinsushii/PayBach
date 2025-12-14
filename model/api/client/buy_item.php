@@ -85,15 +85,18 @@ $images = array_column(
 $stmtImgs->close();
 
 // ===== GET CURRENT PRICE =====
+//SELECT MAX(price_offered) AS current_price
+//FROM bid_offers
+//WHERE bid_id = ?
 $stmtPrice = $conn->prepare("
-    SELECT MAX(price_offered) AS current_price
-    FROM bid_offers
-    WHERE bid_id = ?
+    SELECT current_amount
+    FROM bids
+    WHERE listing_id = ?
 ");
 $stmtPrice->bind_param("i", $listing_id);
 $stmtPrice->execute();
 $priceRes = $stmtPrice->get_result()->fetch_assoc();
-$currentPrice = $priceRes["current_price"] ?? $listing["start_bid"];
+$currentPrice = $priceRes["current_amount"];
 $stmtPrice->close();
 
 echo json_encode([

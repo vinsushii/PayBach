@@ -1,47 +1,59 @@
 <?php
-require_once("../database/db_connect.php");
 header("Content-Type: application/json");
+session_start();
 
-if (!isset($_POST["id"]) || !isset($_POST["price"])) {
+require_once __DIR__ . "/../../config/db_connect.php";
+
+if (!isset($_SESSION['user_idnum'])) {
+    echo json_encode(["success" => false, "message" => "Unauthorized"]);
+    exit;
+}
+
+if (!isset($_POST["id"], $_POST["price"])) {
     echo json_encode(["success" => false, "message" => "Missing parameters"]);
     exit;
 }
 
-$id = $_POST["id"];
-$price = $_POST["price"];
+$listingId = intval($_POST["id"]);
+$newPrice  = floatval($_POST["price"]);
+$userId    = $_SESSION['user_idnum'];
 
-if (!ctype_digit($id)) {
-    echo json_encode(["success" => false, "message" => "Invalid ID"]);
-    exit;
-}
-
-if (!is_numeric($price)) {
+if ($newPrice <= 0) {
     echo json_encode(["success" => false, "message" => "Invalid price"]);
     exit;
 }
 
-$id = intval($id);
-$price = floatval($price);
-
 // Get current bid
-$stmt = $conn->prepare("SELECT current_amount, start_bid FROM bids WHERE transaction_id = ? LIMIT 1");
-$stmt->bind_param("i", $id);
+$stmt = $conn->prepare("
+    SELECT current_amount, start_bid 
+    FROM bids 
+    WHERE listing_id = ?
+    LIMIT 1
+");
+$stmt->bind_param("i", $listingId);
 $stmt->execute();
-$bidData = $stmt->get_result()->fetch_assoc();
+$bid = $stmt->get_result()->fetch_assoc();
 
-$current = $bidData["current_amount"] ?? $bidData["start_bid"] ?? 0;
+$current = $bid["current_amount"] ?? $bid["start_bid"] ?? 0;
 
-if ($price <= $current) {
+if ($newPrice <= $current) {
     echo json_encode(["success" => false, "message" => "Bid must be higher"]);
     exit;
 }
 
-// Update
-$stmt2 = $conn->prepare("UPDATE bids SET current_amount = ?, bid_datetime = NOW() WHERE transaction_id = ?");
-$stmt2->bind_param("di", $price, $id);
+// Update bid
+$update = $conn->prepare("
+    UPDATE bids 
+    SET 
+        current_amount = ?,
+        current_highest_bidder = ?,
+        bid_datetime = NOW()
+    WHERE listing_id = ?
+");
+$update->bind_param("dsi", $newPrice, $userId, $listingId);
 
-if ($stmt2->execute()) {
-    echo json_encode(["success" => true, "newPrice" => $price]);
+if ($update->execute()) {
+    echo json_encode(["success" => true, "newPrice" => $newPrice]);
 } else {
     echo json_encode(["success" => false, "message" => "Database error"]);
 }
