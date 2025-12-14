@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { listing, items, categories, images, currentPrice } = data;
+  const { listing, items, categories, images, currentPrice, offers } = data;
 
   // ===== Structure Fallbacks =====
   const item = items?.[0] || {};
@@ -121,6 +121,49 @@ document.addEventListener("DOMContentLoaded", async () => {
   sellerBlock.innerHTML =
     `👤 ${listing.first_name} ${listing.last_name}<br>` +
     `📧 ${listing.email}`;
+
+  // ===BID BOX (SHOULD ONLY SHOW IF USER IS A BUYER)===
+  const bidBox = document.querySelector(".bid-box");
+  const bidButton = document.createElement("button");
+  bidButton.textContent = "TOP UP";
+  bidButton.classList.add("topup");
+  bidBox.appendChild(bidButton);
+
+  // ===BID OFFERS (FIRST ROW SHOWS UP FOR BOTH BUYER AND SELLER)===
+  const container = document.querySelector(".bid-offers-container");
+  container.innerHTML = ""; //empty ulet to fill with new bids without duplicating entries
+  const table = document.createElement("table");
+  const headerRow = document.createElement("tr");
+
+  //set teable headers (uses teeny tiny two array long loop)
+  ["User", "Bid Offer"].forEach(text => {
+    const th = document.createElement("th");
+    th.textContent = text;
+    headerRow.appendChild(th);
+  })
+
+  table.appendChild(headerRow);
+  console.log(offers);
+  
+  //table body
+  const tbody = document.createElement("tbody");
+
+    offers.forEach((offr) => {
+    const row = document.createElement("tr");
+    const bidder = document.createElement("td");
+    bidder.textContent = offr.user_id;
+    const bidOffer = document.createElement("td");
+    bidOffer.textContent = offr.price_offered;
+
+    row.appendChild(bidder);
+    row.appendChild(bidOffer);
+    tbody.appendChild(row);
+    });
+
+
+  table.appendChild(tbody);
+  container.appendChild(table);
+
 
   // ===== Top Up Modal =====
   const modal = document.getElementById("topupModal");

@@ -85,9 +85,6 @@ $images = array_column(
 $stmtImgs->close();
 
 // ===== GET CURRENT PRICE =====
-//SELECT MAX(price_offered) AS current_price
-//FROM bid_offers
-//WHERE bid_id = ?
 $stmtPrice = $conn->prepare("
     SELECT current_amount
     FROM bids
@@ -99,11 +96,24 @@ $priceRes = $stmtPrice->get_result()->fetch_assoc();
 $currentPrice = $priceRes["current_amount"];
 $stmtPrice->close();
 
+//fetch_assoc will only get first row whiel fetch_all(mysqli_assoc) will keep fetching until all rows have been fetched
+// ===GET BID OFFERS===
+$stmtOffers = $conn->prepare("
+    SELECT user_id, price_offered
+    FROM bid_offers
+    WHERE listing_id = ?
+");
+$stmtOffers->bind_param("i", $listing_id);
+$stmtOffers->execute();
+$offers = $stmtOffers->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmtOffers->close();
+
 echo json_encode([
     "success" => true,
     "listing" => $listing,
     "items" => $items,
     "categories" => $categories,
     "images" => $images,
-    "currentPrice" => $currentPrice
+    "currentPrice" => $currentPrice,
+    "offers" => $offers
 ]);
