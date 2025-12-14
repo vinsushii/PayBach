@@ -86,7 +86,7 @@ $stmtImgs->close();
 
 // ===== GET CURRENT PRICE =====
 $stmtPrice = $conn->prepare("
-    SELECT current_amount
+    SELECT current_amount, bid_increment
     FROM bids
     WHERE listing_id = ?
 ");
@@ -94,6 +94,7 @@ $stmtPrice->bind_param("i", $listing_id);
 $stmtPrice->execute();
 $priceRes = $stmtPrice->get_result()->fetch_assoc();
 $currentPrice = $priceRes["current_amount"];
+$increment = $priceRes["bid_increment"];
 $stmtPrice->close();
 
 //fetch_assoc will only get first row whiel fetch_all(mysqli_assoc) will keep fetching until all rows have been fetched
@@ -115,5 +116,6 @@ echo json_encode([
     "categories" => $categories,
     "images" => $images,
     "currentPrice" => $currentPrice,
+    "increment" => $increment,
     "offers" => $offers
 ]);

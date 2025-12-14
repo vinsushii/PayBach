@@ -172,8 +172,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   const topupBtn = document.querySelector(".topup");
   const input = document.getElementById("topupInput");
 
-  topupBtn.addEventListener("click", () => {
-    input.value = "";
+  //disable bidding if owner
+  if (isOwner && topupBtn) {
+    topupBtn.disabled = true;
+    topupBtn.innerText = "You own this item";
+    topupBtn.classList.add("disabled");
+  }
+
+  if(topupBtn && !isOwner){
+    topupBtn.addEventListener("click", () => {
+    input.value = "₱" + Number(currentPrice).toLocaleString();
     modal.style.display = "flex";
   });
 
@@ -190,7 +198,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const newPrice = parseFloat(input.value);
 
     if (isNaN(newPrice)) return alert("Enter a valid number.");
-    if (newPrice <= oldPrice) return alert("New bid must be higher.");
+    if (newPrice <= (oldPrice + increment)) return alert("New bid must be higher.");
 
     try {
       const res = await fetch("../../../model/api/client/update_price.php", {
