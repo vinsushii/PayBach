@@ -20,6 +20,7 @@ try {
             l.quantity AS start_bid,
             l.start_date,
             l.end_date,
+            l.listing_type,
             CONCAT(u.first_name, ' ', u.last_name) AS seller_name,
             u.school, 
             u.program

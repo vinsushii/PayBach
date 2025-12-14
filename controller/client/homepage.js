@@ -56,8 +56,8 @@ function createCardElement(item, showPrice = true) {
   // determine card type for label
   let typeText = "";
   let typeClass = "";
-  if (item.exchange_method) {
-    const ex = item.exchange_method.toLowerCase();
+  if (item.listing_type) {
+    const ex = item.listing_type.toLowerCase();
     if (ex.includes("bid") || ex.includes("bidding") || ex.includes("auction")) {
       typeText = "for Bid";
       typeClass = "bid";
