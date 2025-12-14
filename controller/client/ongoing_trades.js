@@ -154,7 +154,7 @@ function createTradeCard(trade, type) {
     const itemName = trade.item_name || trade.offered_item_name || 'Unnamed Item';
     
     // Get image with proper path
-    let imageUrl = "/PayBach/uploads/default-item.png"; // Changed from assets to uploads
+    let imageUrl = "/PayBach/uploads/default-item.png"; 
     
     if (trade.images && trade.images.length > 0) {
         // Get first image
