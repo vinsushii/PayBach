@@ -1,20 +1,13 @@
 <?php
-/////////////////////////
-// NEED MAPALITAN TOH //
-///////////////////////
-
-
 // model/api/client/fetch_trade_listings.php
 header("Content-Type: application/json");
 
-// Adjust path to config file (model/config/db_connect.php)
 require_once __DIR__ . "/../../config/db_connect.php";  // MySQLi connection in $conn
 
 session_start();
 $current_user_id = $_SESSION["user_idnum"] ?? 0;
 
 try {
-
     $stmt = $conn->prepare("
         SELECT 
             l.listing_id,
@@ -33,7 +26,7 @@ try {
         FROM listings l
         JOIN users u ON l.user_idnum = u.user_idnum
         WHERE l.is_valid = TRUE 
-          AND l.listing_type = 'trade'  // Filter for trades only
+          AND l.listing_type = 'trade'
         ORDER BY l.created_at DESC      
     ");
     $stmt->execute();
@@ -79,37 +72,42 @@ try {
         $l["images"] = array_column($resImgs->fetch_all(MYSQLI_ASSOC), "image_path");
         $stmtImgs->close();
 
-        // ---------------------------------------------------------
-        // TRADE PARTICIPATION CHECK - UPDATED FOR TRADES
-        // Check if current user has made offers on this trade listing
-        // ---------------------------------------------------------
         
-        $stmtTradePart = $conn->prepare("
+        $userParticipating = false;
+        
+        $stmtBarterCheck = $conn->prepare("
             SELECT 1 FROM barter_offers bo
-            JOIN barters b ON bo.barter_id = b.barter_id
-            WHERE b.listing_id = ? AND bo.nagoffer = ?
+            WHERE bo.nagoffer = ?
+            AND bo.barter_id IN (
+                SELECT b.barter_id FROM barters b 
+                WHERE b.listing_id = ?
+            )
             LIMIT 1
         ");
         
+        if ($stmtBarterCheck) {
+            $stmtBarterCheck->bind_param("si", $current_user_id, $listing_id);
+            $stmtBarterCheck->execute();
+            $resBarterCheck = $stmtBarterCheck->get_result();
+            $userParticipating = $resBarterCheck->num_rows > 0;
+            $stmtBarterCheck->close();
+        }
         
-      
-        $stmtTradePart = $conn->prepare("
-            SELECT 1 FROM listings 
-            WHERE listing_id = ? AND user_idnum = ?
-            LIMIT 1
-        ");
-        $stmtTradePart->bind_param("is", $listing_id, $current_user_id);
-        $stmtTradePart->execute();
-        $resTradePart = $stmtTradePart->get_result();
+        // If no relationship found, check if this is user's own listing
+        if (!$userParticipating) {
+            $stmtOwnCheck = $conn->prepare("
+                SELECT 1 FROM listings 
+                WHERE listing_id = ? AND user_idnum = ?
+                LIMIT 1
+            ");
+            $stmtOwnCheck->bind_param("is", $listing_id, $current_user_id);
+            $stmtOwnCheck->execute();
+            $resOwnCheck = $stmtOwnCheck->get_result();
+            $userParticipating = $resOwnCheck->num_rows > 0;
+            $stmtOwnCheck->close();
+        }
         
-       
-        $l["user_participating"] = false;
-        
-        $stmtTradePart->close();
-        
-    
-        if ($current_user_id !== 0) {
-            
+        $l["user_participating"] = $userParticipating;
     }
 
     // Return success with trade listings data
@@ -128,6 +126,5 @@ try {
         "message" => "Failed to fetch trade listings",
         "error" => $e->getMessage()
     ]);
-}
 }
 ?>
