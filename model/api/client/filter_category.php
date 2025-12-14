@@ -15,13 +15,14 @@ $query = "
         li.item_id,
         li.name,
         li.item_condition,
-        li.categories,
+        cat.category,
         l.description,
         img.image_path
     FROM listing_items li
     LEFT JOIN listings l ON li.listing_id = l.listing_id
     LEFT JOIN listing_images img ON li.listing_id = img.listing_id
-    WHERE li.categories = '$category'
+    LEFT JOIN listing_categories cat ON li.listing_id = cat.listing_id
+    WHERE cat.category = '$category'
 ";
 
 $result = mysqli_query($conn, $query);
