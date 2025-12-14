@@ -15,9 +15,8 @@ $user_idnum = $_SESSION['user_idnum'];
 try {
     $conn = get_db_connection();
     
-    // Get ongoing trades where user is involved
     $query = "
-        SELECT DISTINCT
+        SELECT 
             b.barter_id,
             b.listing_id,
             b.offered_item_name,
@@ -26,47 +25,40 @@ try {
             b.exchange_method,
             b.payment_method,
             b.max_additional_cash,
+            b.trade_tags,
             b.created_at,
-            b.updated_at,
             l.description as listing_description,
             li.name as listing_item_name,
             li.item_condition as listing_item_condition,
-            bo.status as offer_status,
-            bo.offerer_idnum,
-            bo.offered_item_name as offer_item_name,
-            GROUP_CONCAT(DISTINCT li_img.image_path) as images,
-            CASE 
-                WHEN b.user_idnum = ? THEN 'owner'
-                WHEN bo.offerer_idnum = ? THEN 'offerer'
-                ELSE 'participant'
-            END as user_role
+            u.user_idnum as owner_id,
+            u.first_name,
+            u.last_name,
+            GROUP_CONCAT(DISTINCT li_img.image_path) as images
         FROM barters b
         JOIN listings l ON b.listing_id = l.listing_id
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
         LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
-        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id
+        JOIN users u ON b.user_idnum = u.user_idnum
         WHERE l.listing_type = 'trade'
         AND b.is_active = 1
-        AND (
-            b.user_idnum = ?  -- User owns the barter
-            OR bo.offerer_idnum = ?  -- User made an offer
-        )
-        AND (
-            bo.status IS NULL 
-            OR bo.status IN ('accepted', 'pending')
+        AND b.user_idnum != ?
+        AND NOT EXISTS (
+            SELECT 1 FROM barter_offers bo 
+            WHERE bo.barter_id = b.barter_id 
+            AND bo.offerer_idnum = ?
+            AND bo.status IN ('pending', 'accepted')
         )
         GROUP BY b.barter_id
-        ORDER BY b.updated_at DESC
+        ORDER BY b.created_at DESC
     ";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ssss', $user_idnum, $user_idnum, $user_idnum, $user_idnum);
+    $stmt->bind_param('ss', $user_idnum, $user_idnum);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $trades = [];
     while ($row = $result->fetch_assoc()) {
-        // Process images
         if ($row['images']) {
             $images = explode(',', $row['images']);
             $row['images'] = array_map(function($img) {
@@ -79,14 +71,8 @@ try {
         
         $row['item_name'] = $row['offered_item_name'];
         $row['description'] = $row['offered_item_description'];
-        
-        // Determine status
-        if ($row['user_role'] === 'owner') {
-            $row['barter_status'] = $row['offer_status'] ? 'has_offers' : 'waiting';
-        } else {
-            $row['barter_status'] = $row['offer_status'] ? $row['offer_status'] : 'pending';
-        }
-        
+        $row['owner_name'] = trim($row['first_name'] . ' ' . $row['last_name']);
+        $row['barter_status'] = 'available';
         $trades[] = $row;
     }
     

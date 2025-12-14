@@ -15,7 +15,6 @@ $user_idnum = $_SESSION['user_idnum'];
 try {
     $conn = get_db_connection();
     
-    // Get ongoing trades where user is involved
     $query = "
         SELECT DISTINCT
             b.barter_id,
@@ -31,42 +30,37 @@ try {
             l.description as listing_description,
             li.name as listing_item_name,
             li.item_condition as listing_item_condition,
-            bo.status as offer_status,
-            bo.offerer_idnum,
-            bo.offered_item_name as offer_item_name,
-            GROUP_CONCAT(DISTINCT li_img.image_path) as images,
-            CASE 
-                WHEN b.user_idnum = ? THEN 'owner'
-                WHEN bo.offerer_idnum = ? THEN 'offerer'
-                ELSE 'participant'
-            END as user_role
+            bo.status as final_offer_status,
+            bo.offered_item_name as accepted_offer_item,
+            t.transaction_date as completed_date,
+            GROUP_CONCAT(DISTINCT li_img.image_path) as images
         FROM barters b
         JOIN listings l ON b.listing_id = l.listing_id
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
         LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
-        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id
+        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id AND bo.status = 'accepted'
+        LEFT JOIN transactions t ON b.listing_id = t.listing_id AND t.transaction_type = 'barter'
         WHERE l.listing_type = 'trade'
-        AND b.is_active = 1
         AND (
-            b.user_idnum = ?  -- User owns the barter
-            OR bo.offerer_idnum = ?  -- User made an offer
+            b.is_active = 0 
+            OR t.status = 'completed' 
+            OR bo.status = 'accepted'
         )
         AND (
-            bo.status IS NULL 
-            OR bo.status IN ('accepted', 'pending')
+            b.user_idnum = ? 
+            OR bo.offerer_idnum = ?
         )
         GROUP BY b.barter_id
-        ORDER BY b.updated_at DESC
+        ORDER BY COALESCE(t.transaction_date, b.updated_at) DESC
     ";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ssss', $user_idnum, $user_idnum, $user_idnum, $user_idnum);
+    $stmt->bind_param('ss', $user_idnum, $user_idnum);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $trades = [];
     while ($row = $result->fetch_assoc()) {
-        // Process images
         if ($row['images']) {
             $images = explode(',', $row['images']);
             $row['images'] = array_map(function($img) {
@@ -79,14 +73,7 @@ try {
         
         $row['item_name'] = $row['offered_item_name'];
         $row['description'] = $row['offered_item_description'];
-        
-        // Determine status
-        if ($row['user_role'] === 'owner') {
-            $row['barter_status'] = $row['offer_status'] ? 'has_offers' : 'waiting';
-        } else {
-            $row['barter_status'] = $row['offer_status'] ? $row['offer_status'] : 'pending';
-        }
-        
+        $row['barter_status'] = 'completed';
         $trades[] = $row;
     }
     

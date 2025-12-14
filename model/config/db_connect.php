@@ -29,6 +29,8 @@ class Database {
         return $this->conn;
     }
 }
-
+function get_db_connection() {
+    return Database::getInstance()->getConnection();
+}
 $conn = Database::getInstance()->getConnection();
 ?>
