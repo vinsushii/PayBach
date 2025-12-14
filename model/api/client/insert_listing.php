@@ -109,6 +109,63 @@ try {
         }
         $stmt_cat->close();
     }
+    // 3. INSERT INTO BIDS TABLE (for bid listings)
+    if ($listing_type === 'bid') {
+        $item_price = $_POST['item_price'] ?? 0;
+        $max_price = $_POST['max_price'] ?? 0;
+        $starting_bid = $_POST['bid'] ?? 0;
+        $max_bid = $_POST['max_bid'] ?? 0;
+        
+        // Calculate bid increment (you can adjust this logic)
+        $bid_increment = max(50.00, $starting_bid * 0.05); // 5% of starting bid, min 50
+        
+        // Insert into bids table
+        $stmt_bid = $conn->prepare("
+            INSERT INTO bids (
+                user_idnum, 
+                transaction_id, 
+                autobuy_amount, 
+                start_bid, 
+                bid_increment, 
+                current_amount, 
+                bid_datetime, 
+                current_highest_bidder  -- Using your renamed column
+            ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
+        ");
+        
+        $transaction_id = 0;
+        $current_amount = $starting_bid;
+        $current_highest_bidder = $user_idnum; 
+        
+        $stmt_bid->bind_param(
+            "sidddds",
+            $user_idnum,              
+            $transaction_id,           
+            $max_bid,                 
+            $starting_bid,             
+            $bid_increment,            
+            $current_amount,           
+            $current_highest_bidder    // current highest bidder (seller initially)
+        );
+        
+        if (!$stmt_bid->execute()) {
+            throw new Exception("Failed to insert bid: " . $stmt_bid->error);
+        }
+        
+        $bid_id = $conn->insert_id;
+        $stmt_bid->close();
+        
+        // Update listing with bid dates
+        $stmt_update = $conn->prepare("
+            UPDATE listings 
+            SET start_date = NOW(),
+                end_date = DATE_ADD(NOW(), INTERVAL 7 DAY)
+            WHERE listing_id = ?
+        ");
+        $stmt_update->bind_param("i", $listing_id);
+        $stmt_update->execute();
+        $stmt_update->close();
+    }
     
     // 4. HANDLE BID-SPECIFIC DATA
     if ($listing_type === 'bid') {
