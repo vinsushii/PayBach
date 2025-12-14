@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 14, 2025 at 04:19 AM
+-- Generation Time: Dec 14, 2025 at 07:05 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
@@ -176,7 +176,12 @@ CREATE TABLE IF NOT EXISTS `listings` (
 INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `end_date`, `description`, `exchange_method`, `payment_method`, `is_valid`, `created_at`, `listing_type`) VALUES
 (1, '2241389', 3, '2025-10-18 00:00:00', '2025-10-25 00:00:00', '3 sets of textbooks for exchange', 'In person', 'Gcash', 1, '2025-11-08 00:33:20', 'bid'),
 (2, '2241389', 123, '2025-11-07 16:38:47', '2025-11-07 16:38:47', '123', '123', 'onsite', 1, '2025-11-08 00:38:48', 'bid'),
-(3, '2241389', 19000, '2025-11-07 17:18:11', '2025-11-07 17:18:11', 'i dont know', 'January', 'onsite', 1, '2025-11-08 01:18:11', 'bid');
+(3, '2241389', 19000, '2025-11-07 17:18:11', '2025-11-07 17:18:11', 'i dont know', 'January', 'onsite', 1, '2025-11-08 01:18:11', 'bid'),
+(5, '2241389', 1, '2025-12-14 13:13:18', '2025-12-21 13:13:18', 'yes', 'face to face', 'onsite', 1, '2025-12-14 13:13:18', 'bid'),
+(6, '2241389', 1, '2025-12-14 13:22:05', '2025-12-21 13:22:05', 'yes', 'face to face', 'onsite', 1, '2025-12-14 13:22:05', 'bid'),
+(7, '2241389', 1, '2025-12-14 13:24:20', '2025-12-21 13:24:20', 'ssss', 'face to face', 'onsite', 1, '2025-12-14 13:24:20', 'bid'),
+(8, '2241389', 1, '2025-12-14 13:24:44', '2025-12-21 13:24:44', 'aaaa', 'face to face', 'onsite', 1, '2025-12-14 13:24:44', 'bid'),
+(9, '2241389', 1, '2025-12-14 13:27:25', '2025-12-21 13:27:25', 'ok', 'face to face', 'onsite', 1, '2025-12-14 13:27:25', 'bid');
 
 -- --------------------------------------------------------
 
@@ -191,7 +196,20 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
   `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `listing_categories`
+--
+
+INSERT INTO `listing_categories` (`id`, `listing_id`, `category`) VALUES
+(1, 5, 'Fashion'),
+(2, 5, 'Hobbies & Toys'),
+(3, 6, 'Sports & Recreation'),
+(4, 6, 'Pet Supplies'),
+(5, 7, 'Decoration'),
+(6, 8, 'School Supplies'),
+(7, 9, 'Pet Supplies');
 
 -- --------------------------------------------------------
 
@@ -207,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`image_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_images`
@@ -215,7 +233,11 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
 
 INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_at`) VALUES
 (1, 2, '../../../uploads/1762533528_bird.jpg', '2025-11-08 00:38:48'),
-(2, 3, '../../../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11');
+(2, 3, '../../../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11'),
+(3, 5, '../../../uploads/1765689198_693e476e076ee_OIP.jpg', '2025-12-14 13:13:18'),
+(4, 6, '../../../uploads/1765689725_693e497d965a3_OIP.jpg', '2025-12-14 13:22:05'),
+(5, 7, '../../../uploads/1765689860_693e4a04b9dd6_OIP.jpg', '2025-12-14 13:24:20'),
+(6, 9, '../../../uploads/1765690045_693e4abdd10d0_OIP.jpg', '2025-12-14 13:27:25');
 
 -- --------------------------------------------------------
 
@@ -233,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `listing_items` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_items`
@@ -244,7 +266,12 @@ INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, 
 (2, 1, 'English Book', 'Fair', 'School Supplies', '2025-11-08 00:33:20'),
 (3, 1, 'History Book', 'Excellent', 'School Supplies', '2025-11-08 00:33:20'),
 (4, 2, '123', '123', 'Technology', '2025-11-08 00:38:48'),
-(5, 3, 'Labubu', 'so good', 'Hobbies & Toys', '2025-11-08 01:18:11');
+(5, 3, 'Labubu', 'so good', 'Hobbies & Toys', '2025-11-08 01:18:11'),
+(6, 5, 'iphone 1121', 'good', 'Fashion', '2025-12-14 13:13:18'),
+(7, 6, 'iphone 1121', 'good', 'Sports & Recreation', '2025-12-14 13:22:05'),
+(8, 7, 'iphone 1123123', 'good', 'Decoration', '2025-12-14 13:24:20'),
+(9, 8, 'iphone 1123123', 'good', 'School Supplies', '2025-12-14 13:24:44'),
+(10, 9, 'cola', 'good', 'Pet Supplies', '2025-12-14 13:27:25');
 
 -- --------------------------------------------------------
 
