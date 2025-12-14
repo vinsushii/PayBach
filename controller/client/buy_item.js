@@ -16,11 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: `listing_id=${listingId}`
       });
-    if(!res.ok){
-      alert("Server error: " + res.status);
-      return;
-    }
-    data = await res.json();
+      if(!res.ok){
+        alert("Server error: " + res.status);
+        return;
+      }
+      data = await res.json();
   } catch (err) {
     alert("Failed to load listing. Check your connection.");
     return;
@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const { listing, items, categories, images, currentPrice } = data;
+
+  //Owner check
+  const isOwner = listing.is_owner === true;
 
   // ===== Structure Fallbacks =====
   const item = items?.[0] || {};
@@ -119,8 +122,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===== Seller Info =====
   const sellerBlock = document.querySelector(".meetup p:nth-of-type(3)");
   sellerBlock.innerHTML =
-    `👤 ${listing.first_name} ${listing.last_name}<br>` +
-    `📧 ${listing.email}`;
+    `${listing.first_name} ${listing.last_name}<br>` +
+    `${listing.email}`;
 
   // ===== Top Up Modal =====
   const modal = document.getElementById("topupModal");
@@ -129,11 +132,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   const topupBtn = document.querySelector(".topup");
   const input = document.getElementById("topupInput");
 
-  topupBtn.addEventListener("click", () => {
+  //disable bidding if owner
+  if (isOwner && topupBtn) {
+    topupBtn.disabled = true;
+    topupBtn.innerText = "You own this item";
+    topupBtn.classList.add("disabled");
+  }
+
+  if(topupBtn && !isOwner){
+    topupBtn.addEventListener("click", () => {
     input.value = "";
     modal.style.display = "flex";
   });
-
+  }
+  
   closeBtn.addEventListener("click", () => {
     modal.style.display = "none";
   });
@@ -143,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   confirmBtn.addEventListener("click", async () => {
+    if(isOwner) return;
     const oldPrice = parseFloat(priceText.textContent.replace(/[₱,]/g, ""));
     const newPrice = parseFloat(input.value);
 
@@ -169,4 +182,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Network error updating price.");
     }
   });
+  //show bidders to owner
+  const bidderSection = document.querySelector("#bidders-section");
+
+  if (isOwner && bidderSection) {
+    bidderSection.style.display = "block";
+    if(bidders.length === 0){
+      bidderSection.innerHTML = "<p>No bidders yet.</p>";
+    } else {
+      bidders.forEach(bidder => {
+        const p = document.createElement("p");
+        p.textContent = `${bidder.user_id} — ₱${Number(bidder.price_offered).toLocaleString()}`;
+        biddersSection.appendChild(p);
+    });
+  }
+}
 });

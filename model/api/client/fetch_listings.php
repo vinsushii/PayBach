@@ -37,8 +37,19 @@ try {
     $listings = $result->fetch_all(MYSQLI_ASSOC);
 
     foreach ($listings as &$l) {
-        $listing_id = $l["listing_id"];
+        $l["is_completed"] = strtotime($l["end_date"]) < time();
+        $l["is_owner"] = ($l["user_idnum"] === $current_user_id);
+        $stmtCount = $conn->prepare("
+            SELECT COUNT(*) AS total_bids 
+            FROM bid_offers 
+            WHERE bid_id = ?
+        ");
+        $stmtCount->bind_param("i", $listing_id);
+        $stmtCount->execute();
+        $l["bidder_count"] = $stmtCount->get_result()->fetch_assoc()["total_bids"] ?? 0;
+        $stmtCount->close();
 
+        $listing_id = $l["listing_id"];
         // Fetch items
         $stmtItems = $conn->prepare("
             SELECT name, item_condition
@@ -102,4 +113,4 @@ try {
         "error" => $e->getMessage()
     ]);
 }
-?>
+?> 
