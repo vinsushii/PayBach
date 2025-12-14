@@ -55,7 +55,7 @@ $_SESSION["role"]       = $user["role"];
 
 // Role-based redirect
 $redirect = ($user["role"] === "admin")
-    ? "/PayBach/views/pages/admin/validate_listing.html"
+    ? "/PayBach/views/pages/admin/admin_homepage.html"
     : "/PayBach/views/pages/client/homepage.html";
 
 echo json_encode([

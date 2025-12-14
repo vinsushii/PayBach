@@ -1,69 +1,81 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  const loginForm = document.getElementById("loginForm");
   const loginFormSection = document.getElementById('login-form');
   const registerFormSection = document.getElementById('register-form');
-
   const registerLink = document.getElementById('register-link');
   const loginLink = document.getElementById('login-link');
 
+  // Notification helper
   function showNotification(message, type = "success") {
     const notif = document.getElementById("notification");
     notif.textContent = message;
     notif.className = type;
     notif.style.display = "block";
-
-    setTimeout(() => {
-      notif.style.display = "none";
-    }, 3000);
+    setTimeout(() => notif.style.display = "none", 3000);
   }
 
-  // SWITCH TO REGISTER
-  if (registerLink) {
-    registerLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginFormSection.classList.remove('active');
-      registerFormSection.classList.add('active');
+  // Switch forms
+  registerLink?.addEventListener('click', e => {
+    e.preventDefault();
+    loginFormSection.classList.remove('active');
+    registerFormSection.classList.add('active');
+  });
+
+  loginLink?.addEventListener('click', e => {
+    e.preventDefault();
+    registerFormSection.classList.remove('active');
+    loginFormSection.classList.add('active');
+  });
+
+  // Forward to PHP for clients
+  async function forwardToPHP(email, password) {
+  try {
+    const response = await fetch("/PayBach/model/api/client/login.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
     });
+    const result = await response.json();
+    if (result.success) {
+      window.location.href = result.redirect;
+    } else {
+      alert(result.error);
+    }
+  } catch (err) {
+    console.error(err);
   }
+}
 
-  // SWITCH TO LOGIN
-  if (loginLink) {
-    loginLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      registerFormSection.classList.remove('active');
-      loginFormSection.classList.add('active');
-    });
-  }
 
-  // LOGIN AJAX
-  const loginForm = document.getElementById("loginForm");
-
+  // Login form submit
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const formData = {
-        email: loginForm.email.value,
-        password: loginForm.password.value
-      };
+      const email = loginForm.email.value;
+      const password = loginForm.password.value;
 
       try {
-        const response = await fetch("/PayBach/model/api/client/login.php", {
+        // 1️⃣ Try Node.js login first (admins only)
+        const response = await fetch("http://localhost:3000/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
+          credentials: "include",
+          body: JSON.stringify({ email, password })
         });
 
         const result = await response.json();
 
-        if (result.success) {
-          showNotification("Login successful!", "success");
-          setTimeout(() => {
-            window.location.href = result.redirect;
-          }, 1000);
-        } else {
-          showNotification(result.error, "error");
+        // Admin login successful
+        if (result.success && result.role === "admin") {
+          showNotification("Admin login successful!", "success");
+          setTimeout(() => window.location.href = result.redirect, 800);
+          return;
         }
+
+        // Otherwise, forward to PHP (clients)
+        forwardToPHP(email, password);
 
       } catch (error) {
         console.error("Error:", error);
