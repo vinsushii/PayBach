@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "../client/post_trade.html";
         });
     }
-});s
+});
 
 // API Endpoints
 const API_ENDPOINTS = {
