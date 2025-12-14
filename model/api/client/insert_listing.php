@@ -109,6 +109,48 @@ try {
         }
         $stmt_cat->close();
     }
+    // 3. INSERT INTO BIDS TABLE (for bid listings)
+    if ($listing_type === 'bid') {
+    $item_price = $_POST['item_price'] ?? 0;
+    $max_price = $_POST['max_price'] ?? 0;
+    $starting_bid = $_POST['bid'] ?? 0;
+    $max_bid = $_POST['max_bid'] ?? 0;
+    
+    $bid_increment = max(50.00, $starting_bid * 0.05);
+    
+    $stmt_bid = $conn->prepare("
+        INSERT INTO bids (
+            user_idnum, 
+            autobuy_amount, 
+            start_bid, 
+            bid_increment, 
+            current_amount, 
+            bid_datetime, 
+            current_highest_bidder
+        ) VALUES (?, ?, ?, ?, ?, NOW(), ?)
+    ");
+    
+    $current_amount = $starting_bid;
+    $current_highest_bidder = $user_idnum;
+    
+    $stmt_bid->bind_param(
+        "sdddds",
+        $user_idnum,
+        $max_bid,
+        $starting_bid,
+        $bid_increment,
+        $current_amount,
+        $current_highest_bidder
+    );
+    
+    if (!$stmt_bid->execute()) {
+        throw new Exception("Failed to insert bid: " . $stmt_bid->error);
+    }
+    
+    $bid_id = $conn->insert_id;
+    $stmt_bid->close();
+    
+    }
     
     // 4. HANDLE BID-SPECIFIC DATA
     if ($listing_type === 'bid') {
