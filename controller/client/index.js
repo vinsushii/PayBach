@@ -30,23 +30,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Forward to PHP for clients
   async function forwardToPHP(email, password) {
-    try {
-      const response = await fetch("/PayBach/model/api/client/login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const result = await response.json();
-      if (result.success) {
-        window.location.href = result.redirect;
-      } else {
-        alert(result.error);
-      }
-    } catch (err) {
-      console.error(err);
+  try {
+    const response = await fetch("/PayBach/model/api/client/login.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const result = await response.json();
+    if (result.success) {
+      window.location.href = result.redirect;
+    } else {
+      alert(result.error);
     }
+  } catch (err) {
+    console.error(err);
   }
-  
+}
+
 
   // Login form submit
   if (loginForm) {
