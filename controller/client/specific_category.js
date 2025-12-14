@@ -33,16 +33,19 @@ document.addEventListener("DOMContentLoaded", () => {
         div.className = "item-card";
 
         // pangcheck uli
-        const imgUrl = item.image_url || "../../images/placeholder.png";
+        const imgUrl = item.image_url || "../../images/default.png";
 
         div.innerHTML = `
-          <img src="${imgUrl}" alt="${escapeHtml(item.name)}" class="item-img" onerror="this.src='../../images/placeholder.png'">
+          <img src="${imgUrl}" alt="${escapeHtml(item.name)}" class="item-img" onerror="this.src='../../images/default.png'">
           <div>
             <h3 class="item-title">${escapeHtml(item.name)}</h3>
             <p class="item-meta">Condition: ${escapeHtml(item.item_condition || 'N/A')}</p>
             <p class="item-meta">Listing: ${escapeHtml(item.description || '')}</p>
           </div>
         `;
+        div.onclick = () => {
+          window.location.href = `buy_item.html?id=${encodeURIComponent(item.listing_id)}`;
+        };
         container.appendChild(div);
       });
     })

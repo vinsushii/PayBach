@@ -38,7 +38,7 @@ function createCardElement(item, showPrice = true) {
   div.className = "card";
 
   // pick first image if any
-  let imgSrc = "../../images/auto-image.jpg"; // default
+  let imgSrc = "../../images/default.png"; // default
   if (item.images && Array.isArray(item.images) && item.images.length > 0) {
     imgSrc = item.images[0];
     if (imgSrc.startsWith("../")) imgSrc = imgSrc.replace("../", "../../");

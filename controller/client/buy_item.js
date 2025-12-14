@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const listingId = params.get('listing_id');
+  const listingId = params.get('listing_id') || params.get('id') || '';
   console.log(listingId);
 
   if (!listingId) {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   categories.forEach(cat => {
     const btn = document.createElement("button");
     btn.className = "tag";
-    btn.textContent = cat.category;
+    btn.textContent = cat;
     catContainer.appendChild(btn);
   });
 
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let imageList = [];
 
   if (images.length > 0) {
-    imageList = images.map(path => "../../" + path.replace("../", ""));
+    imageList = images.map(path => "../" + path.replace("../", ""));
     mainImage.src = imageList[0];
 
     imageList.forEach((img, i) => {
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       thumbRow.appendChild(thumb);
     });
   } else {
-    mainImage.src = "../images/default.png";
+    mainImage.src = "../../images/default.png";
   }
 
   const thumbnails = document.querySelectorAll(".thumb");
