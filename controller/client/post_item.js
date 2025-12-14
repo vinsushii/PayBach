@@ -205,7 +205,7 @@ qs("#postForm").addEventListener("submit", async (e) => {
 
     if (data.success) {
       alert(data.message || "Listing submitted successfully!");
-      window.location.href = "../../../model/api/client/homepage.php";
+      window.location.href = "/PayBach/views/pages/client/homepage.html";
     } else {
       alert("Failed: " + data.message);
     }
