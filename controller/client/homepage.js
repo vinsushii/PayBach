@@ -41,9 +41,6 @@ function createCardElement(item, showPrice = true) {
   let imgSrc = "../../images/default.png"; // default
   if (item.images && Array.isArray(item.images) && item.images.length > 0) {
     imgSrc = item.images[0];
-    if (imgSrc.startsWith("../")) imgSrc = imgSrc.replace("../", "../../");
-  } else if (item.image_path) {
-    imgSrc = item.image_path.startsWith("../") ? item.image_path.replace("../", "../../") : item.image_path;
   }
 
   // title
