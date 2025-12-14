@@ -44,9 +44,11 @@ function createCardElement(item, showPrice = true) {
   }
 
   // title
-  let title = item.title || item.description || "";
-  if ((!title || title.trim() === "") && Array.isArray(item.items) && item.items.length > 0) {
+  let title;
+  if (Array.isArray(item.items) && item.items.length > 0) {
     title = item.items[0].name || item.items[0].item_name || title;
+  } else {
+    title = item.description;
   }
 
   // price

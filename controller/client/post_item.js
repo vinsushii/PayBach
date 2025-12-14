@@ -162,9 +162,9 @@ qs("#postForm").addEventListener("submit", async (e) => {
 
   // BID FIELDS
   formData.append("item_price", itemPrice);
-  formData.append("max_price", maxPrice);
-  formData.append("max_bid", maxBid);
   formData.append("bid", startingBid);
+  formData.append("max_bid", maxBid);
+  formData.append("max_price", maxPrice);
 
   // Tags
   selectedTags.forEach((tag, i) => formData.append(`categories[${i}]`, tag));

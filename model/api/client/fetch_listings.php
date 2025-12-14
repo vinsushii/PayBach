@@ -9,7 +9,6 @@ session_start();
 $current_user_id = $_SESSION["user_idnum"] ?? 0;
 
 try {
-    // Alias quantity as start_bid so frontend can use l.start_bid
     $stmt = $conn->prepare("
         SELECT 
             l.listing_id,
@@ -17,15 +16,19 @@ try {
             l.description,
             l.exchange_method,
             l.payment_method,
-            l.quantity AS start_bid,
+            l.quantity,
             l.start_date,
             l.end_date,
             l.listing_type,
             CONCAT(u.first_name, ' ', u.last_name) AS seller_name,
             u.school, 
-            u.program
+            u.program,
+            b.current_amount,
+            i.name
         FROM listings l
         JOIN users u ON l.user_idnum = u.user_idnum
+        JOIN bids b ON l.listing_id = b.listing_id
+        JOIN listing_items i ON i.listing_id = l.listing_id
         WHERE l.is_valid = TRUE
         ORDER BY l.start_date DESC
     ");
@@ -77,7 +80,7 @@ try {
         // -----------------------------------------
         $stmtBid = $conn->prepare("
             SELECT 1 FROM bids 
-            WHERE bid_id = ? AND user_idnum = ? 
+            WHERE listing_id = ? AND user_idnum = ? 
             LIMIT 1
         ");
         $stmtBid->bind_param("ii", $listing_id, $current_user_id);

@@ -80,16 +80,15 @@ try {
     
     $stmt_item = $conn->prepare("
         INSERT INTO listing_items (
-            listing_id, name, item_condition, categories, created_at
-        ) VALUES (?, ?, ?, ?, NOW())
+            listing_id, name, item_condition, created_at
+        ) VALUES (?, ?, ?, NOW())
     ");
     
     $stmt_item->bind_param(
-        "isss",
+        "iss",
         $listing_id,
         $item_name,
-        $condition,
-        $category
+        $condition
     );
     
     if (!$stmt_item->execute()) {
@@ -120,6 +119,7 @@ try {
     
     $stmt_bid = $conn->prepare("
         INSERT INTO bids (
+            listing_id,
             user_idnum, 
             autobuy_amount, 
             start_bid, 
@@ -127,14 +127,15 @@ try {
             current_amount, 
             bid_datetime, 
             current_highest_bidder
-        ) VALUES (?, ?, ?, ?, ?, NOW(), ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
     ");
     
     $current_amount = $starting_bid;
     $current_highest_bidder = $user_idnum;
     
     $stmt_bid->bind_param(
-        "sdddds",
+        "isdddds",
+        $listing_id,
         $user_idnum,
         $max_bid,
         $starting_bid,
@@ -154,10 +155,6 @@ try {
     
     // 4. HANDLE BID-SPECIFIC DATA
     if ($listing_type === 'bid') {
-        $item_price = $_POST['item_price'] ?? 0;
-        $max_price = $_POST['max_price'] ?? 0;
-        $starting_bid = $_POST['bid'] ?? 0;
-        $max_bid = $_POST['max_bid'] ?? 0;
         
         // You might want to store this in a bids table or listings table
         // For now, let's update the listings table with bid info
@@ -170,9 +167,6 @@ try {
         $stmt_update->bind_param("i", $listing_id);
         $stmt_update->execute();
         $stmt_update->close();
-        
-        // Optional: Insert into bids table if you have one
-        // $stmt_bid = $conn->prepare("INSERT INTO bids ...");
     }
     
     // 5. HANDLE IMAGE UPLOADS

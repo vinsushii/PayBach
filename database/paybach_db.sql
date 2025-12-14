@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 14, 2025 at 07:42 AM
+-- Generation Time: Dec 14, 2025 at 11:23 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -35,14 +35,7 @@ CREATE TABLE IF NOT EXISTS `barters` (
   `date_of_exchange` datetime DEFAULT NULL,
   PRIMARY KEY (`barter_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `barters`
---
-
-INSERT INTO `barters` (`barter_id`, `user_idnum`, `requested_items`, `date_of_exchange`) VALUES
-(1, '224123', 'Laptop', '2025-10-18 12:00:00');
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -59,15 +52,7 @@ CREATE TABLE IF NOT EXISTS `barter_offers` (
   `nagoffer` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`offer_id`),
   KEY `barter_id` (`barter_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `barter_offers`
---
-
-INSERT INTO `barter_offers` (`offer_id`, `barter_id`, `name`, `item_condition`, `nagoffer`) VALUES
-(1, 1, 'Tablet', 'Good', '2230136'),
-(2, 1, 'Monitor', 'Excellent', '2236875');
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -77,7 +62,7 @@ INSERT INTO `barter_offers` (`offer_id`, `barter_id`, `name`, `item_condition`, 
 
 DROP TABLE IF EXISTS `bids`;
 CREATE TABLE IF NOT EXISTS `bids` (
-  `bid_id` int NOT NULL AUTO_INCREMENT,
+  `listing_id` int NOT NULL AUTO_INCREMENT,
   `user_idnum` varchar(20) DEFAULT NULL,
   `autobuy_amount` decimal(10,2) DEFAULT NULL,
   `start_bid` decimal(10,2) DEFAULT NULL,
@@ -85,17 +70,17 @@ CREATE TABLE IF NOT EXISTS `bids` (
   `current_amount` decimal(10,2) DEFAULT NULL,
   `bid_datetime` datetime DEFAULT NULL,
   `current_highest_bidder` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`bid_id`),
+  PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `bids`
 --
 
-INSERT INTO `bids` (`bid_id`, `user_idnum`, `autobuy_amount`, `start_bid`, `bid_increment`, `current_amount`, `bid_datetime`, `current_highest_bidder`) VALUES
-(3, '2241389', 5000.00, 10000.00, 500.00, 10000.00, '2025-12-14 15:41:27', '2241389'),
-(4, '2241389', 5000.00, 10000.00, 500.00, 10000.00, '2025-12-14 15:41:54', '2241389');
+INSERT INTO `bids` (`listing_id`, `user_idnum`, `autobuy_amount`, `start_bid`, `bid_increment`, `current_amount`, `bid_datetime`, `current_highest_bidder`) VALUES
+(21, '2230136', 150.00, 1000.00, 50.00, 1000.00, '2025-12-14 18:46:09', '2230136'),
+(22, '2230136', 20.00, 50.00, 50.00, 50.00, '2025-12-14 18:57:00', '2230136');
 
 -- --------------------------------------------------------
 
@@ -111,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `bid_offers` (
   `price_offered` decimal(10,2) NOT NULL,
   PRIMARY KEY (`offer_id`),
   KEY `bid_id` (`bid_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -126,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `image` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `categories`
@@ -166,29 +151,15 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
 --
 
 INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `end_date`, `description`, `exchange_method`, `payment_method`, `is_valid`, `created_at`, `listing_type`) VALUES
-(1, '2241389', 3, '2025-10-18 00:00:00', '2025-10-25 00:00:00', '3 sets of textbooks for exchange', 'In person', 'Gcash', 1, '2025-11-08 00:33:20', 'bid'),
-(2, '2241389', 123, '2025-11-07 16:38:47', '2025-11-07 16:38:47', '123', '123', 'onsite', 1, '2025-11-08 00:38:48', 'bid'),
-(3, '2241389', 19000, '2025-11-07 17:18:11', '2025-11-07 17:18:11', 'i dont know', 'January', 'onsite', 1, '2025-11-08 01:18:11', 'bid'),
-(5, '2241389', 1, '2025-12-14 13:13:18', '2025-12-21 13:13:18', 'yes', 'face to face', 'onsite', 1, '2025-12-14 13:13:18', 'bid'),
-(6, '2241389', 1, '2025-12-14 13:22:05', '2025-12-21 13:22:05', 'yes', 'face to face', 'onsite', 1, '2025-12-14 13:22:05', 'bid'),
-(7, '2241389', 1, '2025-12-14 13:24:20', '2025-12-21 13:24:20', 'ssss', 'face to face', 'onsite', 1, '2025-12-14 13:24:20', 'bid'),
-(8, '2241389', 1, '2025-12-14 13:24:44', '2025-12-21 13:24:44', 'aaaa', 'face to face', 'onsite', 1, '2025-12-14 13:24:44', 'bid'),
-(9, '2241389', 1, '2025-12-14 13:27:25', '2025-12-21 13:27:25', 'ok', 'face to face', 'onsite', 1, '2025-12-14 13:27:25', 'bid'),
-(10, '2241389', 1, '2025-12-14 15:16:41', '2025-12-21 15:16:41', 'hahahha', 'face to face', 'onsite', 1, '2025-12-14 15:16:41', 'bid'),
-(11, '2241389', 1, '2025-12-14 15:35:30', '2025-12-14 15:35:30', 'yes', 'face to face', 'onsite', 1, '2025-12-14 15:35:30', 'bid'),
-(12, '2241389', 1, '2025-12-14 15:35:45', '2025-12-14 15:35:45', 'yes', 'face to face', 'onsite', 1, '2025-12-14 15:35:45', 'bid'),
-(13, '2241389', 1, '2025-12-14 15:36:22', '2025-12-14 15:36:22', 'yes', 'face to face', 'onsite', 1, '2025-12-14 15:36:22', 'bid'),
-(14, '2241389', 1, '2025-12-14 15:36:46', '2025-12-21 15:36:46', 'yes', 'face to face', 'onsite', 1, '2025-12-14 15:36:46', 'bid'),
-(15, '2241389', 1, '2025-12-14 15:37:22', '2025-12-14 15:37:22', 'yeeee', 'face to face', 'onsite', 1, '2025-12-14 15:37:22', 'bid'),
-(16, '2241389', 1, '2025-12-14 15:41:27', '2025-12-21 15:41:27', 'ssss', 'face to face', 'onsite', 1, '2025-12-14 15:41:27', 'bid'),
-(17, '2241389', 1, '2025-12-14 15:41:54', '2025-12-21 15:41:54', 'asdas', 'face to face', 'onsite', 1, '2025-12-14 15:41:54', 'bid');
+(21, '2230136', 1, '2025-12-14 18:46:09', '2025-12-21 18:46:09', 'Gaming laptop with great flexibility. Used once or twice. Comes with box', 'in person', 'onsite', 1, '2025-12-14 18:46:09', 'bid'),
+(22, '2230136', 1, '2025-12-14 18:57:00', '2025-12-21 18:57:00', 'Pentel graphgear 1000 .5 in satin gold. Has retractable tip', 'drop off', 'online', 1, '2025-12-14 18:57:00', 'bid');
 
 -- --------------------------------------------------------
 
@@ -203,33 +174,16 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
   `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_categories`
 --
 
 INSERT INTO `listing_categories` (`id`, `listing_id`, `category`) VALUES
-(1, 5, 'Fashion'),
-(2, 5, 'Hobbies & Toys'),
-(3, 6, 'Sports & Recreation'),
-(4, 6, 'Pet Supplies'),
-(5, 7, 'Decoration'),
-(6, 8, 'School Supplies'),
-(7, 9, 'Pet Supplies'),
-(8, 10, 'Tools & Home Materials'),
-(9, 11, 'School Supplies'),
-(10, 11, 'Decoration'),
-(11, 12, 'School Supplies'),
-(12, 12, 'Decoration'),
-(13, 13, 'School Supplies'),
-(14, 13, 'Decoration'),
-(15, 14, 'School Supplies'),
-(16, 14, 'Decoration'),
-(17, 15, 'School Supplies'),
-(18, 15, 'Technology'),
-(19, 16, 'School Supplies'),
-(20, 17, 'School Supplies');
+(25, 22, 'School Supplies'),
+(24, 21, 'Hobbies & Toys'),
+(23, 21, 'Technology');
 
 -- --------------------------------------------------------
 
@@ -245,23 +199,18 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`image_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_images`
 --
 
 INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_at`) VALUES
-(1, 2, '../../../uploads/1762533528_bird.jpg', '2025-11-08 00:38:48'),
-(2, 3, '../../../uploads/1762535891_lux.jpg', '2025-11-08 01:18:11'),
-(3, 5, '../../../uploads/1765689198_693e476e076ee_OIP.jpg', '2025-12-14 13:13:18'),
-(4, 6, '../../../uploads/1765689725_693e497d965a3_OIP.jpg', '2025-12-14 13:22:05'),
-(5, 7, '../../../uploads/1765689860_693e4a04b9dd6_OIP.jpg', '2025-12-14 13:24:20'),
-(6, 9, '../../../uploads/1765690045_693e4abdd10d0_OIP.jpg', '2025-12-14 13:27:25'),
-(7, 10, '../../../uploads/1765696601_693e645946c43_OIP.jpg', '2025-12-14 15:16:41'),
-(8, 14, '../../../uploads/1765697806_693e690e512da_OIP.jpg', '2025-12-14 15:36:46'),
-(9, 16, '../../../uploads/1765698087_693e6a27b952e_OIP.jpg', '2025-12-14 15:41:27'),
-(10, 17, '../../../uploads/1765698114_693e6a42044cc_OIP.jpg', '2025-12-14 15:41:54');
+(13, 21, '../../../uploads/1765709169_693e9571673c0_GPD-Win-Max-2-review-a-surprisingly-competent-tiny-laptop-1014x1024-703694246.jpeg', '2025-12-14 18:46:09'),
+(17, 22, '../../../uploads/1765709820_693e97fc73d1b_Pentel-Graphgear-1000-Mechanical-Pencil-Pentel-1683965778-4237365079.jpg', '2025-12-14 18:57:00'),
+(14, 21, '../../../uploads/1765709169_693e95716778f_winmax.jpg', '2025-12-14 18:46:09'),
+(15, 22, '../../../uploads/1765709820_693e97fc737ce_61G56dooF5L._AC_SL1500_-1668775032.jpg', '2025-12-14 18:57:00'),
+(16, 22, '../../../uploads/1765709820_693e97fc73a5d_547b90f571476b17e7c5576d4df30a52-4153913507.jpg', '2025-12-14 18:57:00');
 
 -- --------------------------------------------------------
 
@@ -275,35 +224,18 @@ CREATE TABLE IF NOT EXISTS `listing_items` (
   `listing_id` int DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `item_condition` varchar(50) DEFAULT NULL,
-  `categories` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_items`
 --
 
-INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, `categories`, `created_at`) VALUES
-(1, 1, 'Math Book', 'Good', 'School Supplies', '2025-11-08 00:33:20'),
-(2, 1, 'English Book', 'Fair', 'School Supplies', '2025-11-08 00:33:20'),
-(3, 1, 'History Book', 'Excellent', 'School Supplies', '2025-11-08 00:33:20'),
-(4, 2, '123', '123', 'Technology', '2025-11-08 00:38:48'),
-(5, 3, 'Labubu', 'so good', 'Hobbies & Toys', '2025-11-08 01:18:11'),
-(6, 5, 'iphone 1121', 'good', 'Fashion', '2025-12-14 13:13:18'),
-(7, 6, 'iphone 1121', 'good', 'Sports & Recreation', '2025-12-14 13:22:05'),
-(8, 7, 'iphone 1123123', 'good', 'Decoration', '2025-12-14 13:24:20'),
-(9, 8, 'iphone 1123123', 'good', 'School Supplies', '2025-12-14 13:24:44'),
-(10, 9, 'cola', 'good', 'Pet Supplies', '2025-12-14 13:27:25'),
-(11, 10, 'cola', 'good', 'Tools & Home Materials', '2025-12-14 15:16:41'),
-(12, 11, 'coca cola', 'good', 'School Supplies', '2025-12-14 15:35:30'),
-(13, 12, 'coca cola', 'good', 'School Supplies', '2025-12-14 15:35:45'),
-(14, 13, 'coca cola', 'good', 'School Supplies', '2025-12-14 15:36:22'),
-(15, 14, 'coca cola', 'good', 'School Supplies', '2025-12-14 15:36:46'),
-(16, 15, 'cocacola', 'good', 'School Supplies', '2025-12-14 15:37:22'),
-(17, 16, 'cocacola', 'good', 'School Supplies', '2025-12-14 15:41:27'),
-(18, 17, 'iphone 1121', 'good', 'School Supplies', '2025-12-14 15:41:54');
+INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, `created_at`) VALUES
+(21, 22, 'Mechanical pencil', 'Well loved', '2025-12-14 18:57:00'),
+(20, 21, 'GPD win max 2', 'lightly used', '2025-12-14 18:46:09');
 
 -- --------------------------------------------------------
 
@@ -325,7 +257,7 @@ CREATE TABLE IF NOT EXISTS `platform_metrics` (
   `avg_transaction_value` decimal(10,2) DEFAULT '0.00',
   PRIMARY KEY (`metric_id`),
   UNIQUE KEY `metric_date` (`metric_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -351,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   KEY `buyer_id` (`buyer_id`),
   KEY `transaction_date` (`transaction_date`),
   KEY `status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -372,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `role` enum('admin','student') NOT NULL DEFAULT 'student',
   PRIMARY KEY (`user_idnum`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
@@ -399,7 +331,7 @@ CREATE TABLE IF NOT EXISTS `user_courses` (
   `course_code` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `user_courses`
@@ -425,7 +357,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   PRIMARY KEY (`session_id`),
   KEY `user_idnum` (`user_idnum`),
   KEY `last_activity` (`last_activity`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
