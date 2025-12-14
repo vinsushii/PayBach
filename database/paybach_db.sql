@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 14, 2025 at 03:22 AM
+-- Generation Time: Dec 14, 2025 at 04:16 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -188,22 +188,10 @@ DROP TABLE IF EXISTS `listing_categories`;
 CREATE TABLE IF NOT EXISTS `listing_categories` (
   `id` int NOT NULL AUTO_INCREMENT,
   `listing_id` int DEFAULT NULL,
-  `category` varchar(50) DEFAULT NULL,
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `listing_categories`
---
-
-INSERT INTO `listing_categories` (`id`, `listing_id`, `category`, `created_at`) VALUES
-(1, 1, 'Books', '2025-11-08 00:33:20'),
-(2, 1, 'SAMCIS', '2025-11-08 00:33:20'),
-(3, 1, 'Learning Material', '2025-11-08 00:33:20'),
-(4, 2, 'Technology', '2025-11-08 00:38:48'),
-(5, 3, 'Fashion', '2025-11-08 01:18:11');
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
