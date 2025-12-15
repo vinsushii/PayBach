@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   console.log('Trade item page loaded with:', { barterId, listingId });
 
-  
+  /*
   if (!barterId && !listingId) {
     alert("Missing trade ID. Redirecting to trades page.");
     window.location.href = "ongoing_trades.html";
     return;
-  }
+  }*/
     
-/*
+
   //temporary 
   if (!barterId && !listingId && !window.location.href.includes('test')) {
   // Load demo data for testing
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadDemoData();
   initModals();
   return;
-}*/
+}
 
   // Initialize modals
   initModals();
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // API Endpoints
 const API_ENDPOINTS = {
- // getTradeDetails: "/PayBach/model/api/client/get_trade_details.php",
+  getTradeDetails: "/PayBach/model/api/client/get_trade_details.php",
   //getTradeOffers: "/PayBach/model/api/client/get_trade_offers.php",
   //submitOffer: "/PayBach/model/api/client/submit_offer.php",
   //respondToOffer: "/PayBach/model/api/client/respond_to_offer.php",
