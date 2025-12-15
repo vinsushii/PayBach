@@ -41,7 +41,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+<<<<<<< HEAD
   const { listing, items, categories, images, currentPrice, increment, offers } = data;
+=======
+  const {
+    listing,
+    items,
+    categories,
+    images,
+    currentPrice,
+    increment,
+    offers,
+    autobuy
+  } = data;
+
+>>>>>>> ad0f60cc7d49f1e690e9a6a8c203ade70a5afa52
   const CURRENT_USER_ID = localStorage.getItem("user_id");
   const isOwner = listing.user_idnum === CURRENT_USER_ID;
 
@@ -137,8 +151,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const input = document.getElementById("topupInput");
   let lowestValidBid = Number(currentPrice) + Number(increment);
 
+<<<<<<< HEAD
   bidBtn.onclick = () => {
     input.value = (Number(currentPrice) + Number(increment)).toFixed(2); // numeric addition + 2 decimals
+=======
+  topupBtn.onclick = () => {
+    input.value = lowestValidBid;
+    input.min = lowestValidBid;
+    input.max = autobuy;
+    input.step = increment;
+    //onkeydown="preventKeyboardInput(event)" i wanted to disable keyboard input sana para fixed na by increment ung bids pero di ko mapagana T^T
+>>>>>>> ad0f60cc7d49f1e690e9a6a8c203ade70a5afa52
     modal.style.display = "flex";
   };
 
@@ -146,9 +169,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
   confirmBtn.onclick = async () => {
+<<<<<<< HEAD
     const newBid = parseFloat(input.value);
     if (isNaN(newBid)) return alert("Invalid amount");
     if (newBid <= currentPrice) return alert(`Bid must be higher than current: ₱${currentPrice}`);
+=======
+    const newPrice = parseFloat(input.value);
+    if (isNaN(newPrice)) return alert("Invalid amount");
+    if (newPrice > autobuy)
+      newPrice = autobuy;
+>>>>>>> ad0f60cc7d49f1e690e9a6a8c203ade70a5afa52
 
     try {
       const res = await fetch("/PayBach/model/api/client/update_price.php", {
