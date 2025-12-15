@@ -1,94 +1,83 @@
 <?php
-header("Content-Type: application/json");
 session_start();
-require_once __DIR__ . "/../../config/db_connect.php";
+header('Content-Type: application/json');
+require_once __DIR__ . '/../../config/db_connect.php';
 
-if (!isset($_SESSION["user_idnum"])) {
-    echo json_encode(["success" => false, "message" => "Unauthorized"]);
+if (!isset($_SESSION['user_idnum'])) {
+    echo json_encode(["success" => false, "error" => "User not logged in"]);
     exit;
 }
 
-if (!isset($_POST["id"], $_POST["price"])) {
-    echo json_encode(["success" => false, "message" => "Missing parameters"]);
+$user_idnum = $_SESSION['user_idnum'];
+$listing_id = (int)($_POST['listing_id'] ?? 0);
+$bid_amount = (float)($_POST['bid_amount'] ?? 0);
+
+if ($listing_id <= 0 || $bid_amount <= 0) {
+    echo json_encode(["success" => false, "error" => "Invalid data"]);
     exit;
 }
 
-$listingId = intval($_POST["id"]);
-$bidAmount = floatval($_POST["price"]);
-$userId    = $_SESSION["user_idnum"];
-
-if ($bidAmount <= 0) {
-    echo json_encode(["success" => false, "message" => "Invalid bid amount"]);
-    exit;
-}
-
+$conn = get_db_connection();
 $conn->begin_transaction();
 
 try {
-    // Check ownership
-    $stmtOwner = $conn->prepare("
-        SELECT user_idnum 
-        FROM listings 
-        WHERE listing_id = ?
-    ");
-    $stmtOwner->bind_param("i", $listingId);
-    $stmtOwner->execute();
-    $owner = $stmtOwner->get_result()->fetch_assoc();
-
-    if ($owner && $owner["user_idnum"] === $userId) {
-        throw new Exception("You cannot bid on your own listing");
-    }
-
-    // Lock auction row
+    /* Lock auction row */
     $stmt = $conn->prepare("
-        SELECT current_amount, bid_increment, bid_status
-        FROM bids
-        WHERE listing_id = ?
+        SELECT b.current_amount, l.user_idnum AS owner_id
+        FROM bids b
+        JOIN listings l ON l.listing_id = b.listing_id
+        WHERE b.listing_id = ?
         FOR UPDATE
     ");
-    $stmt->bind_param("i", $listingId);
+    $stmt->bind_param("i", $listing_id);
     $stmt->execute();
-    $auction = $stmt->get_result()->fetch_assoc();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 
-    if (!$auction || $auction["bid_status"] !== "ACTIVE") {
-        throw new Exception("Auction is closed");
+    if (!$row) {
+        throw new Exception("Auction not found");
     }
 
-    $minBid = $auction["current_amount"] + $auction["bid_increment"];
-    if ($bidAmount < $minBid) {
-        throw new Exception("Bid must be at least ₱" . number_format($minBid, 2));
+    if ($row['owner_id'] === $user_idnum) {
+        throw new Exception("You cannot bid on your own item");
     }
 
-    // Insert bid history
-    $stmtHist = $conn->prepare("
-        INSERT INTO bid_history (listing_id, user_idnum, bid_amount)
-        VALUES (?, ?, ?)
+    if ($bid_amount <= $row['current_amount']) {
+        throw new Exception("Bid must be higher than current amount");
+    }
+
+    /* Insert bid history */
+    $stmt = $conn->prepare("
+        INSERT INTO bid_history (listing_id, user_idnum, bid_amount, bid_time)
+        VALUES (?, ?, ?, NOW())
     ");
-    $stmtHist->bind_param("isd", $listingId, $userId, $bidAmount);
-    $stmtHist->execute();
+    $stmt->bind_param("isd", $listing_id, $user_idnum, $bid_amount);
+    $stmt->execute();
+    $stmt->close();
 
-    // Update auction state
-    $stmtUpdate = $conn->prepare("
+    /* Update current bid */
+    $stmt = $conn->prepare("
         UPDATE bids
         SET current_amount = ?,
             current_highest_bidder = ?,
             bid_datetime = NOW()
         WHERE listing_id = ?
     ");
-    $stmtUpdate->bind_param("dsi", $bidAmount, $userId, $listingId);
-    $stmtUpdate->execute();
+    $stmt->bind_param("dsi", $bid_amount, $user_idnum, $listing_id);
+    $stmt->execute();
+    $stmt->close();
 
     $conn->commit();
 
     echo json_encode([
         "success" => true,
-        "newPrice" => $bidAmount
+        "current_amount" => $bid_amount
     ]);
 
 } catch (Exception $e) {
     $conn->rollback();
     echo json_encode([
         "success" => false,
-        "message" => $e->getMessage()
+        "error" => $e->getMessage()
     ]);
 }

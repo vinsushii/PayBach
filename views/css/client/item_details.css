@@ -137,3 +137,34 @@ cursor: default;
   opacity: 0.7;
   transition: 0.3s;
 }
+.bid-offers {
+  background-color: #f5f5f5;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.bid-offers h3 {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.bid-offers-container table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.bid-offers-container th,
+.bid-offers-container td {
+  padding: 8px 12px;
+}
+
+.bid-offers-container th {
+  font-weight: bold;
+  border-bottom: 2px solid #ccc;
+}
+
+.bid-offers-container td {
+  border-bottom: 1px solid #e0e0e0;
+}
+

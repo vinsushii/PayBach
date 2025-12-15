@@ -1,13 +1,15 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const listingId = params.get('listing_id') || '';
+  const listingId = params.get('listing_id');
 
   if (!listingId) {
     alert("Missing listing ID");
     return;
   }
 
-  // Fetch Listing Data
+  /* =========================
+     FETCH ITEM DETAILS
+  ========================= */
   let data;
   try {
     const res = await fetch("../../../model/api/client/buy_item.php", {
@@ -32,12 +34,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { listing, items, categories, images, currentPrice, offers } = data;
+  const { listing, items, categories, images, currentPrice } = data;
+
+  /* =========================
+     RENDER ITEM DETAILS
+  ========================= */
 
   // Title
   const item = items?.[0] || {};
-  const mainTitle = item.name || listing.description || "Unnamed Item";
-  document.querySelector("main h2").textContent = mainTitle;
+  document.querySelector("main h2").textContent =
+    item.name || listing.description || "Unnamed Item";
 
   // Description
   document.querySelector(".description p.lorem").textContent =
@@ -62,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   let imageList = [];
   if (images.length > 0) {
-    imageList = images.map(path => "../" + path.replace("../", ""));
+    imageList = images.map(p => "../" + p.replace("../", ""));
     mainImage.src = imageList[0];
 
     imageList.forEach((img, i) => {
@@ -77,62 +83,95 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const thumbnails = document.querySelectorAll(".thumb");
   let currentIndex = 0;
+
   function updateImage(index) {
-    thumbnails.forEach((thumb, i) => thumb.classList.toggle("active", i === index));
+    thumbnails.forEach((t, i) => t.classList.toggle("active", i === index));
     mainImage.src = thumbnails[index].src;
     currentIndex = index;
   }
-  if (thumbnails.length > 0) {
-    document.querySelector(".arrow.left").addEventListener("click", () => {
-      const next = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-      updateImage(next);
-    });
-    document.querySelector(".arrow.right").addEventListener("click", () => {
-      const next = (currentIndex + 1) % thumbnails.length;
-      updateImage(next);
-    });
-    thumbnails.forEach((thumb, i) => thumb.addEventListener("click", () => updateImage(i)));
+
+  if (thumbnails.length) {
+    document.querySelector(".arrow.left").onclick = () =>
+      updateImage((currentIndex - 1 + thumbnails.length) % thumbnails.length);
+
+    document.querySelector(".arrow.right").onclick = () =>
+      updateImage((currentIndex + 1) % thumbnails.length);
+
+    thumbnails.forEach((t, i) =>
+      t.onclick = () => updateImage(i)
+    );
   }
 
   // Price & Details
-  document.querySelector(".price").textContent = "₱" + Number(currentPrice).toLocaleString();
-  document.getElementById("meetup-location").textContent = listing.exchange_method || "N/A";
-  document.getElementById("payment-method").textContent = listing.payment_method || "N/A";
+  document.querySelector(".price").textContent =
+    "₱" + Number(currentPrice).toLocaleString();
+  document.getElementById("meetup-location").textContent =
+    listing.exchange_method || "N/A";
+  document.getElementById("payment-method").textContent =
+    listing.payment_method || "N/A";
 
   // Seller Info
-  const sellerBlock = document.querySelector(".meetup p:nth-of-type(2)");
-  sellerBlock.innerHTML =
+  document.querySelector(".meetup p:nth-of-type(2)").innerHTML =
     `👤 ${listing.first_name} ${listing.last_name}<br>` +
     `📧 ${listing.email}`;
 
-  // Bid / Transaction History Table
-  const container = document.querySelector(".bid-offers-container");
-  container.innerHTML = "";
+  /* =========================
+     BID HISTORY (LIVE)
+  ========================= */
 
-  if (offers.length === 0) {
-    container.innerHTML = "<p>No bids yet.</p>";
-  } else {
+async function loadBidHistory() {
+  try {
+    const res = await fetch(`../../../model/api/client/fetch_bid_history.php?listing_id=${listingId}`);
+    const result = await res.json();
+
+    const container = document.querySelector(".bid-offers-container");
+    container.innerHTML = "";
+
+    if (!result.success || result.data.length === 0) {
+      container.innerHTML = "<p>No bids yet.</p>";
+      return;
+    }
+
     const table = document.createElement("table");
+
+    // Table header
     const headerRow = document.createElement("tr");
-    ["User", "Bid Offer"].forEach(text => {
+    ["User", "Bid Offer", "Time"].forEach(h => {
       const th = document.createElement("th");
-      th.textContent = text;
+      th.textContent = h;
       headerRow.appendChild(th);
     });
     table.appendChild(headerRow);
 
+    // Table body
     const tbody = document.createElement("tbody");
-    offers.forEach(offer => {
+    result.data.forEach(bid => {
       const row = document.createElement("tr");
+
       const userCell = document.createElement("td");
-      userCell.textContent = offer.user_id;
-      const bidCell = document.createElement("td");
-      bidCell.textContent = "₱" + Number(offer.price_offered).toLocaleString();
+      userCell.textContent = bid.bidder;
       row.appendChild(userCell);
-      row.appendChild(bidCell);
+
+      const amountCell = document.createElement("td");
+      amountCell.textContent = "₱" + Number(bid.bid_amount).toLocaleString();
+      row.appendChild(amountCell);
+
+      const timeCell = document.createElement("td");
+      timeCell.textContent = new Date(bid.bid_time).toLocaleString();
+      row.appendChild(timeCell);
+
       tbody.appendChild(row);
     });
+
     table.appendChild(tbody);
     container.appendChild(table);
+  } catch (err) {
+    console.error("Failed to load bid history", err);
   }
+}
+
+// Initial load
+loadBidHistory();
+// Auto refresh every 3 seconds
+setInterval(loadBidHistory, 3000);
 });
