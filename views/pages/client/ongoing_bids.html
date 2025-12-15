@@ -22,41 +22,69 @@
   <div id="client-nav"></div>
 
 <!-- PAGE CONTENT -->
-  <main class="bids-section">
+<main class="bids-section">
   <h2>ONGOING BIDS</h2>
 
   <div class="bids-wrapper">
 
-  <!-- YOUR BIDS -->
-  <div class="bids-column">
-    <div class="bids-header">
-      <button class="action-add-btn" id="add-bid-btn">+</button>
-      <h3>Your Bids</h3>
+    <!-- YOUR BIDS -->
+    <div class="bids-column">
+      <div class="bids-header">
+        <button class="action-add-btn" id="add-bid-btn">+</button>
+        <h3>Your Bids</h3>
+      </div>
+      <div class="bids-container" id="your-bids"></div>
     </div>
-    <div class="bids-container" id="your-bids"></div>
+
+    <!-- COMPLETED BIDS -->
+    <div class="bids-column">
+      <div class="bids-header">
+        <span class="header-spacer"></span>
+        <h3>Completed Bids</h3>
+      </div>
+      <div class="bids-container" id="completed-bids"></div>
+    </div>
+
+    <!-- AVAILABLE BIDS -->
+    <div class="bids-column">
+      <div class="bids-header">
+        <button class="action-filter-btn" id="filter-available-bid-btn" title="Filter available bids">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+        </button>
+        <h3>Available Bids</h3>
+      </div>
+      <div class="bids-container" id="available-bids"></div>
+    </div>
   </div>
 
-  <!-- COMPLETED BIDS -->
-  <div class="bids-column">
-    <div class="bids-header">
-      <span class="header-spacer"></span>
-      <h3>Completed Bids</h3>
+  <!-- FILTER MODAL -->
+  <div id="filter-modal" class="filter-modal">
+    <div class="filter-modal-content">
+      <h3>Filter Available Bids</h3>
+      <div class="filter-options">
+        <label><input type="checkbox" name="category" value="all" checked> All Categories</label>
+        <label><input type="checkbox" name="category" value="electronics" checked> Electronics</label>
+        <label><input type="checkbox" name="category" value="furniture" checked> Furniture</label>
+        <label><input type="checkbox" name="category" value="vehicles" checked> Vehicles</label>
+        <label><input type="checkbox" name="category" value="clothing" checked> Clothing</label>
+        <label><input type="checkbox" name="category" value="other" checked> Other</label>
+      </div>
+      <div class="filter-actions">
+        <button id="apply-filter-btn" class="filter-btn apply">Apply Filter</button>
+        <button id="cancel-filter-btn" class="filter-btn cancel">Cancel</button>
+      </div>
     </div>
-    <div class="bids-container" id="completed-bids"></div>
-  </div>
-
-  <!-- AVAILABLE BIDS -->
-  <div class="bids-column">
-    <div class="bids-header">
-      <span class="header-spacer"></span>
-      <h3>Available Bids</h3>
-    </div>
-    <div class="bids-container" id="available-bids"></div>
   </div>
 </main>
 
   <!-- IMPORT FOOTER -->
   <div id="footer"></div>
+
+  <!-- SCRIPTS -->
+  <script src="../../../controller/client/ongoing_bids.js"></script>
+  <script src="../layout/load_layout.js"></script>
 
   <!-- SCRIPTS -->
   <script src="../../../controller/client/ongoing_bids.js"></script>

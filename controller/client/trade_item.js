@@ -1,4 +1,4 @@
-// trade_item.js - UPDATED to use backend API
+// trade_item.js - UPDATED to fix loading state issue
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const barterId = params.get('barter_id') || '';
@@ -51,34 +51,52 @@ function initModals() {
 // Load trade data from backend API
 async function loadTradeData(barterId) {
   try {
-    showLoadingState();
-    
+    // Don't call showLoadingState() since it replaces the entire main content
+    // Just ensure the loading state is visible initially
     console.log('Fetching trade details for barter_id:', barterId);
     
     const response = await fetch(`${API_ENDPOINTS.getTradeDetails}?barter_id=${barterId}`);
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    console.log('Response status:', response.status);
+    
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    // Try to parse as JSON
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      throw new Error('Invalid JSON response: ' + text.substring(0, 100));
     }
     
-    const data = await response.json();
-    console.log('Trade details response:', data);
+    console.log('Parsed data:', data);
     
     if (data.success && data.trade) {
       currentTrade = data.trade;
       existingOffers = data.offers || [];
       currentUserRole = data.trade.user_role || 'viewer';
       
+      // Hide loading state, show content
+      const loadingState = document.getElementById('loading-state');
+      const tradeContent = document.getElementById('trade-content');
+      
+      if (loadingState && tradeContent) {
+        loadingState.style.display = 'none';
+        tradeContent.style.display = 'flex';
+      }
+      
       renderTradeDetails();
       renderActionButtons();
       renderExistingOffers();
     } else {
-      throw new Error(data.error || 'Trade not found');
+      throw new Error(data.error || data.message || 'Trade not found');
     }
     
   } catch (error) {
     console.error('Failed to load trade:', error);
-    showErrorState('Failed to load trade details. Please try again.');
+    showErrorState('Failed to load trade details: ' + error.message);
   }
 }
 
@@ -89,50 +107,53 @@ function renderTradeDetails() {
   console.log('Rendering trade:', currentTrade);
   
   // Set page title
-  document.getElementById('trade-title').textContent = 
-    `${currentTrade.offered_item_name} → ${currentTrade.listing_item_name || 'Trade Item'}`;
+  const tradeTitle = document.getElementById('trade-title');
+  if (tradeTitle) {
+    tradeTitle.textContent = 
+      `${currentTrade.offered_item_name} → ${currentTrade.listing_item_name || 'Trade Item'}`;
+  }
   
   // Offered Item (Left Column)
-  document.getElementById('offered-item-name').textContent = currentTrade.offered_item_name;
-  document.getElementById('offered-item-condition').textContent = currentTrade.offered_item_condition || 'N/A';
-  document.getElementById('offered-item-description').textContent = currentTrade.offered_item_description || 'No description provided.';
+  setElementText('offered-item-name', currentTrade.offered_item_name);
+  setElementText('offered-item-condition', currentTrade.offered_item_condition || 'N/A');
+  setElementText('offered-item-description', currentTrade.offered_item_description || 'No description provided.');
   
   // Requested Item (Right Column)
-  document.getElementById('requested-item-name').textContent = currentTrade.listing_item_name || 'Trade Item';
-  document.getElementById('requested-item-condition').textContent = currentTrade.listing_item_condition || 'N/A';
-  document.getElementById('requested-item-description').textContent = currentTrade.listing_description || 'No description provided.';
-  
+  setElementText('requested-item-name', currentTrade.listing_item_name || 'Trade Item');
+  setElementText('requested-item-condition', currentTrade.listing_item_condition || 'N/A');
+  setElementText('requested-item-description', currentTrade.listing_description || currentTrade.requested_items_text || 'No description provided.');
+
   // Trade Meta Info
-  document.getElementById('exchange-method').textContent = currentTrade.exchange_method || 'N/A';
-  document.getElementById('payment-method').textContent = currentTrade.payment_method || 'N/A';
-  document.getElementById('additional-cash').textContent = 
-    currentTrade.max_additional_cash > 0 ? `₱${parseFloat(currentTrade.max_additional_cash).toFixed(2)}` : 'None';
+  setElementText('exchange-method', currentTrade.exchange_method || 'N/A');
+  setElementText('payment-method', currentTrade.payment_method || 'N/A');
+  setElementText('additional-cash', 
+    currentTrade.max_additional_cash > 0 ? `₱${parseFloat(currentTrade.max_additional_cash).toFixed(2)}` : 'None');
   
   // Dates
   if (currentTrade.created_at) {
     const postDate = new Date(currentTrade.created_at);
-    document.getElementById('posted-date').textContent = postDate.toLocaleDateString('en-US', {
+    setElementText('posted-date', postDate.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
       day: 'numeric'
-    });
+    }));
   }
   
   if (currentTrade.updated_at) {
     const updateDate = new Date(currentTrade.updated_at);
-    document.getElementById('updated-date').textContent = updateDate.toLocaleDateString('en-US', {
+    setElementText('updated-date', updateDate.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
       day: 'numeric'
-    });
+    }));
   }
   
   // Owner Info
   if (currentTrade.owner_name) {
-    document.getElementById('owner-name').textContent = currentTrade.owner_name;
-    document.getElementById('owner-email').textContent = currentTrade.owner_email || 'Email not available';
+    setElementText('owner-name', currentTrade.owner_name);
+    setElementText('owner-email', currentTrade.owner_email || 'Email not available');
   }
   
   // Process images
@@ -145,22 +166,29 @@ function renderTradeDetails() {
   updateStatusBadge();
 }
 
+// Helper function to safely set element text
+function setElementText(id, text) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.textContent = text;
+  }
+}
+
 // Process and display trade images
 function processTradeImages() {
   const offeredImage = document.getElementById('offered-item-image');
   const requestedImage = document.getElementById('requested-item-image');
   
-  // Offered item image
-  if (currentTrade.images && currentTrade.images.length > 0) {
-    const imagePath = processImagePath(currentTrade.images[0]);
+  if (!offeredImage || !requestedImage) return;
+  
+  // Offered item image - use offered_images array
+  if (currentTrade.offered_images && currentTrade.offered_images.length > 0) {
+    const imagePath = processImagePath(currentTrade.offered_images[0]);
     offeredImage.src = imagePath;
   }
   
-  // Requested item image
-  if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
-    const listingImagePath = processImagePath(currentTrade.listing_images[0]);
-    requestedImage.src = listingImagePath;
-  }
+  // Requested item image - always use default since there are no images for requested items
+  requestedImage.src = '../../images/default-item.png';
   
   // Add error handlers
   offeredImage.onerror = () => {
@@ -193,6 +221,8 @@ function processTradeTags() {
   const offeredTagsContainer = document.getElementById('offered-item-tags');
   const requestedTagsContainer = document.getElementById('requested-item-tags');
   
+  if (!offeredTagsContainer || !requestedTagsContainer) return;
+  
   offeredTagsContainer.innerHTML = '';
   requestedTagsContainer.innerHTML = '';
   
@@ -212,15 +242,19 @@ function processTradeTags() {
   }
   
   // Add item condition as a tag
-  const conditionTag = document.createElement('span');
-  conditionTag.className = 'trade-tag';
-  conditionTag.textContent = currentTrade.offered_item_condition || 'Unknown';
-  offeredTagsContainer.appendChild(conditionTag);
+  if (currentTrade.offered_item_condition) {
+    const conditionTag = document.createElement('span');
+    conditionTag.className = 'trade-tag';
+    conditionTag.textContent = currentTrade.offered_item_condition;
+    offeredTagsContainer.appendChild(conditionTag);
+  }
 }
 
 // Update status badge based on trade state
 function updateStatusBadge() {
   const statusBadge = document.getElementById('trade-status');
+  
+  if (!statusBadge || !currentTrade) return;
   
   let statusText = 'Active';
   let statusClass = 'active';
@@ -250,6 +284,8 @@ function updateStatusBadge() {
 // Render action buttons based on user role and trade state
 function renderActionButtons() {
   const actionsContainer = document.getElementById('trade-actions');
+  if (!actionsContainer) return;
+  
   actionsContainer.innerHTML = '';
   
   if (currentUserRole === 'owner') {
@@ -328,6 +364,8 @@ function renderExistingOffers() {
   const offersContainer = document.getElementById('existing-offers');
   const offersSection = document.getElementById('existing-offers-section');
   
+  if (!offersContainer || !offersSection) return;
+  
   if (!existingOffers || existingOffers.length === 0) {
     offersSection.style.display = 'none';
     return;
@@ -369,6 +407,7 @@ function renderExistingOffers() {
 // Show make offer modal
 function showMakeOfferModal() {
   const modal = document.getElementById('makeOfferModal');
+  if (!modal) return;
   
   // Reset form
   document.getElementById('offer-item-name').value = '';
@@ -379,18 +418,20 @@ function showMakeOfferModal() {
   
   // Set up submit handler
   const submitBtn = document.getElementById('submit-offer');
-  submitBtn.onclick = submitOffer;
+  if (submitBtn) {
+    submitBtn.onclick = submitOffer;
+  }
   
   modal.style.display = 'flex';
 }
 
 // Submit offer to API
 async function submitOffer() {
-  const itemName = document.getElementById('offer-item-name').value.trim();
-  const description = document.getElementById('offer-item-description').value.trim();
-  const condition = document.getElementById('offer-item-condition').value;
-  const additionalCash = document.getElementById('offer-additional-cash').value;
-  const notes = document.getElementById('offer-notes').value.trim();
+  const itemName = document.getElementById('offer-item-name')?.value.trim();
+  const description = document.getElementById('offer-item-description')?.value.trim();
+  const condition = document.getElementById('offer-item-condition')?.value;
+  const additionalCash = document.getElementById('offer-additional-cash')?.value;
+  const notes = document.getElementById('offer-notes')?.value.trim();
   
   if (!itemName) {
     alert('Please enter an item name');
@@ -398,17 +439,18 @@ async function submitOffer() {
   }
   
   try {
+    const params = new URLSearchParams({
+      barter_id: currentTrade.barter_id,
+      item_name: itemName,
+      description: description,
+      condition: condition,
+      additional_cash: additionalCash
+    });
+    
     const response = await fetch('/PayBach/model/api/client/submit_offer.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        barter_id: currentTrade.barter_id,
-        item_name: itemName,
-        description: description,
-        condition: condition,
-        additional_cash: additionalCash,
-        notes: notes
-      })
+      body: params
     });
     
     const data = await response.json();
@@ -433,6 +475,8 @@ function showViewOffersModal() {
   const modal = document.getElementById('viewOffersModal');
   const offersList = document.getElementById('offers-list');
   
+  if (!modal || !offersList) return;
+  
   offersList.innerHTML = '';
   
   if (!existingOffers || existingOffers.length === 0) {
@@ -452,7 +496,7 @@ function showViewOffersModal() {
   modal.style.display = 'flex';
 }
 
-// Create offer card for modal
+// Create offer card
 function createOfferCard(offer) {
   const card = document.createElement('div');
   card.className = `offer-card ${offer.status}`;
@@ -471,7 +515,6 @@ function createOfferCard(offer) {
       <p><strong>Description:</strong> ${offer.description || 'No description'}</p>
       <p><strong>Condition:</strong> ${condition}</p>
       ${cash ? `<p><strong>Additional Cash:</strong> ${cash}</p>` : ''}
-      ${offer.notes ? `<p><strong>Notes:</strong> ${offer.notes}</p>` : ''}
       <p><small>Offered on: ${date}</small></p>
       ${offer.offerer_name ? `<p><small>From: ${offer.offerer_name}</small></p>` : ''}
       ${offer.offerer_email ? `<p><small>Email: ${offer.offerer_email}</small></p>` : ''}
@@ -490,8 +533,12 @@ function createOfferCard(offer) {
     const acceptBtn = card.querySelector('.accept');
     const rejectBtn = card.querySelector('.reject');
     
-    acceptBtn.addEventListener('click', () => respondToOffer(offer.offer_id, 'accept'));
-    rejectBtn.addEventListener('click', () => respondToOffer(offer.offer_id, 'reject'));
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', () => respondToOffer(offer.offer_id, 'accept'));
+    }
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', () => respondToOffer(offer.offer_id, 'reject'));
+    }
   }
   
   return card;
@@ -585,19 +632,11 @@ async function cancelTrade() {
   }
 }
 
-// Helper functions
-function showLoadingState() {
-  const main = document.querySelector('main');
-  main.innerHTML = `
-    <div class="loading-trade">
-      <div class="loading-spinner"></div>
-      <p>Loading trade details...</p>
-    </div>
-  `;
-}
-
+// Show error state
 function showErrorState(message) {
   const main = document.querySelector('main');
+  if (!main) return;
+  
   main.innerHTML = `
     <div class="loading-trade">
       <p style="color: #dc3545; font-size: 18px;"> Error</p>
