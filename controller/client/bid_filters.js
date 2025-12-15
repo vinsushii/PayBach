@@ -180,7 +180,7 @@ function displayFilteredItems(items) {
   if (items.length === 0) {
     availableContainer.innerHTML = `
       <div class="empty-state">
-        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-icon">?</div>
         <p>No bids found for selected categories</p>
         <button onclick="clearFilter()" class="show-all-btn">Show All Bids</button>
       </div>
@@ -189,7 +189,7 @@ function displayFilteredItems(items) {
   }
 
   items.forEach(item => {
-    //  Adapt item 
+    //  Adapt item → bid (NO backend changes)
     const bid = {
       listing_id: item.listing_id,
 

@@ -41,11 +41,6 @@ let ALL_LISTINGS = [];
 let ALL_BIDS = [];
 let ALL_TRADES = [];
 
-// ----------------------------
-// Search functionality
-// ... [Keep all the code before initSearch function the same] ...
-
-// ----------------------------
 // Search functionality
 function initSearch() {
   const searchInput = document.querySelector('.search-bar input[type="text"]');
@@ -56,10 +51,16 @@ function initSearch() {
     return;
   }
   
-  function performSearch() {
-    const searchTerm = searchInput.value.trim().toLowerCase();
+  async function performSearch() {
+    const searchTerm = searchInput.value.trim();
+    await loadListings(searchTerm);
+  }
+  
+  // Fallback client-side search function (if backend fails)
+  function fallbackClientSideSearch(searchTerm) {
+    const term = searchTerm.toLowerCase();
     
-    if (!searchTerm) {
+    if (!term) {
       // If search is empty, show all listings
       renderCards('bargains-list', ALL_LISTINGS, true);
       renderCards('bids-list', ALL_BIDS, true);
@@ -71,21 +72,31 @@ function initSearch() {
     const filteredListings = ALL_LISTINGS.filter(item => {
       // Search in description
       const description = item.description ? item.description.toLowerCase() : '';
-      if (description.includes(searchTerm)) return true;
+      if (description.includes(term)) return true;
       
-      // Search in item name if available
+      // Search in item name
       if (item.items && Array.isArray(item.items) && item.items.length > 0) {
-        const itemName = item.items[0].name || item.items[0].item_name || '';
-        if (itemName.toLowerCase().includes(searchTerm)) return true;
+        const itemName = item.items[0].name || '';
+        if (itemName.toLowerCase().includes(term)) return true;
       }
       
-      // Search in listing type/exchange method
+      // Search in exchange method
       const exchangeMethod = item.exchange_method ? item.exchange_method.toLowerCase() : '';
-      if (exchangeMethod.includes(searchTerm)) return true;
+      if (exchangeMethod.includes(term)) return true;
       
-      // Search in price (convert to string)
-      const price = String(item.start_bid || item.price || item.current_amount || '').toLowerCase();
-      if (price.includes(searchTerm)) return true;
+      // Search in price
+      const startBid = String(item.start_bid || '').toLowerCase();
+      const currentAmount = String(item.current_amount || '').toLowerCase();
+      if (startBid.includes(term) || currentAmount.includes(term)) return true;
+      
+      // Search in categories
+      if (item.categories && Array.isArray(item.categories)) {
+        if (item.categories.some(cat => cat.toLowerCase().includes(term))) return true;
+      }
+      
+      // Search in listing type
+      const listingType = item.listing_type ? item.listing_type.toLowerCase() : '';
+      if (listingType.includes(term)) return true;
       
       return false;
     });
@@ -93,12 +104,14 @@ function initSearch() {
     // Separate filtered listings into bids and trades
     const filteredBids = filteredListings.filter(item => {
       const exchange = (item.exchange_method || "").toLowerCase();
-      return exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction");
+      const listingType = (item.listing_type || "").toLowerCase();
+      return exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction") || listingType.includes("bid");
     });
     
     const filteredTrades = filteredListings.filter(item => {
       const exchange = (item.exchange_method || "").toLowerCase();
-      return !(exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction"));
+      const listingType = (item.listing_type || "").toLowerCase();
+      return !(exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction") || listingType.includes("bid"));
     });
     
     // Render filtered results
@@ -106,8 +119,7 @@ function initSearch() {
     renderCards('bids-list', filteredBids, true);
     renderCards('trades-list', filteredTrades, false);
     
-    // Show search results count
-    console.log(`Search for "${searchTerm}" found ${filteredListings.length} items`);
+    console.log(`Client-side search for "${searchTerm}" found ${filteredListings.length} items`);
   }
   
   // Search on button click
@@ -124,7 +136,7 @@ function initSearch() {
   let searchTimeout;
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(performSearch, 300);
+    searchTimeout = setTimeout(performSearch, 500);
   });
   
   console.log("Search functionality initialized");
@@ -219,9 +231,15 @@ function renderCards(containerId, items, showPrice = true) {
 
 // ----------------------------
 // Fetch listings and separate bids/trades
-async function loadListings() {
+async function loadListings(searchTerm = '') {
   try {
-    const res = await fetch("../../../model/api/client/fetch_listings.php", { cache: "no-store" });
+    // Build URL with search parameter
+    let url = '../../../model/api/client/fetch_listings.php';
+    if (searchTerm) {
+      url += '?search=' + encodeURIComponent(searchTerm);
+    }
+    
+    const res = await fetch(url, { cache: "no-store" });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const payload = await res.json();
@@ -244,8 +262,10 @@ async function loadListings() {
     const bids = [];
     const trades = [];
     listings.forEach(l => {
+      const listingType = (l.listing_type || "").toLowerCase();
       const exchange = (l.exchange_method || "").toLowerCase();
-      if (exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction")) {
+      
+      if (listingType.includes("bid") || exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction")) {
         bids.push(l);
       } else {
         trades.push(l);
@@ -260,19 +280,21 @@ async function loadListings() {
     renderCards('bids-list', bids, true);
     renderCards('trades-list', trades, false);
 
+    console.log(`Loaded ${listings.length} listings (${bids.length} bids, ${trades.length} trades)` + (searchTerm ? ` for search: "${searchTerm}"` : ''));
+
   } catch (err) {
     console.warn("Failed to load listings:", err);
 
     // fallback demo cards (with no owner flag, since this is demo)
     const demoBids = [
-      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"], exchange_method: "bid" },
-      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../images/Generic-profile.png"], exchange_method: "bid"},
-      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", images: ["../images/auto-image.jpg"], exchange_method: "bid" }
+      { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", current_amount: "35000", images: ["../images/iphone17.webp"], exchange_method: "bid", listing_type: "bid", items: [{ name: "IPhone 17 Pro Max" }] },
+      { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", current_amount: "170", images: ["../images/Generic-profile.png"], exchange_method: "bid", listing_type: "bid", items: [{ name: "Leather Wallet" }] },
+      { listing_id: "demo-3", description: "Swimming Goggles", start_bid: "50", current_amount: "50", images: ["../images/auto-image.jpg"], exchange_method: "bid", listing_type: "bid", items: [{ name: "Swimming Goggles" }] }
     ];
     const demoTrades = [
-      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../images/beauty-main.jpg"], exchange_method: "trade" },
-      { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"], exchange_method: "trade" },
-      { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"], exchange_method: "trade" }
+      { listing_id: "demo-4", description: "Coding for Dummies", images: ["../images/beauty-main.jpg"], exchange_method: "trade", listing_type: "trade", items: [{ name: "Coding for Dummies" }] },
+      { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"], exchange_method: "trade", listing_type: "trade", items: [{ name: "Pliers" }] },
+      { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"], exchange_method: "trade", listing_type: "trade", items: [{ name: "Stanley Blue" }] }
     ];
     
     // Store demo data globally
@@ -285,6 +307,7 @@ async function loadListings() {
     renderCards('trades-list', demoTrades, false);
   }
 }
+
 
 // ----------------------------
 // Initialize on DOM ready
