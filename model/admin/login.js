@@ -58,6 +58,7 @@ router.post("/", async (req, res) => {
         return res.json({
             success: true,
             role: user.role,
+            user_idnum: user.user_idnum,
             redirect
         });
 

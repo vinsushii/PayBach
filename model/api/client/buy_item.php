@@ -13,22 +13,10 @@ if (!$listing_id) {
     exit;
 }
 
-// ===== GET LISTING DETAILS =====
+/* ================= LISTING ================= */
+
 $stmt = $conn->prepare("
-    SELECT 
-        l.listing_id,
-        l.user_idnum,
-        l.description,
-        l.exchange_method,
-        l.payment_method,
-        l.quantity AS start_bid,
-        l.start_date,
-        l.end_date,
-        u.first_name,
-        u.last_name,
-        u.email,
-        u.school,
-        u.program
+    SELECT l.*, u.first_name, u.last_name, u.email
     FROM listings l
     JOIN users u ON l.user_idnum = u.user_idnum
     WHERE l.listing_id = ? AND l.is_valid = TRUE
@@ -36,8 +24,7 @@ $stmt = $conn->prepare("
 ");
 $stmt->bind_param("i", $listing_id);
 $stmt->execute();
-$result = $stmt->get_result();
-$listing = $result->fetch_assoc();
+$listing = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
 if (!$listing) {
@@ -45,69 +32,78 @@ if (!$listing) {
     exit;
 }
 
-// ===== GET ITEMS =====
-$stmtItems = $conn->prepare("
+/* ================= ITEMS ================= */
+
+$stmt = $conn->prepare("
     SELECT name, item_condition
     FROM listing_items
     WHERE listing_id = ?
 ");
-$stmtItems->bind_param("i", $listing_id);
-$stmtItems->execute();
-$items = $stmtItems->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmtItems->close();
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
+$items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-// ===== GET CATEGORIES =====
-$stmtCats = $conn->prepare("
+/* ================= CATEGORIES ================= */
+
+$stmt = $conn->prepare("
     SELECT category
     FROM listing_categories
     WHERE listing_id = ?
 ");
-$stmtCats->bind_param("i", $listing_id);
-$stmtCats->execute();
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
 $categories = array_column(
-    $stmtCats->get_result()->fetch_all(MYSQLI_ASSOC),
+    $stmt->get_result()->fetch_all(MYSQLI_ASSOC),
     "category"
 );
-$stmtCats->close();
+$stmt->close();
 
-// ===== GET IMAGES =====
-$stmtImgs = $conn->prepare("
+/* ================= IMAGES ================= */
+
+$stmt = $conn->prepare("
     SELECT image_path
     FROM listing_images
     WHERE listing_id = ?
 ");
-$stmtImgs->bind_param("i", $listing_id);
-$stmtImgs->execute();
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
 $images = array_column(
-    $stmtImgs->get_result()->fetch_all(MYSQLI_ASSOC),
+    $stmt->get_result()->fetch_all(MYSQLI_ASSOC),
     "image_path"
 );
-$stmtImgs->close();
+$stmt->close();
 
-// ===== GET CURRENT PRICE =====
-$stmtPrice = $conn->prepare("
+/* ================= BIDS ================= */
+
+$stmt = $conn->prepare("
     SELECT current_amount, bid_increment
     FROM bids
     WHERE listing_id = ?
 ");
-$stmtPrice->bind_param("i", $listing_id);
-$stmtPrice->execute();
-$priceRes = $stmtPrice->get_result()->fetch_assoc();
-$currentPrice = $priceRes["current_amount"];
-$increment = $priceRes["bid_increment"];
-$stmtPrice->close();
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
+$bid = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
-//fetch_assoc will only get first row whiel fetch_all(mysqli_assoc) will keep fetching until all rows have been fetched
-// ===GET BID OFFERS===
-$stmtOffers = $conn->prepare("
-    SELECT user_id, price_offered
-    FROM bid_offers
-    WHERE listing_id = ?
+$currentPrice = $bid["current_amount"] ?? 0;
+$increment = $bid["bid_increment"] ?? 1;
+
+/* ================= OFFERS ================= */
+
+$stmt = $conn->prepare("
+    SELECT bo.user_id, bo.price_offered
+    FROM bid_offers bo
+    JOIN bids b ON bo.bid_id = b.listing_id
+    WHERE b.listing_id = ?
+    ORDER BY bo.price_offered DESC
 ");
-$stmtOffers->bind_param("i", $listing_id);
-$stmtOffers->execute();
-$offers = $stmtOffers->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmtOffers->close();
+$stmt->bind_param("i", $listing_id);
+$stmt->execute();
+$offers = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+/* ================= RESPONSE ================= */
 
 echo json_encode([
     "success" => true,

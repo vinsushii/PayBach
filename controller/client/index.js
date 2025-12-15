@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+
+
   const loginForm = document.getElementById("loginForm");
   const loginFormSection = document.getElementById('login-form');
   const registerFormSection = document.getElementById('register-form');
@@ -30,23 +32,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Forward to PHP for clients
   async function forwardToPHP(email, password) {
-  try {
-    const response = await fetch("/PayBach/model/api/client/login.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-    const result = await response.json();
-    if (result.success) {
-      window.location.href = result.redirect;
-    } else {
-      alert(result.error);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
+    try {
+      const response = await fetch("/PayBach/model/api/client/login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
+      const result = await response.json();
+
+      console.log("PHP LOGIN RESPONSE:", result);
+
+      if (result.success) {
+        // Store user ID to localStorage
+        localStorage.setItem("user_id", result.user_idnum);
+
+        console.log("STORED USER ID:", localStorage.getItem("user_id"));
+
+        // Delay redirect slightly so storage is saved
+        setTimeout(() => {
+          window.location.href = result.redirect;
+        }, 300);
+      } else {
+        alert(result.error);
+      }
+    } catch (err) {
+      console.error("PHP login error:", err);
+    }
+  }
 
   // Login form submit
   if (loginForm) {
@@ -57,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const password = loginForm.password.value;
 
       try {
-        // 1️⃣ Try Node.js login first (admins only)
+        //  Try Node.js login first (admins only)
         const response = await fetch("http://localhost:3000/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -69,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Admin login successful
         if (result.success && result.role === "admin") {
+          localStorage.setItem("user_idnum", result.user_idnum);
           showNotification("Admin login successful!", "success");
           setTimeout(() => window.location.href = result.redirect, 800);
           return;

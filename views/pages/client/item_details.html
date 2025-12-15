@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Item Details</title>
+  <link rel="stylesheet" href="../../css/client/item_details.css">
+<!-- LAYOUT CSS -->
+  <link rel="stylesheet" href="../../css/layout/header.css">
+  <link rel="stylesheet" href="../../css/layout/client_nav.css">
+  <link rel="stylesheet" href="../../css/layout/footer.css">
+</head>
+
+<body>
+    <!-- IMPORT HEADER -->
+    <div id="header"></div>
+    <!-- IMPORT NAVIGATION -->
+    <div id="client-nav"></div>
+  <main>
+    <!-- PAGE CONTENT -->
+    <h2>Item Title</h2>
+    <!-- Item Info -->
+    <section class="description">
+      <strong>Condition:</strong> <span></span>
+      <p class="lorem">Description goes here.</p>
+    </section>
+
+    <!-- Categories -->
+    <div id="item-tags"></div>
+
+    <!-- Images -->
+    <div class="main-image">
+      <img src="" alt="Item Image">
+    </div>
+    <div class="thumbnail-row"></div>
+    <div class="arrow left">◀</div>
+    <div class="arrow right">▶</div>
+
+    <!-- Price & Details -->
+    <div class="price-container">
+      <p class="price"></p>
+      <p>Meetup Location: <span id="meetup-location"></span></p>
+      <p>Payment Method: <span id="payment-method"></span></p>
+    </div>
+
+    <!-- Seller Info -->
+    <section class="meetup">
+      <p>Seller Information:</p>
+      <p></p>
+    </section>
+
+    <!-- Bid/Offer History -->
+    <section class="bid-offers">
+      <h3>Bid / Transaction History</h3>
+      <div class="bid-offers-container"></div>
+    </section>
+  </main>
+  <!-- IMPORT FOOTER -->
+  <div id="footer"></div>
+
+  <!-- SCRIPTS -->
+  <script src="../../js/client/item_details.js"></script>
+</body>
+</html>
