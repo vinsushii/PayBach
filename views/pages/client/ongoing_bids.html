@@ -77,6 +77,65 @@
       </div>
     </div>
   </div>
+
+  <!-- FILTER DROPDOWN (Hidden by default) -->
+<div id="filter-dropdown" class="filter-dropdown-container">
+  <div class="filter-dropdown-header">Filter by Category</div>
+  <div class="filter-options">
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="all" checked>
+      <span>All Categories</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Fashion" checked>
+      <span> Fashion</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="School Supplies" checked>
+      <span> School Supplies</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Technology" checked>
+      <span> Technology</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Tools & Home Materials" checked>
+      <span> Tools & Home</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Automotive" checked>
+      <span> Automotive</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Hobbies & Toys" checked>
+      <span> Hobbies & Toys</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Decoration" checked>
+      <span> Decoration</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Sports & Recreation" checked>
+      <span> Sports & Recreation</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Pet Supplies" checked>
+      <span> Pet Supplies</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Beauty" checked>
+      <span> Beauty</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="Others" checked>
+      <span> Others</span>
+    </label>
+  </div>
+  <div class="filter-actions">
+    <button id="apply-filter-btn" class="filter-btn apply">Apply</button>
+    <button id="clear-filter-btn" class="filter-btn clear">Clear</button>
+  </div>
+</div>
 </main>
 
   <!-- IMPORT FOOTER -->
@@ -84,11 +143,7 @@
 
   <!-- SCRIPTS -->
   <script src="../../../controller/client/ongoing_bids.js"></script>
+   <script src="../../../controller/client/bid_filters.js"></script>
   <script src="../layout/load_layout.js"></script>
-
-  <!-- SCRIPTS -->
-  <script src="../../../controller/client/ongoing_bids.js"></script>
-  <script src="../layout/load_layout.js"></script>
-
 </body>
 </html>
