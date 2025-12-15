@@ -1,0 +1,522 @@
+/* TRADE ITEM PAGE STYLES */
+
+/* GLOBAL OVERRIDES */
+.trade-page {
+  padding: 40px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.go-back {
+  text-decoration: none;
+  color: #555;
+  font-weight: bold;
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+.go-back:hover {
+  color: #10006b;
+  text-decoration: underline;
+}
+
+/* TRADE CONTAINER */
+.trade-container {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.trade-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+.trade-column.middle {
+  flex: 0.8;
+}
+
+/* TRADE CARD */
+.trade-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+}
+
+.trade-card h3 {
+  color: #10006b;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #f0f0f0;
+  font-size: 22px;
+}
+
+/* ITEM IMAGES */
+.trade-item-image-container {
+  width: 100%;
+  height: 250px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.trade-item-image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+/* ITEM DETAILS */
+.trade-item-details h4 {
+  color: #333;
+  margin: 15px 0 10px;
+  font-size: 20px;
+}
+
+.trade-item-details p {
+  color: #555;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.trade-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.trade-tag {
+  background-color: #eef2ff;
+  color: #10006b;
+  border: 1px solid #b3c1ff;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* TRADE META */
+.trade-meta {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.trade-meta p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* OWNER INFO */
+.owner-info {
+  background-color: #f0f7ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 25px;
+}
+
+.owner-info h5 {
+  color: #10006b;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* TRADE INFO (MIDDLE COLUMN) */
+.trade-info {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* STATUS BADGE */
+.trade-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.trade-status-badge.active {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.trade-status-badge.completed {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.trade-status-badge.pending {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.trade-status-badge span {
+  font-size: 20px;
+}
+
+/* TRADE DATE */
+.trade-date {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.trade-date p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* ACTION BUTTONS */
+.trade-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.action-btn {
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.action-btn.primary {
+  background-color: #10006b;
+  color: white;
+}
+
+.action-btn.primary:hover {
+  background-color: #1a0099;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 0, 107, 0.2);
+}
+
+.action-btn.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.action-btn.secondary:hover {
+  background-color: #5a6268;
+}
+
+.action-btn.success {
+  background-color: #28a745;
+  color: white;
+}
+
+.action-btn.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* EXISTING OFFERS SECTION */
+.existing-offers {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.existing-offers h4 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.offers-container {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.offer-item {
+  background-color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid #10006b;
+}
+
+.offer-item h5 {
+  margin: 0 0 5px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.offer-item p {
+  margin: 3px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* MODALS */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-content.wide-modal {
+  max-width: 800px;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-content .close:hover {
+  color: #333;
+}
+
+/* OFFER FORM */
+.offer-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #10006b;
+  box-shadow: 0 0 0 3px rgba(16, 0, 107, 0.1);
+}
+
+.submit-btn {
+  background-color: #10006b;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #1a0099;
+}
+
+/* OFFERS LIST IN MODAL */
+.offers-list {
+  margin-top: 20px;
+}
+
+.offer-card {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.offer-card.accepted {
+  border-color: #28a745;
+  background-color: #f0fff4;
+}
+
+.offer-card h4 {
+  margin-top: 0;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.offer-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.offer-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.offer-status.accepted {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.offer-status.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.offer-details {
+  margin-top: 15px;
+}
+
+.offer-details p {
+  margin: 8px 0;
+  color: #555;
+}
+
+.offer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.action-small-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-small-btn.accept {
+  background-color: #28a745;
+  color: white;
+}
+
+.action-small-btn.reject {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-small-btn.view {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .trade-container {
+    flex-wrap: wrap;
+  }
+  
+  .trade-column.middle {
+    order: 3;
+    flex: 1 100%;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .trade-page {
+    padding: 20px;
+  }
+  
+  .trade-column {
+    min-width: 100%;
+  }
+}
+
+/* EMPTY STATES */
+.empty-offers {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.empty-offers p {
+  margin-top: 10px;
+}
+
+/* LOADING STATE */
+.loading-trade {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #10006b;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

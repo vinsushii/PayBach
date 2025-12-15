@@ -227,6 +227,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id=${listingId}&price=${newPrice}`
       }
+<<<<<<< Updated upstream
     );
 
     const r = await res.json();
@@ -234,3 +235,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     else alert("Failed to update bid.");
   };
 });
+=======
+    } catch (err) {
+      alert("Network error updating price.");
+    }
+  });
+  }
+})
+>>>>>>> Stashed changes
