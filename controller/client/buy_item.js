@@ -53,7 +53,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     images,
     currentPrice,
     increment,
-    offers
+    offers,
+    autobuy
   } = data;
 
   const CURRENT_USER_ID = localStorage.getItem("user_id");
@@ -201,9 +202,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const closeBtn = modal.querySelector(".close");
   const confirmBtn = document.getElementById("confirmTopup");
   const input = document.getElementById("topupInput");
+  let lowestValidBid = Number(currentPrice) + Number(increment);
 
   topupBtn.onclick = () => {
-    input.value = currentPrice;
+    input.value = lowestValidBid;
+    input.min = lowestValidBid;
+    input.max = autobuy;
+    input.step = increment;
+    //onkeydown="preventKeyboardInput(event)" i wanted to disable keyboard input sana para fixed na by increment ung bids pero di ko mapagana T^T
     modal.style.display = "flex";
   };
 
@@ -217,8 +223,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   confirmBtn.onclick = async () => {
     const newPrice = parseFloat(input.value);
     if (isNaN(newPrice)) return alert("Invalid amount");
-    if (newPrice <= currentPrice + increment)
-      return alert("Bid must be higher.");
+    if (newPrice > autobuy)
+      newPrice = autobuy;
 
     const res = await fetch(
       "../../../model/api/client/update_price.php",
