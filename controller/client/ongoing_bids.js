@@ -84,7 +84,7 @@ function createBidCard(bid) {
     </div>
   `;
 
-  // 🔴 CLICK LOGIC (THIS IS THE IMPORTANT PART)
+  // CLICK LOGIC (THIS IS THE IMPORTANT PART)
   card.addEventListener("click", () => {
     if (bid.is_owner) {
       // YOUR BID → item details (see bidders)
