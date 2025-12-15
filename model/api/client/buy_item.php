@@ -13,7 +13,7 @@ if (!$listing_id) {
     exit;
 }
 
-/* ================= LISTING ================= */
+/* ================= LISTING ================= */ 
 
 $stmt = $conn->prepare("
     SELECT l.*, u.first_name, u.last_name, u.email

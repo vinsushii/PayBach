@@ -174,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Initial load
+  // Initial load 
   loadBidHistory();
 
   // Auto refresh every 3 seconds

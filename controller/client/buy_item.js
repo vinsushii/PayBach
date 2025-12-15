@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bidBox = document.querySelector(".bid-box");
   if (!bidBox) return;
 
-  const bidBtn = document.createElement("button");
+  const bidBtn = document.createElement("button"); 
   bidBtn.className = "topup";
   bidBtn.textContent = isOwner ? "You own this item" : "Place Bid";
   if (isOwner) {

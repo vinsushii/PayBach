@@ -32,7 +32,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("is", $listingId, $ownerId);
 $stmt->execute();
 $result = $stmt->get_result();
-$stmt->close();
+$stmt->close(); 
 
 if ($result->num_rows === 0) {
     echo json_encode([
