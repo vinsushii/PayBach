@@ -174,27 +174,44 @@ async function filterBidsByCategories(categories) {
 function displayFilteredItems(items) {
   const availableContainer = document.getElementById("available-bids");
   if (!availableContainer) return;
-  
+
+  availableContainer.innerHTML = "";
+
   if (items.length === 0) {
     availableContainer.innerHTML = `
-      <div class="no-results-message">
-        <div class="no-results-icon">🔍</div>
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
         <p>No bids found for selected categories</p>
         <button onclick="clearFilter()" class="show-all-btn">Show All Bids</button>
       </div>
     `;
     return;
   }
-  
-  // Clear container
-  availableContainer.innerHTML = '';
-  
-  // Create cards for each filtered item
+
   items.forEach(item => {
-    const card = createFilteredBidCard(item);
+    //  Adapt item 
+    const bid = {
+      listing_id: item.listing_id,
+
+      // used by title
+      description: item.name || item.description || "Untitled",
+
+      // used by price
+      start_bid: 0,
+      current_amount: 0,
+
+      // used by image logic
+      images: item.image_url ? [item.image_url] : [],
+
+      // used by click logic
+      is_owner: false
+    };
+
+    const card = createBidCard(bid);
     availableContainer.appendChild(card);
   });
 }
+
 
 function createFilteredBidCard(item) {
   const card = document.createElement("div");
@@ -230,7 +247,7 @@ function showFilterError() {
   
   availableContainer.innerHTML = `
     <div class="no-results-message">
-      <div class="no-results-icon">⚠️</div>
+      <div class="no-results-icon">!</div>
       <p>Error loading filtered bids</p>
       <button onclick="clearFilter()" class="show-all-btn">Show All Bids</button>
     </div>

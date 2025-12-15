@@ -36,6 +36,100 @@ function escapeHtml(text) {
 const CURRENT_USER_ID = localStorage.getItem("user_id") || null;
 console.log("CURRENT_USER_ID:", CURRENT_USER_ID);
 
+// Store all listings globally for search filtering
+let ALL_LISTINGS = [];
+let ALL_BIDS = [];
+let ALL_TRADES = [];
+
+// ----------------------------
+// Search functionality
+// ... [Keep all the code before initSearch function the same] ...
+
+// ----------------------------
+// Search functionality
+function initSearch() {
+  const searchInput = document.querySelector('.search-bar input[type="text"]');
+  const searchButton = document.querySelector('.search-bar button');
+  
+  if (!searchInput || !searchButton) {
+    console.warn("Search elements not found. Make sure your HTML has .search-bar input and button.");
+    return;
+  }
+  
+  function performSearch() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+      // If search is empty, show all listings
+      renderCards('bargains-list', ALL_LISTINGS, true);
+      renderCards('bids-list', ALL_BIDS, true);
+      renderCards('trades-list', ALL_TRADES, false);
+      return;
+    }
+    
+    // Filter listings based on search term
+    const filteredListings = ALL_LISTINGS.filter(item => {
+      // Search in description
+      const description = item.description ? item.description.toLowerCase() : '';
+      if (description.includes(searchTerm)) return true;
+      
+      // Search in item name if available
+      if (item.items && Array.isArray(item.items) && item.items.length > 0) {
+        const itemName = item.items[0].name || item.items[0].item_name || '';
+        if (itemName.toLowerCase().includes(searchTerm)) return true;
+      }
+      
+      // Search in listing type/exchange method
+      const exchangeMethod = item.exchange_method ? item.exchange_method.toLowerCase() : '';
+      if (exchangeMethod.includes(searchTerm)) return true;
+      
+      // Search in price (convert to string)
+      const price = String(item.start_bid || item.price || item.current_amount || '').toLowerCase();
+      if (price.includes(searchTerm)) return true;
+      
+      return false;
+    });
+    
+    // Separate filtered listings into bids and trades
+    const filteredBids = filteredListings.filter(item => {
+      const exchange = (item.exchange_method || "").toLowerCase();
+      return exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction");
+    });
+    
+    const filteredTrades = filteredListings.filter(item => {
+      const exchange = (item.exchange_method || "").toLowerCase();
+      return !(exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction"));
+    });
+    
+    // Render filtered results
+    renderCards('bargains-list', filteredListings, true);
+    renderCards('bids-list', filteredBids, true);
+    renderCards('trades-list', filteredTrades, false);
+    
+    // Show search results count
+    console.log(`Search for "${searchTerm}" found ${filteredListings.length} items`);
+  }
+  
+  // Search on button click
+  searchButton.addEventListener('click', performSearch);
+  
+  // Search on Enter key press
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });
+  
+  // Optional: Search as you type (debounced)
+  let searchTimeout;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(performSearch, 300);
+  });
+  
+  console.log("Search functionality initialized");
+}
+
 // ----------------------------
 // Render cards into container
 function createCardElement(item, showPrice = true) {
@@ -127,7 +221,6 @@ function renderCards(containerId, items, showPrice = true) {
 // Fetch listings and separate bids/trades
 async function loadListings() {
   try {
-    // FIXED PATH ✔
     const res = await fetch("../../../model/api/client/fetch_listings.php", { cache: "no-store" });
 
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -145,6 +238,9 @@ async function loadListings() {
       l.is_owner = CURRENT_USER_ID && String(l.owner_id) === String(CURRENT_USER_ID);
     });
 
+    // Store all listings globally
+    ALL_LISTINGS = listings;
+    
     const bids = [];
     const trades = [];
     listings.forEach(l => {
@@ -155,6 +251,10 @@ async function loadListings() {
         trades.push(l);
       }
     });
+    
+    // Store separated listings globally
+    ALL_BIDS = bids;
+    ALL_TRADES = trades;
 
     renderCards('bargains-list', listings, true);
     renderCards('bids-list', bids, true);
@@ -174,6 +274,11 @@ async function loadListings() {
       { listing_id: "demo-5", description: "Pliers", images: ["../images/tools-main.jpg"], exchange_method: "trade" },
       { listing_id: "demo-6", description: "Stanley Blue", images: ["../images/stanley.jpg"], exchange_method: "trade" }
     ];
+    
+    // Store demo data globally
+    ALL_LISTINGS = [...demoBids, ...demoTrades];
+    ALL_BIDS = demoBids;
+    ALL_TRADES = demoTrades;
 
     renderCards('bargains-list', [...demoBids, ...demoTrades], true);
     renderCards('bids-list', demoBids, true);
@@ -186,4 +291,5 @@ async function loadListings() {
 document.addEventListener("DOMContentLoaded", () => {
   initCarousel();
   loadListings();
+  initSearch();
 });
