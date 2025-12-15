@@ -60,6 +60,8 @@ $redirect = ($user["role"] === "admin")
 
 echo json_encode([
     "success"  => true,
+    "user_idnum" => $user["user_idnum"],
+    "role"     => $user["role"],
     "redirect" => $redirect,
     "message"  => "Login successful."
 ]);

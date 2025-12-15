@@ -1,25 +1,40 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
-  const listingId = params.get('listing_id') || params.get('id') || '';
-  console.log(listingId);
+  const listingId = params.get("listing_id") || params.get("id");
+  const goBackBtn = document.getElementById("goBackBtn");
+
+  if (goBackBtn) {
+    goBackBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // If browser has history → go back
+      if (document.referrer && document.referrer !== window.location.href) {
+        window.location.href = document.referrer;
+      } else {
+        // Fallback (homepage or listings page)
+        window.location.href = "../../pages/client/homepage.html";
+      }
+    });
+  }
 
   if (!listingId) {
     alert("Missing listing ID");
     return;
   }
 
-  // ===== Fetch Listing Data (Async/Await) =====
   let data;
   try {
-      const res = await fetch("../../../model/api/client/buy_item.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `listing_id=${listingId}`
-      });
-    if(!res.ok){
+    const res = await fetch("../../../model/api/client/buy_item.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `listing_id=${listingId}`
+    });
+
+    if (!res.ok) {
       alert("Server error: " + res.status);
       return;
     }
+
     data = await res.json();
   } catch (err) {
     alert("Failed to load listing. Check your connection.");
@@ -27,38 +42,49 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (!data.success) {
-    alert("Listing not found.");
+    alert(data.message || "Listing not found.");
     return;
   }
 
-  const { listing, items, categories, images, currentPrice, offers } = data;
+  const {
+    listing,
+    items,
+    categories,
+    images,
+    currentPrice,
+    increment,
+    offers
+  } = data;
 
-  // ===== Structure Fallbacks =====
+  const CURRENT_USER_ID = localStorage.getItem("user_id");
+  const isOwner = listing.user_idnum === CURRENT_USER_ID;
+
+  /* ================= BASIC INFO ================= */
+
   const item = items?.[0] || {};
-  const mainTitle = item.name || listing.description || "Unnamed Item";
+  const title =
+    item.name || listing.description || "Unnamed Item";
 
-  // ===== Set Title =====
-  document.querySelector("main h2").textContent = mainTitle;
-
-  // ===== Description =====
+  document.querySelector("main h2").textContent = title;
   document.querySelector(".description p.lorem").textContent =
     listing.description || "No description provided.";
 
-  // ===== Condition =====
   document.querySelector(".description strong").textContent =
     "Condition: " + (item.item_condition || "N/A");
 
-  // ===== Categories =====
-  const catContainer = document.querySelector("#item-tags");
-  catContainer.innerHTML = "";
+  /* ================= CATEGORIES ================= */
+
+  const tagBox = document.getElementById("item-tags");
+  tagBox.innerHTML = "";
   categories.forEach(cat => {
     const btn = document.createElement("button");
     btn.className = "tag";
     btn.textContent = cat;
-    catContainer.appendChild(btn);
+    tagBox.appendChild(btn);
   });
 
-  // ===== Images =====
+  /* ================= IMAGES ================= */
+
   const mainImage = document.querySelector(".main-image img");
   const thumbRow = document.querySelector(".thumbnail-row");
   thumbRow.innerHTML = "";
@@ -66,9 +92,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   let imageList = [];
 
   if (images.length > 0) {
-    imageList = images.map(path => "../" + path.replace("../", ""));
+    imageList = images.map(path => {
+      // Force absolute path from project root
+      return "/PayBach/uploads/" + path.split("/uploads/")[1];
+    });
+  
     mainImage.src = imageList[0];
-
+  
     imageList.forEach((img, i) => {
       const thumb = document.createElement("img");
       thumb.src = img;
@@ -76,148 +106,131 @@ document.addEventListener("DOMContentLoaded", async () => {
       thumbRow.appendChild(thumb);
     });
   } else {
-    mainImage.src = "../../images/default.png";
+    mainImage.src = "/PayBach/uploads/default.png";
   }
 
-  const thumbnails = document.querySelectorAll(".thumb");
-  let currentIndex = 0;
+  const thumbs = document.querySelectorAll(".thumb");
+  let index = 0;
 
-  function updateImage(index) {
-    thumbnails.forEach((thumb, i) =>
-      thumb.classList.toggle("active", i === index)
+  function updateImage(i) {
+    thumbs.forEach((t, n) => t.classList.toggle("active", n === i));
+    mainImage.src = thumbs[i].src;
+    index = i;
+  }
+
+  if (thumbs.length) {
+    document.querySelector(".arrow.left").onclick = () =>
+      updateImage((index - 1 + thumbs.length) % thumbs.length);
+
+    document.querySelector(".arrow.right").onclick = () =>
+      updateImage((index + 1) % thumbs.length);
+
+    thumbs.forEach((t, i) =>
+      t.addEventListener("click", () => updateImage(i))
     );
-    mainImage.src = thumbnails[index].src;
-    currentIndex = index;
   }
 
-  if (thumbnails.length > 0) {
-    document.querySelector(".arrow.left").addEventListener("click", () => {
-      const next = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-      updateImage(next);
-    });
+  /* ================= PRICE & DETAILS ================= */
 
-    document.querySelector(".arrow.right").addEventListener("click", () => {
-      const next = (currentIndex + 1) % thumbnails.length;
-      updateImage(next);
-    });
-
-    thumbnails.forEach((thumb, index) => {
-      thumb.addEventListener("click", () => updateImage(index));
-    });
-  }
-
-  // ===== Pricing =====
   const priceText = document.querySelector(".price");
   priceText.textContent = "₱" + Number(currentPrice).toLocaleString();
 
-  document.querySelector("#meetup-location").textContent =
+  document.getElementById("meetup-location").textContent =
     listing.exchange_method || "N/A";
 
-  document.querySelector("#payment-method").textContent =
+  document.getElementById("payment-method").textContent =
     listing.payment_method || "N/A";
 
-  // ===== Seller Info =====
-  const sellerBlock = document.querySelector(".meetup p:nth-of-type(3)");
-  sellerBlock.innerHTML =
-    `👤 ${listing.first_name} ${listing.last_name}<br>` +
-    `📧 ${listing.email}`;
+  /* ================= SELLER ================= */
 
-  // ===BID BOX (SHOULD ONLY SHOW IF USER IS A BUYER)===
-  const bidBox = document.querySelector(".bid-box");
-  const bidButton = document.createElement("button");
-  bidButton.textContent = "TOP UP";
-  bidButton.classList.add("topup");
-  bidBox.appendChild(bidButton);
+  const seller = document.querySelector(".meetup p:nth-of-type(2)");
+  seller.innerHTML = `
+    👤 ${listing.first_name} ${listing.last_name}<br>
+    📧 ${listing.email}
+  `;
 
-  // ===BID OFFERS (FIRST ROW SHOWS UP FOR BOTH BUYER AND SELLER)===
+  /* ================= BID HISTORY ================= */
+
   const container = document.querySelector(".bid-offers-container");
-  container.innerHTML = ""; //empty ulet to fill with new bids without duplicating entries
-  const table = document.createElement("table");
-  const headerRow = document.createElement("tr");
+  container.innerHTML = "";
 
-  //set teable headers (uses teeny tiny two array long loop)
-  ["User", "Bid Offer"].forEach(text => {
-    const th = document.createElement("th");
-    th.textContent = text;
-    headerRow.appendChild(th);
-  })
+  if (!offers.length) {
+    container.innerHTML = "<p>No bids yet.</p>";
+  } else {
+    const table = document.createElement("table");
+    table.innerHTML = `
+      <tr>
+        <th>User</th>
+        <th>Bid Offer</th>
+      </tr>
+    `;
 
-  table.appendChild(headerRow);
-  console.log(offers);
-  
-  //table body
-  const tbody = document.createElement("tbody");
-
-    offers.forEach((offr) => {
-    const row = document.createElement("tr");
-    const bidder = document.createElement("td");
-    bidder.textContent = offr.user_id;
-    const bidOffer = document.createElement("td");
-    bidOffer.textContent = offr.price_offered;
-
-    row.appendChild(bidder);
-    row.appendChild(bidOffer);
-    tbody.appendChild(row);
+    offers.forEach(o => {
+      const r = document.createElement("tr");
+      r.innerHTML = `
+        <td>${o.user_id}</td>
+        <td>₱${Number(o.price_offered).toLocaleString()}</td>
+      `;
+      table.appendChild(r);
     });
 
+    container.appendChild(table);
+  }
 
-  table.appendChild(tbody);
-  container.appendChild(table);
+  /* ================= BID ACTION ================= */
 
+  const bidBox = document.querySelector(".bid-box");
+  if (!bidBox) return;
 
-  // ===== Top Up Modal =====
+  const topupBtn = document.createElement("button");
+  topupBtn.className = "topup";
+
+  if (isOwner) {
+    topupBtn.textContent = "You own this item";
+    topupBtn.disabled = true;
+    topupBtn.classList.add("disabled");
+  } else {
+    topupBtn.textContent = "TOP UP";
+  }
+
+  bidBox.appendChild(topupBtn);
+
+  if (isOwner) return;
+
   const modal = document.getElementById("topupModal");
   const closeBtn = modal.querySelector(".close");
   const confirmBtn = document.getElementById("confirmTopup");
-  const topupBtn = document.querySelector(".topup");
   const input = document.getElementById("topupInput");
 
-  //disable bidding if owner
-  if (isOwner && topupBtn) {
-    topupBtn.disabled = true;
-    topupBtn.innerText = "You own this item";
-    topupBtn.classList.add("disabled");
-  }
-
-  if(topupBtn && !isOwner){
-    topupBtn.addEventListener("click", () => {
-    input.value = "₱" + Number(currentPrice).toLocaleString();
+  topupBtn.onclick = () => {
+    input.value = currentPrice;
     modal.style.display = "flex";
+  };
+
+  closeBtn.onclick = () => (modal.style.display = "none");
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
   });
 
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-
-  confirmBtn.addEventListener("click", async () => {
-    const oldPrice = parseFloat(priceText.textContent.replace(/[₱,]/g, ""));
+  confirmBtn.onclick = async () => {
     const newPrice = parseFloat(input.value);
+    if (isNaN(newPrice)) return alert("Invalid amount");
+    if (newPrice <= currentPrice + increment)
+      return alert("Bid must be higher.");
 
-    if (isNaN(newPrice)) return alert("Enter a valid number.");
-    if (newPrice <= (oldPrice + increment)) return alert("New bid must be higher.");
-
-    try {
-      const res = await fetch("../../../model/api/client/update_price.php", {
+    const res = await fetch(
+      "../../../model/api/client/update_price.php",
+      {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `id=${listingId}&price=${newPrice}`
-      });
-
-      const resp = await res.json();
-
-      if (resp.success) {
-        priceText.textContent = "₱" + newPrice.toLocaleString();
-        modal.style.display = "none";
-        alert("Bid updated!");
-      } else {
-        alert("Server error updating price.");
       }
-    } catch (err) {
-      alert("Network error updating price.");
-    }
-  });
+    );
+
+    const r = await res.json();
+    if (r.success) location.reload();
+    else alert("Failed to update bid.");
+  };
 });

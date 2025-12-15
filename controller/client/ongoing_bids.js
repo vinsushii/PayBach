@@ -1,83 +1,144 @@
-const yourContainer = document.querySelector("#your-bids");
-const biddingContainer = document.querySelector("#bidding-for");
-const availableContainer = document.querySelector("#available-bids");
+document.addEventListener("DOMContentLoaded", () => {
+  loadBidListings();
 
-// to be replaced ng SESSION ID (from PHP)
-const CURRENT_USER_ID = localStorage.getItem("user_id");
-// ADD BUTTON LOGIC
-const addBtn = document.getElementById("add-bid-btn"); // updated ID for bids
-if (addBtn) {
+  const addBtn = document.getElementById("add-bid-btn");
+  if (addBtn) {
     addBtn.addEventListener("click", () => {
-        // Navigate to the page to post a new bid
-        window.location.href = "../client/post_item.html";
+      window.location.href = "../client/post_item.html";
     });
-}
-async function loadListings() {
+  }
+});
+
+const yourContainer = document.getElementById("your-bids");
+const completedContainer = document.getElementById("completed-bids");
+const availableContainer = document.getElementById("available-bids");
+
+const CURRENT_USER_ID = localStorage.getItem("user_id");
+
+async function loadBidListings() {
   try {
-    //relative path is calculated from ongoing_bids.html and not ongoing_bids.js
+    showLoading();
+
     const res = await fetch("../../../model/api/client/fetch_listings.php");
     const json = await res.json();
 
-    console.log("API response:", json); // debug
+    if (!json.success) throw new Error(json.message);
 
-    if (!json.success) {
-      console.error("Fetch failed:", json.message);
-      return;
-    }
-
-    const listings = json.data;
+    const bids = json.data.filter(l => l.listing_type === "bid");
 
     yourContainer.innerHTML = "";
-    biddingContainer.innerHTML = "";
+    completedContainer.innerHTML = "";
     availableContainer.innerHTML = "";
 
-    const pesoFormatter = new Intl.NumberFormat("en-PH", {
-      style: "currency",
-      currency: "PHP",
-      minimumFractionDigits: 0
-    });
-
-    listings.forEach(l => {
-      const title = l.items?.[0]?.name ?? l.description ?? "Untitled";
-      const price = l.start_bid ? pesoFormatter.format(l.start_bid) : "N/A";
-
-      const imagesHtml = (l.images && l.images.length > 0)
-        ? l.images.map(path => `<img src="${path}" alt="${title}" />`).join("")
-        : `<img src="../../images/default.png" alt="${title}" />`;
-
-      const card = document.createElement("a");
-      card.className = "bid-link";
-      card.href = "../client/buy_item.html?listing_id=" + l.listing_id;
-
-      card.innerHTML = `
-        <div class="bid-card">
-          <div class="image-gallery">${imagesHtml}</div>
-          <p>${title}</p>
-          <span class="price">${price}</span>
-        </div>
-      `;
-
-      // Sorting logic
-      if (l.user_id == CURRENT_USER_ID) {
+    bids.forEach(bid => {
+      const ownerId =
+        bid.user_idnum ||
+        bid.user_id ||
+        bid.seller_id ||
+        bid.owner_id;
+    
+      bid.is_owner = String(ownerId) === String(CURRENT_USER_ID);
+      console.log("CURRENT USER:", CURRENT_USER_ID);
+      console.log("BID OWNER:", bid.user_idnum, bid.user_id, bid.seller_id);
+    
+      const card = createBidCard(bid);
+    
+      if (bid.is_owner) {
         yourContainer.appendChild(card);
-      } else if (l.user_participating == true) {
-        biddingContainer.appendChild(card);
+      } else if (bid.user_participating) {
+        completedContainer.appendChild(card);
       } else {
         availableContainer.appendChild(card);
       }
     });
 
-    // Empty state messages
-    if (!yourContainer.children.length)
-      yourContainer.innerHTML = `<p class="empty">None</p>`;
-    if (!biddingContainer.children.length)
-      biddingContainer.innerHTML = `<p class="empty">None</p>`;
-    if (!availableContainer.children.length)
-      availableContainer.innerHTML = `<p class="empty">None</p>`;
+    handleEmpty();
 
   } catch (err) {
-    console.error("Error:", err);
+    console.error(err);
+    showError("Failed to load bids");
   }
 }
 
-loadListings();
+function createBidCard(bid) {
+  const card = document.createElement("div");
+  card.className = "bid-card";
+
+  const title = bid.items?.[0]?.name || bid.description || "Untitled";
+  const price = formatPeso(bid.current_amount || bid.start_bid || 0);
+
+  // image
+  let imageUrl = "/PayBach/uploads/default-item.png";
+  if (bid.images && bid.images.length > 0) {
+    const filename = bid.images[0].split("/").pop();
+    imageUrl = `/PayBach/uploads/${filename}`;
+  }
+
+  card.innerHTML = `
+    <div class="bid-image">
+      <img src="${imageUrl}" onerror="this.src='/PayBach/uploads/default-item.png'">
+    </div>
+    <div class="bid-content">
+      <p class="bid-title">${truncate(title)}</p>
+      <p class="bid-price">${price}</p>
+    </div>
+  `;
+
+  // 🔴 CLICK LOGIC (THIS IS THE IMPORTANT PART)
+  card.addEventListener("click", () => {
+    if (bid.is_owner) {
+      // YOUR BID → item details (see bidders)
+      window.location.href =
+        `../client/item_details.html?listing_id=${bid.listing_id}`;
+    } else {
+      // OTHER BIDS → bidding page
+      window.location.href =
+        `../client/buy_item.html?listing_id=${bid.listing_id}`;
+    }
+  });
+
+  return card;
+}
+
+/* ================= HELPERS ================= */
+
+function formatPeso(amount) {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP"
+  }).format(amount);
+}
+
+function truncate(text, len = 20) {
+  return text.length > len ? text.substring(0, len) + "..." : text;
+}
+
+function showLoading() {
+  [yourContainer, completedContainer, availableContainer].forEach(c => {
+    c.innerHTML = `<div class="loading-spinner"></div>`;
+  });
+}
+
+function handleEmpty() {
+  if (!yourContainer.children.length)
+    yourContainer.innerHTML = empty("No bids created");
+
+  if (!completedContainer.children.length)
+    completedContainer.innerHTML = empty("No bidding activity");
+
+  if (!availableContainer.children.length)
+    availableContainer.innerHTML = empty("No available bids");
+}
+
+function empty(msg) {
+  return `
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <p>${msg}</p>
+    </div>
+  `;
+}
+
+function showError(msg) {
+  alert(msg);
+}
