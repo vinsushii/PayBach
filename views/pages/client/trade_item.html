@@ -14,164 +14,163 @@
   <!-- PAGE CSS - FIXED PATH -->
  <link rel="stylesheet" href="../../css/client/trade_item.css" />
 
-  <!-- LAYOUT CSS - CHECK THESE PATHS TOO -->
-  <link rel="stylesheet" href="header.css">
-  <link rel="stylesheet" href="client_nav.css">
-  <link rel="stylesheet" href="footer.css">
+  <!-- CSS Files -->
+    <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/layout/client_nav.css">
+    <link rel="stylesheet" href="../../css/client/trade_item.css">
 </head>
 
-<body>
-  <!-- HEADER -->
-  <div id="header"></div>
-  
-  <!-- NAVIGATION -->
-  <div id="client-nav"></div>
+  <body>
+    <!-- These will be populated by load_layout.js -->
+    <div id="header"></div>
+    <div id="client-nav"></div>
+    
+    <!-- YOUR TRADE ITEM CONTENT GOES HERE -->
+    <main class="trade-page">
+        <a href="javascript:history.back()" class="go-back">← Go back</a>
 
-  <!-- MAIN CONTENT -->
-  <main class="trade-page">
-    <a href="javascript:history.back()" class="go-back">← Go back</a>
+        <h2 id="trade-title">Loading Trade...</h2>
 
-    <h2 id="trade-title">Loading Trade...</h2>
-
-    <div class="trade-container">
-      <!-- LEFT COLUMN: User's Offered Item -->
-      <div class="trade-column">
-        <div class="trade-card">
-          <h3>You're Offering</h3>
-          <div class="trade-item-image-container">
-            <img id="offered-item-image" src="../../images/default-item.png" alt="Offered Item">
-          </div>
-          
-          <div class="trade-item-details">
-            <h4 id="offered-item-name">Item Name</h4>
-            <p><strong>Condition:</strong> <span id="offered-item-condition">N/A</span></p>
-            <p id="offered-item-description">No description provided.</p>
-            
-            <div class="trade-tags" id="offered-item-tags"></div>
-            
-            <div class="trade-meta">
-              <p><strong>Exchange Method:</strong> <span id="exchange-method">N/A</span></p>
-              <p><strong>Payment Method:</strong> <span id="payment-method">N/A</span></p>
-              <p><strong>Additional Cash:</strong> <span id="additional-cash">₱0</span></p>
+        <div class="trade-container">
+            <!-- LEFT COLUMN: User's Offered Item -->
+            <div class="trade-column">
+                <div class="trade-card">
+                    <h3>You're Offering</h3>
+                    <div class="trade-item-image-container">
+                        <img id="offered-item-image" src="../../images/default-item.png" alt="Offered Item">
+                    </div>
+                    
+                    <div class="trade-item-details">
+                        <h4 id="offered-item-name">Item Name</h4>
+                        <p><strong>Condition:</strong> <span id="offered-item-condition">N/A</span></p>
+                        <p id="offered-item-description">No description provided.</p>
+                        
+                        <div class="trade-tags" id="offered-item-tags"></div>
+                        
+                        <div class="trade-meta">
+                            <p><strong>Exchange Method:</strong> <span id="exchange-method">N/A</span></p>
+                            <p><strong>Payment Method:</strong> <span id="payment-method">N/A</span></p>
+                            <p><strong>Additional Cash:</strong> <span id="additional-cash">₱0</span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- MIDDLE: Trade Info & Actions -->
-      <div class="trade-column middle">
-        <div class="trade-info">
-          <h3>Trade Details</h3>
-          
-          <div class="trade-status-badge" id="trade-status">
-            <span>●</span> Active
-          </div>
-          
-          <div class="trade-date">
-            <p><strong>Posted:</strong> <span id="posted-date">N/A</span></p>
-            <p><strong>Last Updated:</strong> <span id="updated-date">N/A</span></p>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div class="trade-actions" id="trade-actions">
-            <!-- Will be populated by JavaScript based on user role -->
-          </div>
-          
-          <!-- Existing Offers -->
-          <div class="existing-offers" id="existing-offers-section">
-            <h4>Existing Offers</h4>
-            <div class="offers-container" id="existing-offers"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT COLUMN: Requested Item -->
-      <div class="trade-column">
-        <div class="trade-card">
-          <h3>Looking For</h3>
-          <div class="trade-item-image-container">
-            <img id="requested-item-image" src="../../images/default-item.png" alt="Requested Item">
-          </div>
-          
-          <div class="trade-item-details">
-            <h4 id="requested-item-name">Item Name</h4>
-            <p><strong>Condition:</strong> <span id="requested-item-condition">N/A</span></p>
-            <p id="requested-item-description">No description provided.</p>
-            
-            <div class="trade-tags" id="requested-item-tags"></div>
-            
-            <!-- Owner Info -->
-            <div class="owner-info" id="owner-info">
-              <h5>Trade Owner</h5>
-              <p id="owner-name">Loading...</p>
-              <p id="owner-email">Loading...</p>
+            <!-- MIDDLE: Trade Info & Actions -->
+            <div class="trade-column middle">
+                <div class="trade-info">
+                    <h3>Trade Details</h3>
+                    
+                    <div class="trade-status-badge" id="trade-status">
+                        <span>●</span> Active
+                    </div>
+                    
+                    <div class="trade-date">
+                        <p><strong>Posted:</strong> <span id="posted-date">N/A</span></p>
+                        <p><strong>Last Updated:</strong> <span id="updated-date">N/A</span></p>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="trade-actions" id="trade-actions">
+                        <!-- Will be populated by JavaScript based on user role -->
+                    </div>
+                    
+                    <!-- Existing Offers -->
+                    <div class="existing-offers" id="existing-offers-section">
+                        <h4>Existing Offers</h4>
+                        <div class="offers-container" id="existing-offers"></div>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <!-- RIGHT COLUMN: Requested Item -->
+            <div class="trade-column">
+                <div class="trade-card">
+                    <h3>Looking For</h3>
+                    <div class="trade-item-image-container">
+                        <img id="requested-item-image" src="../../images/default-item.png" alt="Requested Item">
+                    </div>
+                    
+                    <div class="trade-item-details">
+                        <h4 id="requested-item-name">Item Name</h4>
+                        <p><strong>Condition:</strong> <span id="requested-item-condition">N/A</span></p>
+                        <p id="requested-item-description">No description provided.</p>
+                        
+                        <div class="trade-tags" id="requested-item-tags"></div>
+                        
+                        <!-- Owner Info -->
+                        <div class="owner-info" id="owner-info">
+                            <h5>Trade Owner</h5>
+                            <p id="owner-name">Loading...</p>
+                            <p id="owner-email">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- MAKE OFFER MODAL -->
-    <div id="makeOfferModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Make an Offer</h3>
-        
-        <div class="offer-form">
-          <div class="form-group">
-            <label for="offer-item-name">Item Name *</label>
-            <input type="text" id="offer-item-name" placeholder="What are you offering?" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-item-description">Description</label>
-            <textarea id="offer-item-description" placeholder="Describe your item..." rows="3"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-item-condition">Condition</label>
-            <select id="offer-item-condition">
-              <option value="new">Brand New</option>
-              <option value="like_new">Like New</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
-              <option value="poor">Poor</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-additional-cash">Additional Cash (₱)</label>
-            <input type="number" id="offer-additional-cash" min="0" value="0" step="100">
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-notes">Additional Notes (Optional)</label>
-            <textarea id="offer-notes" placeholder="Any special requests or details..." rows="2"></textarea>
-          </div>
-          
-          <button id="submit-offer" class="submit-btn">Submit Offer</button>
+        <!-- MAKE OFFER MODAL -->
+        <div id="makeOfferModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Make an Offer</h3>
+                
+                <div class="offer-form">
+                    <div class="form-group">
+                        <label for="offer-item-name">Item Name *</label>
+                        <input type="text" id="offer-item-name" placeholder="What are you offering?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offer-item-description">Description</label>
+                        <textarea id="offer-item-description" placeholder="Describe your item..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offer-item-condition">Condition</label>
+                        <select id="offer-item-condition">
+                            <option value="new">Brand New</option>
+                            <option value="like_new">Like New</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offer-additional-cash">Additional Cash (₱)</label>
+                        <input type="number" id="offer-additional-cash" min="0" value="0" step="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="offer-notes">Additional Notes (Optional)</label>
+                        <textarea id="offer-notes" placeholder="Any special requests or details..." rows="2"></textarea>
+                    </div>
+                    
+                    <button id="submit-offer" class="submit-btn">Submit Offer</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <!-- VIEW OFFERS MODAL -->
-    <div id="viewOffersModal" class="modal">
-      <div class="modal-content wide-modal">
-        <span class="close">&times;</span>
-        <h3>Offers Received</h3>
-        
-        <div class="offers-list" id="offers-list">
-          <!-- Offers will be populated here -->
+        <!-- VIEW OFFERS MODAL -->
+        <div id="viewOffersModal" class="modal">
+            <div class="modal-content wide-modal">
+                <span class="close">&times;</span>
+                <h3>Offers Received</h3>
+                
+                <div class="offers-list" id="offers-list">
+                    <!-- Offers will be populated here -->
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <div id="footer"></div>
-
-  <!-- SCRIPTS -->
-  <script src="../../../controller/client/trade_item.js"></script>
-  <script src="../layout/load_layout.js"></script>
+    </main>
+    <!-- END OF YOUR TRADE ITEM CONTENT -->
+    
+    <div id="footer"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="../../css/bootstrap/bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../layout/load_layout.js" defer></script>
+    <script src="/controller/client/trade_item.js" defer></script>
 </body>
 </html>
