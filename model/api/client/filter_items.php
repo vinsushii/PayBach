@@ -28,7 +28,8 @@ $sql = "
     FROM listing_items li
     LEFT JOIN listings l ON l.listing_id = li.listing_id
     LEFT JOIN listing_images img ON img.listing_id = li.listing_id
-    WHERE li.categories = '$category'
+    LEFT JOIN listing_categories cat ON li.listing_id = cat.listing_id
+    WHERE cat.category = '$category'
 ";
 
 $result = $conn->query($sql);
