@@ -170,8 +170,8 @@ body {
 .bid-category {
   display: inline-block;
   background-color: #f0f0f0;
-  padding: 3px 8px;
-  border-radius: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
   font-size: 11px;
   color: #666;
   margin-top: 5px;
@@ -340,6 +340,46 @@ body {
 
 .filter-tag button:hover {
   color: #ffcccc;
+}
+
+.filter-dropdown-container {
+  position: fixed;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  padding: 15px;
+  width: 250px; 
+  max-height: 400px; 
+  overflow-y: auto; /* Make scrollable */
+  z-index: 1000;
+  font-family: 'Poppins', sans-serif;
+  display: none;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.filter-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.filter-option span {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* RESPONSIVE */
