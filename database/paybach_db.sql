@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 14, 2025 at 09:52 PM
+-- Generation Time: Dec 15, 2025 at 02:41 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `barters` (
   KEY `exchange_method` (`exchange_method`),
   KEY `payment_method` (`payment_method`),
   KEY `is_active` (`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `barters`
@@ -62,7 +62,9 @@ INSERT INTO `barters` (`barter_id`, `listing_id`, `user_idnum`, `offered_item_na
 (3, 26, '2241389', 'iphone 112312123123', 'Well loved', 'Lenovo Legion', 'in person', 'none', 'MAC', 0.00, NULL, '2025-12-15 00:58:03', '2025-12-15 00:58:03', 1),
 (4, 27, '2241389', 'iphone 112312123123', 'New', 'asadsa', 'in person', 'none', 'lapyop 12', 0.00, '[\"laptop\"]', '2025-12-15 03:56:42', '2025-12-15 03:56:42', 1),
 (5, 28, '2241389', 'rat', 'Like New', 'asas', 'in person', 'onsite', 'sdsddddd', 0.00, '[\"laptop\"]', '2025-12-15 04:52:47', '2025-12-15 04:52:47', 1),
-(6, 29, '2241389', 'hutao', 'Good', 'sssss', 'in person', 'online', 'trade', 0.00, '[\"anime\"]', '2025-12-15 04:58:07', '2025-12-15 04:58:07', 1);
+(6, 29, '2241389', 'hutao', 'Good', 'sssss', 'in person', 'online', 'trade', 0.00, '[\"anime\"]', '2025-12-15 04:58:07', '2025-12-15 04:58:07', 1),
+(7, 30, '111', 'mouse', 'Good', 'White', 'in person', 'none', 'Tech accessories', 0.00, NULL, '2025-12-15 16:05:04', '2025-12-15 16:05:04', 1),
+(8, 34, '222', 'mouse', 'New', 'logitech mouse', 'in person', 'none', 'Earphones', 0.00, NULL, '2025-12-15 20:49:29', '2025-12-15 20:49:29', 1);
 
 -- --------------------------------------------------------
 
@@ -106,18 +108,48 @@ CREATE TABLE IF NOT EXISTS `bids` (
   `current_amount` decimal(10,2) DEFAULT NULL,
   `bid_datetime` datetime DEFAULT NULL,
   `current_highest_bidder` varchar(20) DEFAULT NULL,
+  `bid_status` enum('ACTIVE','CLOSED') NOT NULL DEFAULT 'ACTIVE',
+  `is_auto_bid` tinyint(1) DEFAULT '0',
+  `max_auto_bid` decimal(10,2) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`listing_id`),
-  KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `user_idnum` (`user_idnum`),
+  KEY `idx_bids_listing_amount` (`listing_id`,`current_amount` DESC),
+  KEY `idx_bids_user` (`user_idnum`),
+  KEY `idx_bids_status` (`bid_status`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `bids`
 --
 
-INSERT INTO `bids` (`listing_id`, `user_idnum`, `autobuy_amount`, `start_bid`, `bid_increment`, `current_amount`, `bid_datetime`, `current_highest_bidder`) VALUES
-(21, '2230136', 150.00, 1000.00, 50.00, 1000.00, '2025-12-14 18:46:09', '2230136'),
-(22, '2230136', 20.00, 50.00, 50.00, 100.00, '2025-12-15 00:58:14', '2241389'),
-(24, '2241389', 5000.00, 10000.00, 500.00, 10000.00, '2025-12-15 00:49:30', '2241389');
+INSERT INTO `bids` (`listing_id`, `user_idnum`, `autobuy_amount`, `start_bid`, `bid_increment`, `current_amount`, `bid_datetime`, `current_highest_bidder`, `bid_status`, `is_auto_bid`, `max_auto_bid`, `updated_at`) VALUES
+(21, '2230136', 150.00, 1000.00, 50.00, 1000.00, '2025-12-14 18:46:09', '2230136', 'ACTIVE', 0, NULL, '2025-12-15 07:51:06'),
+(22, '2230136', 20.00, 50.00, 50.00, 100.00, '2025-12-15 00:58:14', '2241389', 'ACTIVE', 0, NULL, '2025-12-15 07:51:06'),
+(24, '2241389', 5000.00, 10000.00, 500.00, 10000.00, '2025-12-15 00:49:30', '2241389', 'ACTIVE', 0, NULL, '2025-12-15 07:51:06'),
+(31, '111', 200.00, 100.00, 50.00, 100.00, '2025-12-15 16:15:04', '111', 'ACTIVE', 0, NULL, '2025-12-15 08:15:04'),
+(32, '222', 100.00, 10.00, 50.00, 10.00, '2025-12-15 16:47:18', '222', 'ACTIVE', 0, NULL, '2025-12-15 08:47:18'),
+(33, '2242157', 300.00, 301.00, 50.00, 301.00, '2025-12-15 16:51:51', '2242157', 'ACTIVE', 0, NULL, '2025-12-15 08:51:51');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bid_history`
+--
+
+DROP TABLE IF EXISTS `bid_history`;
+CREATE TABLE IF NOT EXISTS `bid_history` (
+  `bid_id` int NOT NULL AUTO_INCREMENT,
+  `listing_id` int NOT NULL,
+  `user_idnum` varchar(20) NOT NULL,
+  `bid_amount` decimal(10,2) NOT NULL,
+  `bid_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `is_auto_bid` tinyint(1) DEFAULT '0',
+  `max_auto_bid` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`bid_id`),
+  KEY `idx_bid_history_listing` (`listing_id`),
+  KEY `idx_bid_history_user` (`user_idnum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -188,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
@@ -203,7 +235,12 @@ INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `e
 (26, '2241389', 1, '2025-12-15 00:58:03', '2026-01-14 00:58:03', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:58:03', 'trade'),
 (27, '2241389', 1, '2025-12-15 03:56:42', '2026-01-14 03:56:42', 'asadsa', 'in person', 'Trade only', 1, '2025-12-15 03:56:42', 'trade'),
 (28, '2241389', 1, '2025-12-15 04:52:47', '2026-01-14 04:52:47', 'asas', 'in person', 'onsite', 1, '2025-12-15 04:52:47', 'trade'),
-(29, '2241389', 1, '2025-12-15 04:58:07', '2026-01-14 04:58:07', 'sssss', 'in person', 'online', 1, '2025-12-15 04:58:07', 'trade');
+(29, '2241389', 1, '2025-12-15 04:58:07', '2026-01-14 04:58:07', 'sssss', 'in person', 'online', 1, '2025-12-15 04:58:07', 'trade'),
+(30, '111', 1, '2025-12-15 16:05:04', '2026-01-14 16:05:04', 'White', 'in person', 'Trade only', 1, '2025-12-15 16:05:04', 'trade'),
+(31, '111', 1, '2025-12-15 16:15:04', '2025-12-22 16:15:04', 'good mouse', 'in person', 'onsite', 1, '2025-12-15 16:15:04', 'bid'),
+(32, '222', 1, '2025-12-15 16:47:18', '2025-12-22 16:47:18', 'sarap', 'in person', 'onsite', 1, '2025-12-15 16:47:18', 'bid'),
+(33, '2242157', 1, '2025-12-15 16:51:51', '2025-12-22 16:51:51', 'headphones', 'in person', 'onsite', 1, '2025-12-15 16:51:51', 'bid'),
+(34, '222', 1, '2025-12-15 20:49:29', '2026-01-14 20:49:29', 'logitech mouse', 'in person', 'Trade only', 1, '2025-12-15 20:49:29', 'trade');
 
 -- --------------------------------------------------------
 
@@ -218,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
   `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_categories`
@@ -240,7 +277,14 @@ INSERT INTO `listing_categories` (`id`, `listing_id`, `category`) VALUES
 (35, 28, ''),
 (36, 28, 'Technology'),
 (37, 29, ''),
-(38, 29, 'Technology');
+(38, 29, 'Technology'),
+(39, 30, ''),
+(40, 30, 'Technology'),
+(41, 31, 'Technology'),
+(42, 32, 'Others'),
+(43, 33, 'Technology'),
+(44, 34, ''),
+(45, 34, 'Technology');
 
 -- --------------------------------------------------------
 
@@ -256,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`image_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_images`
@@ -272,7 +316,12 @@ INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_
 (19, 24, '../../../uploads/1765730970_693eea9a79347_OIP.jpg', '2025-12-15 00:49:30'),
 (20, 25, '../../../uploads/1765731450_693eec7ab1059_transparent-dragon-cartoon-dragon-head-with-fiery-expression6586e3b5b18e04.1457572317033389337273.jpg', '2025-12-15 00:57:30'),
 (21, 27, '../../../uploads/1765742202_693f167aa80ba_transparent-dragon-cartoon-dragon-head-with-fiery-expression6586e3b5b18e04.1457572317033389337273.jpg', '2025-12-15 03:56:42'),
-(22, 28, '../../../uploads/1765745567_693f239f72938_transparent-dragon-cartoon-dragon-head-with-fiery-expression6586e3b5b18e04.1457572317033389337273.jpg', '2025-12-15 04:52:47');
+(22, 28, '../../../uploads/1765745567_693f239f72938_transparent-dragon-cartoon-dragon-head-with-fiery-expression6586e3b5b18e04.1457572317033389337273.jpg', '2025-12-15 04:52:47'),
+(23, 30, '../../../uploads/1765785904_693fc130a93da_logitech.jpg', '2025-12-15 16:05:04'),
+(24, 31, '../../../uploads/1765786504_693fc38823af3_logitech-mouse.jpg', '2025-12-15 16:15:04'),
+(25, 32, '../../../uploads/1765788438_693fcb160fdfc_pringles.jpg', '2025-12-15 16:47:18'),
+(26, 33, '../../../uploads/1765788711_693fcc2794a2a_headphones.jpg', '2025-12-15 16:51:51'),
+(27, 34, '../../../uploads/1765802969_694003d9b011e_mouse.jpg', '2025-12-15 20:49:29');
 
 -- --------------------------------------------------------
 
@@ -289,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `listing_items` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_items`
@@ -304,7 +353,12 @@ INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, 
 (25, 26, 'iphone 112312123123', 'Well loved', '2025-12-15 00:58:03'),
 (26, 27, 'iphone 112312123123', 'New', '2025-12-15 03:56:42'),
 (27, 28, 'rat', 'Like New', '2025-12-15 04:52:47'),
-(28, 29, 'hutao', 'Good', '2025-12-15 04:58:07');
+(28, 29, 'hutao', 'Good', '2025-12-15 04:58:07'),
+(29, 30, 'mouse', 'Good', '2025-12-15 16:05:04'),
+(30, 31, 'mouse', 'lightly used', '2025-12-15 16:15:04'),
+(31, 32, 'pringles', 'lightly used', '2025-12-15 16:47:18'),
+(32, 33, 'headphones', 'brand new', '2025-12-15 16:51:51'),
+(33, 34, 'mouse', 'New', '2025-12-15 20:49:29');
 
 -- --------------------------------------------------------
 
@@ -385,6 +439,7 @@ INSERT INTO `users` (`user_idnum`, `first_name`, `middle_initial`, `last_name`, 
 ('2230136', '', NULL, '', '$2y$10$1NqlGqzv0DAktNvsDhLZF.2bxznFr7sMu2DObUA0cp.LwTEJ37NCq', '2230136@slu.edu.ph', NULL, NULL, 'student'),
 ('2241389', '', NULL, '', '$2y$10$HbMJVZ3w7PQd03foT5OIi.TCG0kQInwAgwE.kxsJRc42Zrsc6wot6', '2241389@slu.edu.ph', NULL, NULL, 'student'),
 ('2241901', '', NULL, '', '$2y$10$DHjHhaCi7W23I6pl1B/ORuWxQ/IZ259HHuKui/NMmkzKUQwLZxa6W', '2241901@slu.edu.ph', NULL, NULL, 'student'),
+('2242157', '', NULL, '', '$2y$10$CSGrCI0QT2pbUNJNttWUk.aM4DPAQocjPrw1mqZYwtZdgku/P1brm', '2242157@sample.com', NULL, NULL, 'student'),
 ('ADMIN001', 'Admin', NULL, 'Account', '$2y$10$GwRDdoMlYKAJ6f1KLN4jKuaRcWyK6Mcu1zU5vg1yyTEUsuGskDlzy', 'admin@paybach.com', 'SAMCIS', 'BSCS', 'admin');
 
 -- --------------------------------------------------------
