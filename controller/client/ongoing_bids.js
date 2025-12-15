@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const yourContainer = document.getElementById("your-bids");
-const completedContainer = document.getElementById("completed-bids");
 const availableContainer = document.getElementById("available-bids");
 
 const CURRENT_USER_ID = localStorage.getItem("user_id");
@@ -27,7 +26,6 @@ async function loadBidListings() {
     const bids = json.data.filter(l => l.listing_type === "bid");
 
     yourContainer.innerHTML = "";
-    completedContainer.innerHTML = "";
     availableContainer.innerHTML = "";
 
     bids.forEach(bid => {
@@ -36,17 +34,13 @@ async function loadBidListings() {
         bid.user_id ||
         bid.seller_id ||
         bid.owner_id;
-    
+
       bid.is_owner = String(ownerId) === String(CURRENT_USER_ID);
-      console.log("CURRENT USER:", CURRENT_USER_ID);
-      console.log("BID OWNER:", bid.user_idnum, bid.user_id, bid.seller_id);
-    
+
       const card = createBidCard(bid);
-    
+
       if (bid.is_owner) {
         yourContainer.appendChild(card);
-      } else if (bid.user_participating) {
-        completedContainer.appendChild(card);
       } else {
         availableContainer.appendChild(card);
       }
@@ -84,16 +78,11 @@ function createBidCard(bid) {
     </div>
   `;
 
-  // CLICK LOGIC (THIS IS THE IMPORTANT PART)
   card.addEventListener("click", () => {
     if (bid.is_owner) {
-      // YOUR BID → item details (see bidders)
-      window.location.href =
-        `../client/item_details.html?listing_id=${bid.listing_id}`;
+      window.location.href = `../client/item_details.html?listing_id=${bid.listing_id}`;
     } else {
-      // OTHER BIDS → bidding page
-      window.location.href =
-        `../client/buy_item.html?listing_id=${bid.listing_id}`;
+      window.location.href = `../client/buy_item.html?listing_id=${bid.listing_id}`;
     }
   });
 
@@ -114,7 +103,7 @@ function truncate(text, len = 20) {
 }
 
 function showLoading() {
-  [yourContainer, completedContainer, availableContainer].forEach(c => {
+  [yourContainer, availableContainer].forEach(c => {
     c.innerHTML = `<div class="loading-spinner"></div>`;
   });
 }
@@ -122,9 +111,6 @@ function showLoading() {
 function handleEmpty() {
   if (!yourContainer.children.length)
     yourContainer.innerHTML = empty("No bids created");
-
-  if (!completedContainer.children.length)
-    completedContainer.innerHTML = empty("No bidding activity");
 
   if (!availableContainer.children.length)
     availableContainer.innerHTML = empty("No available bids");
