@@ -393,6 +393,11 @@ h2 {
   color: #111;
 }
 
+.owned-by-user {
+  border: 2px solid #4caf50;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
 /* small screen: make cards responsive */
 @media (max-width: 480px) {
   .card { width: calc(50% - 12px); }

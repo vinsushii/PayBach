@@ -1,4 +1,5 @@
 // controller/client/homepage.js
+
 // Carousel (auto)
 let index = 0;
 const slidesContainer = document.querySelector(".slides");
@@ -31,9 +32,15 @@ function escapeHtml(text) {
     .replaceAll("'", '&#039;');
 }
 
+// Get current user ID from localStorage (set after login)
+const CURRENT_USER_ID = localStorage.getItem("user_id") || null;
+console.log("CURRENT_USER_ID:", CURRENT_USER_ID);
+
 // ----------------------------
 // Render cards into container
 function createCardElement(item, showPrice = true) {
+  console.log("Creating card for:", item.listing_id, "is_owner:", item.is_owner);
+
   const div = document.createElement("div");
   div.className = "card";
 
@@ -80,10 +87,16 @@ function createCardElement(item, showPrice = true) {
     ${typeLabelHtml}
   `;
 
-  // click => details page
+  // click => details page, ownership check
   div.addEventListener("click", () => {
     const lid = encodeURIComponent(item.listing_id || "");
-    if (lid) {
+    console.log("Card clicked:", lid, "Owner:", item.user_idnum, "Current User:", CURRENT_USER_ID, "is_owner:", item.is_owner);
+    if (!lid) return;
+
+    if (item.is_owner) {
+      // Use relative path assuming current page is inside views/pages/client/
+      window.location.href = `item_details.html?listing_id=${lid}`;
+    } else {
       window.location.href = `buy_item.html?listing_id=${lid}`;
     }
   });
@@ -126,6 +139,12 @@ async function loadListings() {
 
     const listings = payload.data;
 
+    // Add is_owner flag comparing user_idnum to CURRENT_USER_ID
+    listings.forEach(l => {
+      console.log("Owner id:", l.owner_id, "Current user:", CURRENT_USER_ID);
+      l.is_owner = CURRENT_USER_ID && String(l.owner_id) === String(CURRENT_USER_ID);
+    });
+
     const bids = [];
     const trades = [];
     listings.forEach(l => {
@@ -144,7 +163,7 @@ async function loadListings() {
   } catch (err) {
     console.warn("Failed to load listings:", err);
 
-    // fallback demo cards
+    // fallback demo cards (with no owner flag, since this is demo)
     const demoBids = [
       { listing_id: "demo-1", description: "IPhone 17 Pro Max", start_bid: "35000", images: ["../images/iphone17.webp"], exchange_method: "bid" },
       { listing_id: "demo-2", description: "Leather Wallet", start_bid: "170", images: ["../images/Generic-profile.png"], exchange_method: "bid"},
