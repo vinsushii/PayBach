@@ -30,6 +30,7 @@ $sql = "
     LEFT JOIN listing_images img ON img.listing_id = li.listing_id
     LEFT JOIN listing_categories cat ON li.listing_id = cat.listing_id
     WHERE cat.category = '$category'
+    GROUP BY li.listing_id;
 ";
 
 $result = $conn->query($sql);
