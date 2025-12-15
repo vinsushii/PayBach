@@ -1,5 +1,7 @@
 // ongoing_bids.js - Main bid loading functionality
 
+// ongoing_bids.js - Main bid loading functionality
+
 document.addEventListener("DOMContentLoaded", () => {
   loadBidListings();
 
@@ -38,6 +40,7 @@ async function loadBidListings() {
         bid.owner_id;
 
       bid.is_owner = String(ownerId) === String(CURRENT_USER_ID);
+    
       const card = createBidCard(bid);
 
       if (bid.is_owner) {
@@ -130,5 +133,7 @@ function showError(msg) {
   alert(msg);
 }
 
+// Make loadBidListings available globally for bid_filters.js
+window.loadBidListings = loadBidListings;
 // Make loadBidListings available globally for bid_filters.js
 window.loadBidListings = loadBidListings;
