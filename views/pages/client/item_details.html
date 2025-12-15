@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Item Details</title>
   <link rel="stylesheet" href="../../css/client/item_details.css">
+  <link rel="stylesheet" href="../../css/client/homepage.css" />
 <!-- LAYOUT CSS -->
   <link rel="stylesheet" href="../../css/layout/header.css">
   <link rel="stylesheet" href="../../css/layout/client_nav.css">
@@ -29,12 +30,19 @@
     <div id="item-tags"></div>
 
     <!-- Images -->
-    <div class="main-image">
+    <div class="main-image carousel">
+      <button class="arrow left" aria-label="Previous image">
+        ‹
+      </button>
+  
       <img src="" alt="Item Image">
+  
+      <button class="arrow right" aria-label="Next image">
+        ›
+      </button>
     </div>
+    
     <div class="thumbnail-row"></div>
-    <div class="arrow left">◀</div>
-    <div class="arrow right">▶</div>
 
     <!-- Price & Details -->
     <div class="price-container">
@@ -59,6 +67,7 @@
   <div id="footer"></div>
 
   <!-- SCRIPTS -->
-  <script src="../../js/client/item_details.js"></script>
+  <script src="../../../controller/client/item_details.js"></script>
+  <script src="../layout/load_layout.js"></script>
 </body>
 </html>
