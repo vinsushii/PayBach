@@ -119,59 +119,64 @@ document.addEventListener("DOMContentLoaded", async () => {
      BID HISTORY (LIVE)
   ========================= */
 
-async function loadBidHistory() {
-  try {
-    const res = await fetch(`../../../model/api/client/fetch_bid_history.php?listing_id=${listingId}`);
-    const result = await res.json();
+  async function loadBidHistory() {
+    try {
+      const res = await fetch(
+        `../../../model/api/client/fetch_bid_history.php?listing_id=${listingId}`
+      );
+      const result = await res.json();
 
-    const container = document.querySelector(".bid-offers-container");
-    container.innerHTML = "";
+      const container = document.querySelector(".bid-offers-container");
+      container.innerHTML = "";
 
-    if (!result.success || result.data.length === 0) {
-      container.innerHTML = "<p>No bids yet.</p>";
-      return;
+      //if (!result.success || result.data.length === 0) {
+      //  container.innerHTML = "<p>No bids yet.</p>";
+      //  return;
+      //}
+
+      const table = document.createElement("table");
+
+      const headerRow = document.createElement("tr");
+      ["User", "Bid Offer", "Time"].forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      const tbody = document.createElement("tbody");
+
+      result.data.forEach(bid => {
+        const row = document.createElement("tr");
+
+        const userCell = document.createElement("td");
+        userCell.textContent = bid.user_idnum;
+        row.appendChild(userCell);
+
+        const amountCell = document.createElement("td");
+        amountCell.textContent =
+          "₱" + Number(bid.bid_amount).toLocaleString();
+        row.appendChild(amountCell);
+
+        const timeCell = document.createElement("td");
+        timeCell.textContent =
+          new Date(bid.bid_time).toLocaleString();
+        row.appendChild(timeCell);
+
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(tbody);
+      container.appendChild(table);
+
+    } catch (err) {
+      console.error("Failed to load bid history", err);
     }
-
-    const table = document.createElement("table");
-
-    // Table header
-    const headerRow = document.createElement("tr");
-    ["User", "Bid Offer", "Time"].forEach(h => {
-      const th = document.createElement("th");
-      th.textContent = h;
-      headerRow.appendChild(th);
-    });
-    table.appendChild(headerRow);
-
-    // Table body
-    const tbody = document.createElement("tbody");
-    result.data.forEach(bid => {
-      const row = document.createElement("tr");
-
-      const userCell = document.createElement("td");
-      userCell.textContent = bid.bidder;
-      row.appendChild(userCell);
-
-      const amountCell = document.createElement("td");
-      amountCell.textContent = "₱" + Number(bid.bid_amount).toLocaleString();
-      row.appendChild(amountCell);
-
-      const timeCell = document.createElement("td");
-      timeCell.textContent = new Date(bid.bid_time).toLocaleString();
-      row.appendChild(timeCell);
-
-      tbody.appendChild(row);
-    });
-
-    table.appendChild(tbody);
-    container.appendChild(table);
-  } catch (err) {
-    console.error("Failed to load bid history", err);
   }
-}
 
-// Initial load
-loadBidHistory();
-// Auto refresh every 3 seconds
-setInterval(loadBidHistory, 3000);
+  // Initial load
+  loadBidHistory();
+
+  // Auto refresh every 3 seconds
+  setInterval(loadBidHistory, 3000);
 });

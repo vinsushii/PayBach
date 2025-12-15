@@ -44,22 +44,16 @@ if ($result->num_rows === 0) {
 
 /* Fetch bid history */
 $stmt = $conn->prepare("
-    SELECT b.listing_id, b.bid_amount, b.bid_time, u.first_name, u.last_name
-    FROM bid_history b
-    JOIN users u ON b.user_idnum = u.user_idnum
-    WHERE b.listing_id = ?
-    ORDER BY b.bid_time DESC
+    SELECT user_idnum, bid_amount, bid_time
+    FROM bid_history
+    WHERE listing_id = ?
+    ORDER BY bid_time DESC
 ");
 $stmt->bind_param("i", $listingId);
 $stmt->execute();
 
 $data = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
-
-foreach ($data as &$bid) {
-    $bid['bidder'] = $bid['first_name'] . ' ' . $bid['last_name'];
-    unset($bid['first_name'], $bid['last_name']);
-}
 
 echo json_encode([
     "success" => true,
