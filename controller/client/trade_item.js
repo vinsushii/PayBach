@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   console.log('Trade item page loaded with:', { barterId, listingId });
 
-  /*
+  
   if (!barterId && !listingId) {
     alert("Missing trade ID. Redirecting to trades page.");
     window.location.href = "ongoing_trades.html";
     return;
   }
-    */
-
+    
+/*
   //temporary 
   if (!barterId && !listingId && !window.location.href.includes('test')) {
   // Load demo data for testing
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadDemoData();
   initModals();
   return;
-}
+}*/
 
   // Initialize modals
   initModals();
