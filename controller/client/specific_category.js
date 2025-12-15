@@ -18,7 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const url = `../../../model/api/client/filter_items.php?category=${encodeURIComponent(category)}`;
 
   fetch(url)
-    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      return res.json()
+    })
     .then(data => {
       // pangcheck
       if (!data || data.status !== "success" || !Array.isArray(data.items)) {

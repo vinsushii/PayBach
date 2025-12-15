@@ -77,7 +77,7 @@ $stmt->close();
 /* ================= BIDS ================= */
 
 $stmt = $conn->prepare("
-    SELECT current_amount, bid_increment
+    SELECT current_amount, bid_increment, autobuy_amount
     FROM bids
     WHERE listing_id = ?
 ");
@@ -88,6 +88,7 @@ $stmt->close();
 
 $currentPrice = $bid["current_amount"] ?? 0;
 $increment = $bid["bid_increment"] ?? 1;
+$autobuy = $bid["autobuy_amount"];
 
 /* ================= OFFERS ================= */
 
@@ -113,5 +114,6 @@ echo json_encode([
     "images" => $images,
     "currentPrice" => $currentPrice,
     "increment" => $increment,
-    "offers" => $offers
+    "offers" => $offers,
+    "autobuy" => $autobuy
 ]);
