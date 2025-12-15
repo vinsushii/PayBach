@@ -1,53 +1,35 @@
-
+// trade_item.js - UPDATED to use backend API
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const barterId = params.get('barter_id') || '';
-  const listingId = params.get('listing_id') || '';
   
-  console.log('Trade item page loaded with:', { barterId, listingId });
+  console.log('Trade item page loaded with barter_id:', barterId);
 
-  /*
-  if (!barterId && !listingId) {
+  if (!barterId) {
     alert("Missing trade ID. Redirecting to trades page.");
     window.location.href = "ongoing_trades.html";
     return;
-  }*/
-    
-
-  //temporary 
-  if (!barterId && !listingId && !window.location.href.includes('test')) {
-  // Load demo data for testing
-  console.log("Test mode: Loading demo data");
-  await loadDemoData();
-  initModals();
-  return;
-}
+  }
 
   // Initialize modals
   initModals();
   
-  // Load trade data
-  await loadTradeData(barterId, listingId);
+  // Load trade data from backend
+  await loadTradeData(barterId);
 });
 
 // API Endpoints
 const API_ENDPOINTS = {
-  getTradeDetails: "/PayBach/model/api/client/get_trade_details.php",
-  //getTradeOffers: "/PayBach/model/api/client/get_trade_offers.php",
-  //submitOffer: "/PayBach/model/api/client/submit_offer.php",
-  //respondToOffer: "/PayBach/model/api/client/respond_to_offer.php",
-  completeTrade: "/PayBach/model/api/client/get_complete_trade.php",
-  //cancelTrade: "/PayBach/model/api/client/cancel_trade.php"
+  getTradeDetails: "/PayBach/model/api/client/trade_item.php",
 };
 
 // Global variables
 let currentTrade = null;
-let currentUserRole = null; // 'owner', 'viewer', 'offerer'
+let currentUserRole = null;
 let existingOffers = [];
 
 // Initialize modal functionality
 function initModals() {
-  // Make Offer Modal
   const makeOfferModal = document.getElementById("makeOfferModal");
   const viewOffersModal = document.getElementById("viewOffersModal");
   
@@ -66,23 +48,14 @@ function initModals() {
   });
 }
 
-// Load trade data from API
-async function loadTradeData(barterId, listingId) {
+// Load trade data from backend API
+async function loadTradeData(barterId) {
   try {
     showLoadingState();
     
-    // Build request data
-    const requestData = new URLSearchParams();
-    if (barterId) requestData.append('barter_id', barterId);
-    if (listingId) requestData.append('listing_id', listingId);
+    console.log('Fetching trade details for barter_id:', barterId);
     
-    console.log('Fetching trade details with:', { barterId, listingId });
-    
-    const response = await fetch(API_ENDPOINTS.getTradeDetails, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: requestData
-    });
+    const response = await fetch(`${API_ENDPOINTS.getTradeDetails}?barter_id=${barterId}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -94,16 +67,11 @@ async function loadTradeData(barterId, listingId) {
     if (data.success && data.trade) {
       currentTrade = data.trade;
       existingOffers = data.offers || [];
-      currentUserRole = data.user_role || 'viewer';
+      currentUserRole = data.trade.user_role || 'viewer';
       
       renderTradeDetails();
       renderActionButtons();
       renderExistingOffers();
-      
-      // Load offers if user is owner
-      if (currentUserRole === 'owner') {
-        await loadTradeOffers();
-      }
     } else {
       throw new Error(data.error || 'Trade not found');
     }
@@ -179,18 +147,16 @@ function renderTradeDetails() {
 
 // Process and display trade images
 function processTradeImages() {
-  // Offered item image
   const offeredImage = document.getElementById('offered-item-image');
   const requestedImage = document.getElementById('requested-item-image');
   
-  // Check if trade has images
+  // Offered item image
   if (currentTrade.images && currentTrade.images.length > 0) {
     const imagePath = processImagePath(currentTrade.images[0]);
     offeredImage.src = imagePath;
-    requestedImage.src = imagePath; // Using same image for requested item (adjust as needed)
   }
   
-  // Fallback for requested item if it has separate images
+  // Requested item image
   if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
     const listingImagePath = processImagePath(currentTrade.listing_images[0]);
     requestedImage.src = listingImagePath;
@@ -224,7 +190,6 @@ function processImagePath(rawPath) {
 
 // Process and display trade tags
 function processTradeTags() {
-  // Offered item tags
   const offeredTagsContainer = document.getElementById('offered-item-tags');
   const requestedTagsContainer = document.getElementById('requested-item-tags');
   
@@ -256,25 +221,30 @@ function processTradeTags() {
 // Update status badge based on trade state
 function updateStatusBadge() {
   const statusBadge = document.getElementById('trade-status');
-  const statusSpan = statusBadge.querySelector('span');
   
   let statusText = 'Active';
   let statusClass = 'active';
-  let statusColor = '#2e7d32';
   
-  if (currentTrade.barter_status === 'completed' || currentTrade.is_active === 0) {
-    statusText = 'Completed';
-    statusClass = 'completed';
-    statusColor = '#7b1fa2';
-  } else if (currentTrade.has_offers) {
-    statusText = 'Has Offers';
-    statusClass = 'pending';
-    statusColor = '#ef6c00';
+  switch(currentTrade.barter_status) {
+    case 'completed':
+      statusText = 'Completed';
+      statusClass = 'completed';
+      break;
+    case 'has_offers':
+      statusText = 'Has Offers';
+      statusClass = 'pending';
+      break;
+    case 'accepted':
+      statusText = 'Accepted';
+      statusClass = 'pending';
+      break;
+    default:
+      statusText = 'Active';
+      statusClass = 'active';
   }
   
   statusBadge.className = `trade-status-badge ${statusClass}`;
-  statusBadge.textContent = `● ${statusText}`;
-  statusSpan.style.color = statusColor;
+  statusBadge.innerHTML = `<span>●</span> ${statusText}`;
 }
 
 // Render action buttons based on user role and trade state
@@ -284,8 +254,7 @@ function renderActionButtons() {
   
   if (currentUserRole === 'owner') {
     // Owner actions
-    if (currentTrade.barter_status === 'has_offers' || existingOffers.length > 0) {
-      // Has offers - can view and manage them
+    if (currentTrade.has_offers || currentTrade.offer_count > 0) {
       const viewOffersBtn = document.createElement('button');
       viewOffersBtn.className = 'action-btn primary';
       viewOffersBtn.innerHTML = '📬 View Offers';
@@ -293,8 +262,7 @@ function renderActionButtons() {
       actionsContainer.appendChild(viewOffersBtn);
     }
     
-    if (currentTrade.is_active === 1) {
-      // Trade is active - can cancel
+    if (currentTrade.is_active == 1) {
       const cancelBtn = document.createElement('button');
       cancelBtn.className = 'action-btn danger';
       cancelBtn.textContent = 'Cancel Trade';
@@ -302,7 +270,6 @@ function renderActionButtons() {
       actionsContainer.appendChild(cancelBtn);
     }
     
-    // Always show complete button (but might be disabled)
     const completeBtn = document.createElement('button');
     completeBtn.className = 'action-btn success';
     completeBtn.textContent = 'Mark as Complete';
@@ -315,7 +282,7 @@ function renderActionButtons() {
     
   } else if (currentUserRole === 'viewer') {
     // Viewer (not owner, hasn't made an offer)
-    if (currentTrade.is_active === 1) {
+    if (currentTrade.is_active == 1) {
       const makeOfferBtn = document.createElement('button');
       makeOfferBtn.className = 'action-btn primary';
       makeOfferBtn.textContent = 'Make an Offer';
@@ -399,27 +366,6 @@ function renderExistingOffers() {
   }
 }
 
-// Load detailed offers for the trade
-async function loadTradeOffers() {
-  try {
-    const response = await fetch(API_ENDPOINTS.getTradeOffers, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `barter_id=${currentTrade.barter_id}`
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
-        existingOffers = data.offers || [];
-        renderExistingOffers();
-      }
-    }
-  } catch (error) {
-    console.error('Failed to load offers:', error);
-  }
-}
-
 // Show make offer modal
 function showMakeOfferModal() {
   const modal = document.getElementById('makeOfferModal');
@@ -452,7 +398,7 @@ async function submitOffer() {
   }
   
   try {
-    const response = await fetch(API_ENDPOINTS.submitOffer, {
+    const response = await fetch('/PayBach/model/api/client/submit_offer.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -471,14 +417,8 @@ async function submitOffer() {
       alert(' Offer submitted successfully!');
       document.getElementById('makeOfferModal').style.display = 'none';
       
-      // Update UI
-      currentUserRole = 'offerer';
-      renderActionButtons();
-      
-      // Refresh offers if owner views the page
-      if (currentUserRole === 'owner') {
-        await loadTradeOffers();
-      }
+      // Reload the page to update status
+      window.location.reload();
     } else {
       alert(`Failed to submit offer: ${data.error || 'Unknown error'}`);
     }
@@ -564,7 +504,7 @@ async function respondToOffer(offerId, action) {
   }
   
   try {
-    const response = await fetch(API_ENDPOINTS.respondToOffer, {
+    const response = await fetch('/PayBach/model/api/client/respond_to_offer.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -577,12 +517,7 @@ async function respondToOffer(offerId, action) {
     
     if (data.success) {
       alert(` Offer ${action}ed successfully!`);
-      
-      // Refresh the page to update status
-      await loadTradeData(currentTrade.barter_id, currentTrade.listing_id);
-      
-      // Close modal
-      document.getElementById('viewOffersModal').style.display = 'none';
+      window.location.reload();
     } else {
       alert(`Failed to ${action} offer: ${data.error || 'Unknown error'}`);
     }
@@ -599,7 +534,7 @@ async function completeTrade() {
   }
   
   try {
-    const response = await fetch(API_ENDPOINTS.completeTrade, {
+    const response = await fetch('/PayBach/model/api/client/complete_trade.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -628,7 +563,7 @@ async function cancelTrade() {
   }
   
   try {
-    const response = await fetch(API_ENDPOINTS.cancelTrade, {
+    const response = await fetch('/PayBach/model/api/client/cancel_trade.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
@@ -674,11 +609,4 @@ function showErrorState(message) {
       </button>
     </div>
   `;
-}
-
-// Update ongoing_trades.js to link to this page
-// Add this to ongoing_trades.js in the viewTradeDetails function:
-function viewTradeDetails(tradeId, type) {
-  // Redirect to trade item page instead of alert
-  window.location.href = `trade_item.html?barter_id=${tradeId}&type=${type}`;
 }
