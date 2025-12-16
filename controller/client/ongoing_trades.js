@@ -359,7 +359,7 @@ function viewTradeDetails(tradeId, type) {
   window.location.href = `trade_item.html?barter_id=${tradeId}`;
 }
 
-// Auto-refresh every 30 seconds (optional)
+// Auto-refresh every 30 seconds 
 setInterval(() => {
     loadAllTrades();
 }, 30000);

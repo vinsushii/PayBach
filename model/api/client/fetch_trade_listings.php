@@ -1,5 +1,4 @@
 <?php
-// model/api/client/fetch_trade_listings.php
 header("Content-Type: application/json");
 
 require_once __DIR__ . "/../../config/db_connect.php";  // MySQLi connection in $conn

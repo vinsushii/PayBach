@@ -1,4 +1,3 @@
-// post_trade.js - Controller for posting trade items
 document.addEventListener('DOMContentLoaded', function () {
     // DOM Elements
     const form = document.getElementById('postTradeForm');
@@ -17,9 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedCategories = [];
     let selectedTradeTags = [];
 
-    // ========================
+    
     // 1. PAYMENT BUTTONS HANDLING
-    // ========================
     paymentBtns.forEach(btn => {
         btn.addEventListener('click', function () {
             paymentBtns.forEach(b => b.classList.remove('active'));
@@ -28,9 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ========================
+ 
     // 2. CATEGORY SELECTION
-    // ========================
     tagButtons.forEach(btn => {
         btn.addEventListener('click', function () {
             const category = this.dataset.category;
@@ -51,9 +48,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ========================
+  
     // 3. TRADE TAGS MANAGEMENT
-    // ========================
     addTagBtn.addEventListener('click', function () {
         addTradeTag();
     });
@@ -99,9 +95,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tradeTagsInput.value = JSON.stringify(selectedTradeTags);
     }
 
-    // ========================
+
     // 4. IMAGE PREVIEW HANDLING
-    // ========================
     if (imageInput && imagePreview) {
         imageInput.addEventListener('change', function (event) {
             imagePreview.innerHTML = '';
@@ -130,9 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ========================
     // 5. FORM VALIDATION & SUBMISSION
-    // ========================
     if (form) {
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -213,9 +206,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // ========================
+    
     // 6. PRICE INPUT VALIDATION
-    // ========================
     const maxPriceInput = document.getElementById('max_price');
     if (maxPriceInput) {
         maxPriceInput.addEventListener('input', function () {
