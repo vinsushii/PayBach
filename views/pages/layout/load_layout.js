@@ -53,12 +53,51 @@ fetch('../layout/header.html')
             })
             .catch(err => console.error('Session check failed:', err));
     });
+    // Search functionality
+    function initSearch() {
+      const searchForm = document.getElementById("search-form");
+      const searchInput = searchForm?.querySelector("input");
+
+      if (!searchForm || !searchInput) {
+        console.warn("Search bar not found");
+        return;
+      }
+
+      async function performSearch() {
+        const term = searchInput.value.trim();
+        await loadListings(term);
+      }
+
+      // Submit (button or Enter)
+      searchForm.addEventListener("submit", e => {
+        e.preventDefault();
+        performSearch();
+      });
+
+      // Optional: live search
+      let timer;
+      searchInput.addEventListener("input", () => {
+        clearTimeout(timer);
+        timer = setTimeout(performSearch, 500);
+      });
+
+      console.log("Backend-powered search initialized");
+    }
+
 
 
 // Load navigation
 fetch('../layout/client_nav.html')
-    .then(res => res.text())
-    .then(data => document.getElementById('client-nav').innerHTML = data);
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('client-nav').innerHTML = data;
+
+    // Initialize search after nav is injected
+    if (typeof initSearch === "function") {
+      initSearch();
+    }
+  });
+
 
 // Load footer
 fetch('../layout/footer.html')

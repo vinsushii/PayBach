@@ -41,106 +41,6 @@ let ALL_LISTINGS = [];
 let ALL_BIDS = [];
 let ALL_TRADES = [];
 
-// Search functionality
-function initSearch() {
-  const searchInput = document.querySelector('.search-bar input[type="text"]');
-  const searchButton = document.querySelector('.search-bar button');
-  
-  if (!searchInput || !searchButton) {
-    console.warn("Search elements not found. Make sure your HTML has .search-bar input and button.");
-    return;
-  }
-  
-  async function performSearch() {
-    const searchTerm = searchInput.value.trim();
-    await loadListings(searchTerm);
-  }
-  
-  // Fallback client-side search function (if backend fails)
-  function fallbackClientSideSearch(searchTerm) {
-    const term = searchTerm.toLowerCase();
-    
-    if (!term) {
-      // If search is empty, show all listings
-      renderCards('bargains-list', ALL_LISTINGS, true);
-      renderCards('bids-list', ALL_BIDS, true);
-      renderCards('trades-list', ALL_TRADES, false);
-      return;
-    }
-    
-    // Filter listings based on search term
-    const filteredListings = ALL_LISTINGS.filter(item => {
-      // Search in description
-      const description = item.description ? item.description.toLowerCase() : '';
-      if (description.includes(term)) return true;
-      
-      // Search in item name
-      if (item.items && Array.isArray(item.items) && item.items.length > 0) {
-        const itemName = item.items[0].name || '';
-        if (itemName.toLowerCase().includes(term)) return true;
-      }
-      
-      // Search in exchange method
-      const exchangeMethod = item.exchange_method ? item.exchange_method.toLowerCase() : '';
-      if (exchangeMethod.includes(term)) return true;
-      
-      // Search in price
-      const startBid = String(item.start_bid || '').toLowerCase();
-      const currentAmount = String(item.current_amount || '').toLowerCase();
-      if (startBid.includes(term) || currentAmount.includes(term)) return true;
-      
-      // Search in categories
-      if (item.categories && Array.isArray(item.categories)) {
-        if (item.categories.some(cat => cat.toLowerCase().includes(term))) return true;
-      }
-      
-      // Search in listing type
-      const listingType = item.listing_type ? item.listing_type.toLowerCase() : '';
-      if (listingType.includes(term)) return true;
-      
-      return false;
-    });
-    
-    // Separate filtered listings into bids and trades
-    const filteredBids = filteredListings.filter(item => {
-      const exchange = (item.exchange_method || "").toLowerCase();
-      const listingType = (item.listing_type || "").toLowerCase();
-      return exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction") || listingType.includes("bid");
-    });
-    
-    const filteredTrades = filteredListings.filter(item => {
-      const exchange = (item.exchange_method || "").toLowerCase();
-      const listingType = (item.listing_type || "").toLowerCase();
-      return !(exchange.includes("bid") || exchange.includes("bidding") || exchange.includes("auction") || listingType.includes("bid"));
-    });
-    
-    // Render filtered results
-    renderCards('bargains-list', filteredListings, true);
-    renderCards('bids-list', filteredBids, true);
-    renderCards('trades-list', filteredTrades, false);
-    
-    console.log(`Client-side search for "${searchTerm}" found ${filteredListings.length} items`);
-  }
-  
-  // Search on button click
-  searchButton.addEventListener('click', performSearch);
-  
-  // Search on Enter key press
-  searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      performSearch();
-    }
-  });
-  
-  // Optional: Search as you type (debounced)
-  let searchTimeout;
-  searchInput.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(performSearch, 500);
-  });
-  
-  console.log("Search functionality initialized");
-}
 
 // ----------------------------
 // Render cards into container
@@ -314,5 +214,5 @@ async function loadListings(searchTerm = '') {
 document.addEventListener("DOMContentLoaded", () => {
   initCarousel();
   loadListings();
-  initSearch();
+  //initSearch();
 });

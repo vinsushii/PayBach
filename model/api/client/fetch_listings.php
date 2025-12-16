@@ -45,17 +45,17 @@ try {
     
     if (!empty($search)) {
         $searchPattern = "%" . $search . "%";
-        $sql .= " AND (
-                    l.description LIKE ? OR 
-                    li_items.name LIKE ? OR 
-                    l.exchange_method LIKE ? OR 
-                    l.listing_type LIKE ? OR 
-                    lc.category LIKE ? OR 
-                    b.start_bid LIKE ? OR 
-                    b.current_amount LIKE ? OR
-                    u.first_name LIKE ? OR
-                    u.last_name LIKE ?
-                )";
+            $sql .= " AND (
+                l.description LIKE ? OR
+                li_items.name LIKE ? OR
+                l.exchange_method LIKE ? OR
+                l.listing_type LIKE ? OR
+                lc.category LIKE ? OR
+                CAST(b.start_bid AS CHAR) LIKE ? OR
+                CAST(b.current_amount AS CHAR) LIKE ? OR
+                u.first_name LIKE ? OR
+                u.last_name LIKE ?
+            )";
         $params = array_fill(0, 9, $searchPattern);
         $types = str_repeat('s', 9); // 9 string parameters
     }
