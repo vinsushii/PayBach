@@ -1,4 +1,3 @@
-// ongoing_trades.js - UPDATED with correct uploads path
 document.addEventListener("DOMContentLoaded", () => {
     loadAllTrades();
     

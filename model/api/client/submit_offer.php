@@ -1,5 +1,4 @@
 <?php
-// submit_offer.php - FIXED VERSION with better JSON output
 ob_start(); // Start output buffering
 
 ini_set('display_errors', 1);

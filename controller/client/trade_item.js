@@ -1,4 +1,3 @@
-// trade_item.js - UPDATED to fix loading state issue
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const barterId = params.get('barter_id') || '';
@@ -51,8 +50,7 @@ function initModals() {
 // Load trade data from backend API
 async function loadTradeData(barterId) {
   try {
-    // Don't call showLoadingState() since it replaces the entire main content
-    // Just ensure the loading state is visible initially
+  
     console.log('Fetching trade details for barter_id:', barterId);
     
     const response = await fetch(`${API_ENDPOINTS.getTradeDetails}?barter_id=${barterId}`);
@@ -113,12 +111,12 @@ function renderTradeDetails() {
       `${currentTrade.offered_item_name} → ${currentTrade.listing_item_name || 'Trade Item'}`;
   }
   
-  // Offered Item (Left Column)
+  // Offered Item 
   setElementText('offered-item-name', currentTrade.offered_item_name);
   setElementText('offered-item-condition', currentTrade.offered_item_condition || 'N/A');
   setElementText('offered-item-description', currentTrade.offered_item_description || 'No description provided.');
   
-  // Requested Item (Right Column)
+  // Requested Item 
   setElementText('requested-item-name', currentTrade.listing_item_name || 'Trade Item');
   setElementText('requested-item-condition', currentTrade.listing_item_condition || 'N/A');
   setElementText('requested-item-description', currentTrade.listing_description || currentTrade.requested_items_text || 'No description provided.');
@@ -252,7 +250,6 @@ function processImagePath(rawPath) {
     return `/PayBach/uploads/${filename}`;
   }
   
-  // If it's just a filename
   return `/PayBach/uploads/${cleanPath}`;
 }
 
