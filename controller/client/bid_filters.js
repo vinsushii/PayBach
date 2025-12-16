@@ -1,3 +1,4 @@
+// bid_filters.js - Backend filtering only (UPDATED)
 document.addEventListener("DOMContentLoaded", () => {
   initializeFilter();
 });
@@ -79,44 +80,60 @@ async function applyFilter() {
   currentFilterCategories = selectedCategories;
 
   if (selectedCategories.length === 0) {
-    if (typeof window.loadBidListings === 'function') await window.loadBidListings();
+    // No filter - show all bids using the existing function
+    if (typeof window.loadBidListings === 'function') {
+      await window.loadBidListings();
+    }
   } else {
-    await filterBidsByCategories(selectedCategories);
+    // Use backend filtering
+    await filterBidsByCategoriesBackend(selectedCategories);
   }
+  
+  closeFilterDropdown();
 }
 
-function clearFilter() {
+async function clearFilter() {
   localStorage.removeItem("bidFilterCategories");
   currentFilterCategories = [];
   
+  // Reset checkboxes
   const allCheckbox = document.querySelector('#filter-dropdown input[value="all"]');
   if (allCheckbox) allCheckbox.checked = true;
-
-  if (typeof window.loadBidListings === 'function') window.loadBidListings();
+  
+  // Show all bids using existing function
+  if (typeof window.loadBidListings === 'function') {
+    await window.loadBidListings();
+  }
+  
+  closeFilterDropdown();
 }
 
-async function filterBidsByCategories(categories) {
+// BACKEND FILTERING FUNCTION - UPDATED
+async function filterBidsByCategoriesBackend(categories) {
   const availableContainer = document.getElementById("available-bids");
   if (!availableContainer) return;
 
-  availableContainer.innerHTML = '<div class="loading-spinner"></div>';
+  // Show loading
+  availableContainer.innerHTML = '<div class="loading-spinner">Filtering...</div>';
 
   try {
-    const allFilteredItems = [];
+    // Call backend filter API - categories are comma-separated
+    const categoriesParam = categories.join(',');
+    const response = await fetch(
+      `../../../model/api/client/filter_listings.php?type=bid&categories=${encodeURIComponent(categoriesParam)}`
+    );
+    
+    const data = await response.json();
 
-    for (const category of categories) {
-      const response = await fetch(`../../../model/api/client/filter_item.php?category=${encodeURIComponent(category)}`);
-      const data = await response.json();
-
-      if (data.status === "success" && data.items) {
-        data.items.forEach(item => {
-          item.category = category;
-          allFilteredItems.push(item);
-        });
-      }
+    if (!data.success) {
+      console.error("Backend filter error:", data);
+      throw new Error(data.message || "Filter failed");
     }
 
-    displayFilteredItems(allFilteredItems);
+    console.log(`Backend filtered ${data.count} bids for categories:`, categories);
+    
+    // Use existing function to display bids
+    displayFilteredBidsFromBackend(data.data);
 
   } catch (error) {
     console.error("Filter error:", error);
@@ -124,14 +141,14 @@ async function filterBidsByCategories(categories) {
   }
 }
 
-function displayFilteredItems(items) {
+function displayFilteredBidsFromBackend(bids) {
   const availableContainer = document.getElementById("available-bids");
   if (!availableContainer) return;
 
-  if (items.length === 0) {
+  if (!bids || bids.length === 0) {
     availableContainer.innerHTML = `
       <div class="no-results-message">
-        <div class="no-results-icon">🔍</div>
+        <div class="no-results-icon">?</div>
         <p>No bids found for selected categories</p>
         <button onclick="clearFilter()" class="show-all-btn">Show All Bids</button>
       </div>
@@ -139,40 +156,70 @@ function displayFilteredItems(items) {
     return;
   }
 
+  // Clear container
   availableContainer.innerHTML = '';
 
-  items.forEach(item => {
-    const card = createFilteredBidCard(item);
+  // Get current user ID for ownership check
+  const CURRENT_USER_ID = localStorage.getItem("user_id") || null;
+
+  // Use the SAME card creation as ongoing_bids.js
+  bids.forEach(bid => {
+    // Check ownership (same logic as ongoing_bids.js)
+    const ownerId = bid.owner_id || bid.user_idnum;
+    bid.is_owner = CURRENT_USER_ID && String(ownerId) === String(CURRENT_USER_ID);
+    
+    // Create card - using the EXACT SAME createBidCard function
+    const card = createBidCard(bid);
     availableContainer.appendChild(card);
   });
 }
 
-function createFilteredBidCard(item) {
+// COPY OF createBidCard from ongoing_bids.js (for consistency)
+function createBidCard(bid) {
   const card = document.createElement("div");
   card.className = "bid-card";
 
-  const title = item.name || item.description || "Untitled";
-  const shortTitle = title.length > 20 ? title.substring(0, 20) + "..." : title;
-  const imageUrl = item.image_url || "/PayBach/uploads/default-item.png";
+  const title = bid.items?.[0]?.name || bid.description || "Untitled";
+  const price = formatPeso(bid.current_amount || bid.start_bid || 0);
+
+  // Image - using same logic as ongoing_bids.js
+  let imageUrl = "/PayBach/uploads/default-item.png";
+  if (bid.images && bid.images.length > 0) {
+    const filename = bid.images[0].split("/").pop();
+    imageUrl = `/PayBach/uploads/${filename}`;
+  }
 
   card.innerHTML = `
     <div class="bid-image">
-      <img src="${imageUrl}" onerror="this.src='/PayBach/uploads/default-item.png'" alt="${title}">
+      <img src="${imageUrl}" onerror="this.src='/PayBach/uploads/default-item.png'">
     </div>
     <div class="bid-content">
-      <p class="bid-title">${shortTitle}</p>
-      <p class="bid-price">₱0.00</p>
-      <span class="bid-category">${item.category || ""}</span>
+      <p class="bid-title">${truncate(title)}</p>
+      <p class="bid-price">${price}</p>
     </div>
   `;
 
-  if (item.listing_id) {
-    card.addEventListener("click", () => {
-      window.location.href = `../client/buy_item.html?listing_id=${item.listing_id}`;
-    });
-  }
+  card.addEventListener("click", () => {
+    if (bid.is_owner) {
+      window.location.href = `../client/item_details.html?listing_id=${bid.listing_id}`;
+    } else {
+      window.location.href = `../client/buy_item.html?listing_id=${bid.listing_id}`;
+    }
+  });
 
   return card;
+}
+
+// Helper functions (same as ongoing_bids.js)
+function formatPeso(amount) {
+  return new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP"
+  }).format(amount);
+}
+
+function truncate(text, len = 20) {
+  return text.length > len ? text.substring(0, len) + "..." : text;
 }
 
 function showFilterError() {
@@ -181,7 +228,7 @@ function showFilterError() {
 
   availableContainer.innerHTML = `
     <div class="no-results-message">
-      <div class="no-results-icon">⚠️</div>
+      <div class="no-results-icon">!</div>
       <p>Error loading filtered bids</p>
       <button onclick="clearFilter()" class="show-all-btn">Show All Bids</button>
     </div>
@@ -206,6 +253,7 @@ function loadSavedFilter() {
   const savedCategories = getSavedFilterCategories();
   if (savedCategories.length > 0) {
     currentFilterCategories = savedCategories;
+    // Apply saved filter after a short delay
     setTimeout(() => {
       applyFilter();
     }, 1000);
@@ -215,3 +263,4 @@ function loadSavedFilter() {
 // Make functions globally available
 window.clearFilter = clearFilter;
 window.applyFilter = applyFilter;
+window.filterBidsByCategoriesBackend = filterBidsByCategoriesBackend;
