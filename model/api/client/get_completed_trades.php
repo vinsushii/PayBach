@@ -27,11 +27,13 @@ try {
             b.max_additional_cash,
             b.created_at,
             b.updated_at,
+            b.status,  
             l.description as listing_description,
             li.name as listing_item_name,
             li.item_condition as listing_item_condition,
             bo.status as final_offer_status,
             bo.offered_item_name as accepted_offer_item,
+            bo.offered_item_image as accepted_offer_image,  
             t.transaction_date as completed_date,
             GROUP_CONCAT(DISTINCT li_img.image_path) as images
         FROM barters b
@@ -42,13 +44,9 @@ try {
         LEFT JOIN transactions t ON b.listing_id = t.listing_id AND t.transaction_type = 'barter'
         WHERE l.listing_type = 'trade'
         AND (
-            b.is_active = 0 
-            OR t.status = 'completed' 
-            OR bo.status = 'accepted'
-        )
-        AND (
-            b.user_idnum = ? 
-            OR bo.offerer_idnum = ?
+            (b.user_idnum = ? AND b.status IN ('completed', 'canceled'))  
+            OR
+            (bo.offerer_idnum = ? AND bo.status = 'accepted')  
         )
         GROUP BY b.barter_id
         ORDER BY COALESCE(t.transaction_date, b.updated_at) DESC
@@ -65,15 +63,31 @@ try {
             $images = explode(',', $row['images']);
             $row['images'] = array_map(function($img) {
                 $img = str_replace('../../../', '', $img);
-                return '/uploads/' . ltrim($img, '/');
+                return '/PayBach/uploads/' . ltrim($img, '/');  // Add PayBach prefix
             }, $images);
         } else {
             $row['images'] = [];
         }
         
+        // Process accepted offer image if exists
+        if ($row['accepted_offer_image']) {
+            $row['accepted_offer_image'] = '/PayBach/' . ltrim($row['accepted_offer_image'], '/');
+        }
+        
         $row['item_name'] = $row['offered_item_name'];
         $row['description'] = $row['offered_item_description'];
-        $row['barter_status'] = 'completed';
+        
+        // Set barter_status based on database status
+        if ($row['status'] === 'canceled') {
+            $row['barter_status'] = 'canceled';
+        } elseif ($row['status'] === 'completed') {
+            $row['barter_status'] = 'completed';
+        } elseif ($row['final_offer_status'] === 'accepted') {
+            $row['barter_status'] = 'accepted';
+        } else {
+            $row['barter_status'] = 'completed';  // default
+        }
+        
         $trades[] = $row;
     }
     

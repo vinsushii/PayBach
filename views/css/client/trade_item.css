@@ -520,3 +520,70 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+/* Add to trade_item.css */
+.image-preview {
+  margin-top: 10px;
+  border: 1px dashed #ddd;
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 200px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.image-preview p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.remove-image {
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.remove-image:hover {
+  background-color: #ff5252;
+}
+
+.offer-image {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.offer-image img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+.trade-status-badge.canceled {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+.trade-status-badge.canceled span {
+  color: #6c757d;
+}
+
+.trade-status-badge.accepted {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.trade-status-badge.accepted span {
+  color: #0c5460;
+}

@@ -155,6 +155,22 @@ function renderTradeDetails() {
     setElementText('owner-name', currentTrade.owner_name);
     setElementText('owner-email', currentTrade.owner_email || 'Email not available');
   }
+  // Show accepted by info if available
+  const acceptedByInfo = document.getElementById('accepted-by-info');
+  const acceptedByName = document.getElementById('accepted-by-name');
+  const acceptedByEmail = document.getElementById('accepted-by-email');
+
+  if (currentTrade.accepted_by_name || currentTrade.accepted_by_email) {
+      acceptedByInfo.style.display = 'block';
+      if (currentTrade.accepted_by_name) {
+          acceptedByName.textContent = currentTrade.accepted_by_name;
+      }
+      if (currentTrade.accepted_by_email) {
+          acceptedByEmail.textContent = currentTrade.accepted_by_email;
+      }
+  } else {
+      acceptedByInfo.style.display = 'none';
+  }
   
   // Process images
   processTradeImages();
@@ -181,14 +197,26 @@ function processTradeImages() {
   
   if (!offeredImage || !requestedImage) return;
   
-  // Offered item image - use offered_images array
+  // Offered item image
   if (currentTrade.offered_images && currentTrade.offered_images.length > 0) {
     const imagePath = processImagePath(currentTrade.offered_images[0]);
     offeredImage.src = imagePath;
   }
   
-  // Requested item image - always use default since there are no images for requested items
-  requestedImage.src = '../../images/default-item.png';
+  // Requested item image - check for accepted offer image first
+  let requestedImagePath = '../../images/default-item.png';
+  
+  // Check if there's an accepted offer with an image
+  if (currentTrade.accepted_offer_image) {
+    requestedImagePath = processImagePath(currentTrade.accepted_offer_image);
+  }
+  // Check if there are listing images (original requested item)
+  else if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
+    const listingImagePath = processImagePath(currentTrade.listing_images[0]);
+    requestedImagePath = listingImagePath;
+  }
+  
+  requestedImage.src = requestedImagePath;
   
   // Add error handlers
   offeredImage.onerror = () => {
@@ -204,10 +232,22 @@ function processTradeImages() {
 function processImagePath(rawPath) {
   if (!rawPath) return '../../images/default-item.png';
   
+  // If it's already a full URL or path, return as is
+  if (rawPath.startsWith('http') || rawPath.startsWith('/')) {
+    return rawPath;
+  }
+  
   let cleanPath = rawPath.replace(/^(\.\.\/)+/, '');
   
-  // If path contains uploads/, make it absolute
+  // Check if path contains uploads/offer_images/ (for offer images)
+  if (cleanPath.includes('uploads/offer_images/')) {
+    // It's an offer image, return full path
+    return `/PayBach/${cleanPath}`;
+  }
+  
+  // Check if path contains uploads/ (for regular listing images)
   if (cleanPath.includes('uploads/')) {
+    // Extract just the filename
     const filename = cleanPath.split('/').pop();
     return `/PayBach/uploads/${filename}`;
   }
@@ -250,7 +290,7 @@ function processTradeTags() {
   }
 }
 
-// Update status badge based on trade state
+// status badge based on trade state
 function updateStatusBadge() {
   const statusBadge = document.getElementById('trade-status');
   
@@ -259,22 +299,51 @@ function updateStatusBadge() {
   let statusText = 'Active';
   let statusClass = 'active';
   
-  switch(currentTrade.barter_status) {
-    case 'completed':
-      statusText = 'Completed';
-      statusClass = 'completed';
-      break;
-    case 'has_offers':
-      statusText = 'Has Offers';
-      statusClass = 'pending';
-      break;
-    case 'accepted':
-      statusText = 'Accepted';
-      statusClass = 'pending';
-      break;
-    default:
-      statusText = 'Active';
-      statusClass = 'active';
+  // Use the database status 
+  if (currentTrade.status) {
+    switch(currentTrade.status) {
+      case 'completed':
+        statusText = 'Completed';
+        statusClass = 'completed';
+        break;
+      case 'canceled':
+        statusText = 'Canceled';
+        statusClass = 'canceled';
+        break;
+      case 'accepted':
+        statusText = 'Accepted';
+        statusClass = 'accepted';
+        break;
+      case 'active':
+      default:
+        // For active trades, check if they have offers
+        if (currentTrade.barter_status === 'has_offers') {
+          statusText = 'Has Offers';
+          statusClass = 'pending';
+        } else {
+          statusText = 'Active';
+          statusClass = 'active';
+        }
+    }
+  } else {
+    // Fallback to old logic
+    switch(currentTrade.barter_status) {
+      case 'completed':
+        statusText = 'Completed';
+        statusClass = 'completed';
+        break;
+      case 'has_offers':
+        statusText = 'Has Offers';
+        statusClass = 'pending';
+        break;
+      case 'accepted':
+        statusText = 'Accepted';
+        statusClass = 'pending';
+        break;
+      default:
+        statusText = 'Active';
+        statusClass = 'active';
+    }
   }
   
   statusBadge.className = `trade-status-badge ${statusClass}`;
@@ -496,16 +565,36 @@ function showViewOffersModal() {
   modal.style.display = 'flex';
 }
 
-// Create offer card
 function createOfferCard(offer) {
   const card = document.createElement('div');
   card.className = `offer-card ${offer.status}`;
   
   const condition = offer.offered_item_condition || 'N/A';
-  const cash = offer.additional_cash > 0 ? `+₱${offer.additional_cash}` : '';
+  const cash = offer.additional_cash > 0 ? `+₱${parseFloat(offer.additional_cash).toFixed(2)}` : '';
   const date = new Date(offer.created_at).toLocaleDateString();
   
+  // Get image path if available
+  let imageHTML = '';
+  if (offer.offered_item_image) {
+    // Use the processImagePath function to get the correct URL
+    const imagePath = processImagePath(offer.offered_item_image);
+    imageHTML = `
+      <div class="offer-image">
+        <img src="${imagePath}" alt="Offer Item" 
+             onerror="this.onerror=null; this.src='../../images/default-item.png'">
+      </div>
+    `;
+  } else {
+    // Show default image if no image uploaded
+    imageHTML = `
+      <div class="offer-image">
+        <img src="../../images/default-item.png" alt="No Image Available">
+      </div>
+    `;
+  }
+  
   card.innerHTML = `
+    ${imageHTML}
     <h4>
       ${offer.offered_item_name || 'Unnamed Item'}
       <span class="offer-status ${offer.status}">${offer.status.toUpperCase()}</span>
@@ -528,7 +617,7 @@ function createOfferCard(offer) {
     ` : ''}
   `;
   
-  // Add event listeners for action buttons
+  // event listeners for action buttons
   if (offer.status === 'pending' && currentUserRole === 'owner') {
     const acceptBtn = card.querySelector('.accept');
     const rejectBtn = card.querySelector('.reject');
@@ -553,27 +642,43 @@ async function respondToOffer(offerId, action) {
   try {
     const response = await fetch('/PayBach/model/api/client/respond_to_offer.php', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       body: new URLSearchParams({
         offer_id: offerId,
         action: action
       })
     });
     
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log('Response text:', responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      console.error('Raw response:', responseText);
+      alert('Invalid response from server. Check console for details.');
+      return;
+    }
     
     if (data.success) {
-      alert(` Offer ${action}ed successfully!`);
+      alert(`Offer ${action}ed successfully!`);
+      
+      // If accepted, the "Looking For" section should update
+      // Reload the page to show updated trade info
       window.location.reload();
     } else {
-      alert(`Failed to ${action} offer: ${data.error || 'Unknown error'}`);
+      alert(`Failed to ${action} offer: ${data.error || data.message || 'Unknown error'}`);
+      console.error('Server error details:', data);
     }
   } catch (error) {
     console.error(`Respond to offer error:`, error);
     alert('Network error. Please try again.');
   }
 }
-
 // Complete trade
 async function completeTrade() {
   if (!confirm('Mark this trade as completed? This cannot be undone.')) {
@@ -648,4 +753,201 @@ function showErrorState(message) {
       </button>
     </div>
   `;
+}
+// Add this function to handle image preview
+function setupImagePreview() {
+  const imageInput = document.getElementById('offer-item-image');
+  const preview = document.getElementById('image-preview');
+  
+  if (!imageInput || !preview) return;
+  
+  imageInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Check if file is an image
+      if (!file.type.match('image.*')) {
+        alert('Please select an image file');
+        imageInput.value = '';
+        preview.innerHTML = '<p>No image selected</p>';
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        imageInput.value = '';
+        preview.innerHTML = '<p>No image selected</p>';
+        return;
+      }
+      
+      // Create preview
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <img src="${e.target.result}" alt="Preview">
+          <p>${file.name} (${(file.size / 1024).toFixed(1)} KB)</p>
+          <button type="button" class="remove-image" id="remove-image">Remove</button>
+        `;
+        
+        // Add remove button functionality
+        document.getElementById('remove-image').addEventListener('click', function() {
+          imageInput.value = '';
+          preview.innerHTML = '<p>No image selected</p>';
+        });
+      };
+      
+      reader.readAsDataURL(file);
+    } else {
+      preview.innerHTML = '<p>No image selected</p>';
+    }
+  });
+}
+
+// Update the initModals function to include image preview setup
+function initModals() {
+  const makeOfferModal = document.getElementById("makeOfferModal");
+  const viewOffersModal = document.getElementById("viewOffersModal");
+  
+  // Close buttons
+  document.querySelectorAll('.modal .close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', () => {
+      makeOfferModal.style.display = 'none';
+      viewOffersModal.style.display = 'none';
+    });
+  });
+  
+  // Close on outside click
+  window.addEventListener('click', (e) => {
+    if (e.target === makeOfferModal) makeOfferModal.style.display = 'none';
+    if (e.target === viewOffersModal) viewOffersModal.style.display = 'none';
+  });
+  
+  // Setup image preview
+  setupImagePreview();
+}
+
+// Update the showMakeOfferModal function to reset the image preview
+function showMakeOfferModal() {
+  const modal = document.getElementById('makeOfferModal');
+  if (!modal) return;
+  
+  // Reset form
+  document.getElementById('offer-item-name').value = '';
+  document.getElementById('offer-item-description').value = '';
+  document.getElementById('offer-item-condition').value = 'good';
+  document.getElementById('offer-additional-cash').value = '0';
+  document.getElementById('offer-notes').value = '';
+  
+  // Reset image input
+  document.getElementById('offer-item-image').value = '';
+  const preview = document.getElementById('image-preview');
+  if (preview) {
+    preview.innerHTML = '<p>No image selected</p>';
+  }
+  
+  // Set up submit handler
+  const submitBtn = document.getElementById('submit-offer');
+  if (submitBtn) {
+    submitBtn.onclick = submitOffer;
+  }
+  
+  modal.style.display = 'flex';
+}
+
+// Update the submitOffer function in trade_item.js
+async function submitOffer() {
+  const itemName = document.getElementById('offer-item-name')?.value.trim();
+  const description = document.getElementById('offer-item-description')?.value.trim();
+  const condition = document.getElementById('offer-item-condition')?.value;
+  const additionalCash = document.getElementById('offer-additional-cash')?.value;
+  const notes = document.getElementById('offer-notes')?.value.trim();
+  const imageInput = document.getElementById('offer-item-image');
+  const imageFile = imageInput?.files[0];
+  
+  console.log('Submitting offer with data:');
+  console.log('Item Name:', itemName);
+  console.log('Description:', description);
+  console.log('Condition:', condition);
+  console.log('Additional Cash:', additionalCash);
+  console.log('Notes:', notes);
+  console.log('Image File:', imageFile);
+  
+  if (!itemName) {
+    alert('Please enter an item name');
+    return;
+  }
+  
+  // Validate image file if selected
+  if (imageFile) {
+    // Check file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(imageFile.type)) {
+      alert('Please select a valid image file (JPG, PNG, GIF, WebP)');
+      return;
+    }
+    
+    // Check file size (5MB limit)
+    if (imageFile.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+  }
+  
+  // Create FormData for file upload
+  const formData = new FormData();
+  formData.append('barter_id', currentTrade.barter_id);
+  formData.append('item_name', itemName);
+  formData.append('description', description || '');
+  formData.append('condition', condition);
+  formData.append('additional_cash', additionalCash || 0);
+  formData.append('notes', notes || '');
+  
+  // Append image file if exists
+  if (imageFile) {
+    formData.append('item_image', imageFile);
+  }
+  
+  console.log('FormData created, sending request...');
+  
+  try {
+    // Use FormData for multipart/form-data upload
+    const response = await fetch('/PayBach/model/api/client/submit_offer.php', {
+      method: 'POST',
+      body: formData
+      // Don't set Content-Type header for FormData, browser sets it automatically
+    });
+    
+    console.log('Response received:', response);
+    
+    const responseText = await response.text();
+    console.log('Response text:', responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse JSON:', e);
+      console.error('Raw response:', responseText);
+      alert('Invalid response from server. Check console for details.');
+      return;
+    }
+    
+    console.log('Parsed data:', data);
+    
+    if (data.success) {
+      alert('Offer submitted successfully!');
+      document.getElementById('makeOfferModal').style.display = 'none';
+      
+      // Reload the page to update status
+      window.location.reload();
+    } else {
+      alert(`Failed to submit offer: ${data.error || data.message || 'Unknown error'}`);
+      console.error('Server error details:', data);
+    }
+  } catch (error) {
+    console.error('Submit offer error:', error);
+    alert('Network error. Please check console for details.');
+  }
 }

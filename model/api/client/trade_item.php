@@ -1,5 +1,7 @@
 <?php
-// trade_item.php - UPDATED VERSION with correct image handling
+
+ob_start(); // Start output buffering
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -11,8 +13,9 @@ header('Content-Type: application/json');
 
 // Check authentication
 if (!isset($_SESSION['user_idnum'])) {
+    ob_end_clean();
     http_response_code(401);
-    echo json_encode(['error' => 'Not authenticated. Please login first.']);
+    echo json_encode(['success' => false, 'error' => 'Not authenticated. Please login first.']);
     exit;
 }
 
@@ -20,8 +23,9 @@ if (!isset($_SESSION['user_idnum'])) {
 $barter_id = isset($_GET['barter_id']) ? trim($_GET['barter_id']) : null;
 
 if (!$barter_id) {
+    ob_end_clean();
     http_response_code(400);
-    echo json_encode(['error' => 'Missing barter_id parameter']);
+    echo json_encode(['success' => false, 'error' => 'Missing barter_id parameter']);
     exit;
 }
 
@@ -58,6 +62,7 @@ try {
             b.created_at,
             b.updated_at,
             b.is_active,
+            b.status,  
             l.description as listing_description,
             u.first_name,
             u.last_name,
@@ -82,9 +87,7 @@ try {
     $result = $stmt->get_result();
     
     if ($result->num_rows === 0) {
-        http_response_code(404);
-        echo json_encode(['error' => 'Trade not found']);
-        exit;
+        throw new Exception("Trade not found");
     }
     
     $trade = $result->fetch_assoc();
@@ -108,14 +111,13 @@ try {
         while ($row = $images_result->fetch_assoc()) {
             $offered_images[] = $row['image_path'];
         }
-        $trade['offered_images'] = $offered_images; // Store as offered_images
+        $trade['offered_images'] = $offered_images;
         $images_stmt->close();
     } else {
         $trade['offered_images'] = [];
     }
     
     // For the REQUESTED item (what they're looking for), we don't have images
-    // So we'll set requested_images to an empty array
     $trade['requested_images'] = [];
     
     // Process image paths for offered item
@@ -147,6 +149,7 @@ try {
                 bo.item_condition as offered_item_condition,
                 bo.offered_item_description as description,
                 bo.additional_cash,
+                bo.offered_item_image,  
                 bo.status,
                 bo.created_at,
                 u.first_name,
@@ -178,13 +181,30 @@ try {
         $trade['has_offers'] = !empty($offers);
         $trade['offer_count'] = count($offers);
         
-        // Check for accepted offers
-        $trade['has_accepted_offer'] = false;
+        // Check for accepted offer and get offerer info
+        $accepted_offerer_info = null;
         foreach ($offers as $offer) {
             if ($offer['status'] === 'accepted') {
-                $trade['has_accepted_offer'] = true;
+                $accepted_offerer_info = [
+                    'name' => $offer['offerer_name'],
+                    'email' => $offer['offerer_email']
+                ];
                 break;
             }
+        }
+
+        // If there's an accepted offer, update the trade with offerer info
+        if ($accepted_offerer_info) {
+            $trade['accepted_by_name'] = $accepted_offerer_info['name'];
+            $trade['accepted_by_email'] = $accepted_offerer_info['email'];
+        }
+
+        $trade['owner_name'] = trim($trade['first_name'] . ' ' . $trade['last_name']);
+        $trade['owner_email'] = $trade['owner_email'] ?: 'Email not available';
+
+        // If no owner name, set default
+        if (empty($trade['owner_name']) || $trade['owner_name'] === ' ') {
+            $trade['owner_name'] = 'Unknown User';
         }
         
     } else {
@@ -203,7 +223,7 @@ try {
         
         $user_offer_stmt = $conn->prepare($user_offer_query);
         if ($user_offer_stmt) {
-            $user_offer_stmt->bind_param('ss', $barter_id, $user_idnum);
+            $user_offer_stmt->bind_param('is', $barter_id, $user_idnum);
             $user_offer_stmt->execute();
             $user_offer_result = $user_offer_stmt->get_result();
             
@@ -221,22 +241,39 @@ try {
     }
     
     // Determine barter status
-    if ($trade['is_active'] == 0) {
-        $trade['barter_status'] = 'completed';
-    } elseif ($trade['has_accepted_offer']) {
-        $trade['barter_status'] = 'accepted';
-    } elseif ($trade['has_offers']) {
-        $trade['barter_status'] = 'has_offers';
-    } else {
-        $trade['barter_status'] = 'active';
+    switch($trade['status']) {
+        case 'completed':
+            $trade['barter_status'] = 'completed';
+            break;
+        case 'canceled':
+            $trade['barter_status'] = 'canceled';
+            break;
+        case 'accepted':
+            $trade['barter_status'] = 'accepted';
+            break;
+        default:
+            // For active trades, check if they have offers or accepted offers
+            if ($trade['has_accepted_offer']) {
+                $trade['barter_status'] = 'accepted';
+            } elseif ($trade['has_offers']) {
+                $trade['barter_status'] = 'has_offers';
+            } else {
+                $trade['barter_status'] = 'active';
+            }
     }
     
     // Format data for frontend
     $trade['owner_name'] = trim($trade['first_name'] . ' ' . $trade['last_name']);
-    
+    $trade['owner_email'] = $trade['owner_email'] ?: 'Email not available';
+
+    // Make sure we're setting these values correctly
+    if (empty($trade['owner_name']) || $trade['owner_name'] === ' ') {
+        $trade['owner_name'] = 'Unknown User';
+    }
+
     // The item they're looking for is in requested_items_text
     $trade['listing_item_name'] = $trade['requested_items_text'] ?: ($trade['listing_item_name'] ?: 'Trade Item');
-    
+
     // If no listing_item_condition, use a default
     if (empty($trade['listing_item_condition'])) {
         $trade['listing_item_condition'] = 'Not specified';
@@ -269,7 +306,8 @@ try {
     // Close connection
     $conn->close();
     
-    // Return success response
+    // Clear output buffer and send response
+    ob_end_clean();
     echo json_encode([
         'success' => true,
         'trade' => $trade,
@@ -277,6 +315,8 @@ try {
     ]);
     
 } catch (Exception $e) {
+    // Clear output buffer and send error
+    ob_end_clean();
     error_log("Trade item error: " . $e->getMessage());
     
     http_response_code(500);

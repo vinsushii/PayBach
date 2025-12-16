@@ -22,7 +22,7 @@ try {
         throw new Exception("Database connection failed");
     }
     
-    // Get active trades (barters) created by the current user
+    // Get accepted trades (barters) created by the current user
     $query = "
         SELECT 
             b.barter_id,
@@ -36,21 +36,24 @@ try {
             b.trade_tags,
             b.created_at,
             b.updated_at,
-            b.status,  
+            b.status,
             l.description as listing_description,
             li.name as listing_item_name,
             li.item_condition as listing_item_condition,
+            bo.offered_item_name as accepted_item_name,
+            bo.offered_item_image as accepted_item_image,
             GROUP_CONCAT(li_img.image_path) as images
         FROM barters b
         JOIN listings l ON b.listing_id = l.listing_id
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
         LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
+        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id AND bo.status = 'accepted'
         WHERE b.user_idnum = ?
         AND l.listing_type = 'trade'
-        AND b.status = 'active' 
-        AND b.is_active = 1  
+        AND b.status = 'accepted'  
+        AND b.is_active = 1
         GROUP BY b.barter_id
-        ORDER BY b.created_at DESC
+        ORDER BY b.updated_at DESC
     ";
     
     $stmt = $conn->prepare($query);
@@ -66,25 +69,23 @@ try {
     while ($row = $result->fetch_assoc()) {
         // Process images
         if ($row['images']) {
-            // Remove any ../../../ from image paths
             $images = explode(',', $row['images']);
             $row['images'] = array_map(function($img) {
                 $img = str_replace('../../../', '', $img);
-                return '/PayBach/uploads/' . ltrim($img, '/');  // Add PayBach prefix
+                return '/PayBach/uploads/' . ltrim($img, '/');
             }, $images);
         } else {
             $row['images'] = [];
         }
         
+        // Process accepted item image
+        if ($row['accepted_item_image']) {
+            $row['accepted_item_image'] = '/PayBach/' . ltrim($row['accepted_item_image'], '/');
+        }
+        
         $row['item_name'] = $row['offered_item_name'];
         $row['description'] = $row['offered_item_description'];
-        
-        // Determine barter status based on database status
-        if ($row['status'] === 'accepted') {
-            $row['barter_status'] = 'accepted';
-        } else {
-            $row['barter_status'] = 'active';
-        }
+        $row['barter_status'] = 'accepted';
         
         $trades[] = $row;
     }

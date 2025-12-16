@@ -120,54 +120,69 @@
               <h5>Trade Owner</h5>
               <p id="owner-name">Loading...</p>
               <p id="owner-email">Loading...</p>
+              
+              <div id="accepted-by-info" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+              <h6>Accepted Offer From</h6>
+              <p id="accepted-by-name"></p>
+              <p id="accepted-by-email"></p>
+            </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- MAKE OFFER MODAL -->
-    <div id="makeOfferModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Make an Offer</h3>
-        
-        <div class="offer-form">
-          <div class="form-group">
-            <label for="offer-item-name">Item Name *</label>
-            <input type="text" id="offer-item-name" placeholder="What are you offering?" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-item-description">Description</label>
-            <textarea id="offer-item-description" placeholder="Describe your item..." rows="3"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-item-condition">Condition</label>
-            <select id="offer-item-condition">
-              <option value="new">Brand New</option>
-              <option value="like_new">Like New</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
-              <option value="poor">Poor</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-additional-cash">Additional Cash (₱)</label>
-            <input type="number" id="offer-additional-cash" min="0" value="0" step="100">
-          </div>
-          
-          <div class="form-group">
-            <label for="offer-notes">Additional Notes (Optional)</label>
-            <textarea id="offer-notes" placeholder="Any special requests or details..." rows="2"></textarea>
-          </div>
-          
-          <button id="submit-offer" class="submit-btn">Submit Offer</button>
+    <!-- MAKE OFFER MODAL section -->
+<div id="makeOfferModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Make an Offer</h3>
+    
+    <div class="offer-form" id="offer-form">
+      <div class="form-group">
+        <label for="offer-item-name">Item Name *</label>
+        <input type="text" id="offer-item-name" placeholder="What are you offering?" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="offer-item-description">Description</label>
+        <textarea id="offer-item-description" placeholder="Describe your item..." rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="offer-item-condition">Condition</label>
+        <select id="offer-item-condition">
+          <option value="new">Brand New</option>
+          <option value="like_new">Like New</option>
+          <option value="good">Good</option>
+          <option value="fair">Fair</option>
+          <option value="poor">Poor</option>
+        </select>
+      </div>
+      
+      <!-- ADD IMAGE UPLOAD FIELD -->
+      <div class="form-group">
+        <label for="offer-item-image">Item Image</label>
+        <input type="file" id="offer-item-image" accept="image/*">
+        <div id="image-preview" class="image-preview">
+          <p>No image selected</p>
         </div>
       </div>
+      
+      <div class="form-group">
+        <label for="offer-additional-cash">Additional Cash (₱)</label>
+        <input type="number" id="offer-additional-cash" min="0" value="0" step="100">
+      </div>
+      
+      <div class="form-group">
+        <label for="offer-notes">Additional Notes (Optional)</label>
+        <textarea id="offer-notes" placeholder="Any special requests or details..." rows="2"></textarea>
+      </div>
+      
+      <button id="submit-offer" class="submit-btn">Submit Offer</button>
     </div>
+  </div>
+</div>
 
     <!-- VIEW OFFERS MODAL -->
     <div id="viewOffersModal" class="modal">
