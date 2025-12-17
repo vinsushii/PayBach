@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!bidBox) return;
 
 
-  if (endDate < new Date().toJSON()) {
+  if (endDate > new Date().toJSON()) {
     const bidBtn = document.createElement("button"); 
     bidBtn.className = "topup";
     bidBtn.textContent = isOwner ? "You own this item" : "Place Bid";
