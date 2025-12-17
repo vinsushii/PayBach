@@ -114,7 +114,7 @@ function renderTradeDetails() {
   const tradeTitle = document.getElementById('trade-title');
   if (tradeTitle) {
     if (currentUserRole === 'offerer') {
-      // For offerer: show "Your Offer → What you want (owner's item)"
+      // For offerer: show "Your Offer → owner's item"
       const lookingForName = currentTrade.listing_item_name || currentTrade.requested_items_text || 'Trade Item';
       tradeTitle.textContent = `${currentTrade.offered_item_name} → ${lookingForName}`;
     } else {
@@ -174,7 +174,7 @@ function renderTradeDetails() {
     }));
   }
   
-  // Owner Info - always show the original trade owner
+  // Owner Info 
   if (currentTrade.owner_name) {
     setElementText('owner-name', currentTrade.owner_name);
     setElementText('owner-email', currentTrade.owner_email || 'Email not available');
@@ -410,8 +410,8 @@ function renderActionButtons() {
   actionsContainer.innerHTML = '';
   
   if (currentUserRole === 'owner') {
+
     // OWNER ACTIONS
-    // ==============
     if (currentTrade.status === 'completed' || currentTrade.status === 'canceled') {
       // Trade is already completed or canceled
       const statusMsg = document.createElement('div');
@@ -419,19 +419,19 @@ function renderActionButtons() {
       if (currentTrade.status === 'completed') {
         statusMsg.innerHTML = `
           <p>✓ Trade Completed</p>
-          <p><small>This trade has been successfully completed</small></p>
+          <p><small>Trade has been successfully completed</small></p>
         `;
       } else {
         statusMsg.innerHTML = `
           <p>✗ Trade Canceled</p>
-          <p><small>This trade has been canceled</small></p>
+          <p><small>Trade has been canceled</small></p>
         `;
       }
       actionsContainer.appendChild(statusMsg);
     } else {
       // Trade is active or accepted - show owner buttons
       
-      // 1. View Offers button (only if there are offers)
+      // 1. View Offers button 
       if (existingOffers && existingOffers.length > 0) {
         const viewOffersBtn = document.createElement('button');
         viewOffersBtn.className = 'action-btn primary';
@@ -478,7 +478,6 @@ function renderActionButtons() {
   } else if (currentUserRole === 'viewer' || 
              (currentUserRole === 'offerer' && currentTrade.user_offer_status === 'rejected')) {
     // VIEWER or OFFERER with REJECTED offer
-    // =====================================
     if (currentTrade.is_active !== false && currentTrade.status !== 'completed' && currentTrade.status !== 'canceled') {
       const makeOfferBtn = document.createElement('button');
       makeOfferBtn.className = 'action-btn primary';
@@ -521,7 +520,6 @@ function renderActionButtons() {
     
   } else if (currentUserRole === 'offerer') {
     // OFFERER with ACTIVE offer (pending or accepted)
-    // ==============================================
     const offerStatus = currentTrade.user_offer_status || 'pending';
     
     const statusMsg = document.createElement('div');
@@ -605,14 +603,14 @@ function renderExistingOffers() {
     const condition = offer.item_condition || offer.offered_item_condition || 'N/A';
     const cash = offer.additional_cash > 0 ? `+₱${parseFloat(offer.additional_cash).toFixed(2)}` : '';
     
-    // Add status badge with different colors
+    // Add status badge 
     let statusBadge = '';
     if (offer.status === 'rejected') {
-      statusBadge = '<span class="rejected-badge">❌ Rejected</span>';
+      statusBadge = '<span class="rejected-badge">Rejected</span>';
     } else if (offer.status === 'accepted') {
-      statusBadge = '<span class="accepted-badge">✓ Accepted</span>';
+      statusBadge = '<span class="accepted-badge">Accepted</span>';
     } else if (offer.status === 'pending') {
-      statusBadge = '<span class="pending-badge">⏳ Pending</span>';
+      statusBadge = '<span class="pending-badge">Pending</span>';
     }
     
     offerElement.innerHTML = `
@@ -1016,7 +1014,7 @@ function setupImagePreview() {
   });
 }
 
-// Update the initModals function to include image preview setup
+// image preview setup
 function initModals() {
   const makeOfferModal = document.getElementById("makeOfferModal");
   const viewOffersModal = document.getElementById("viewOffersModal");
@@ -1039,7 +1037,7 @@ function initModals() {
   setupImagePreview();
 }
 
-// Update the showMakeOfferModal function to reset the image preview
+//reset the image preview
 function showMakeOfferModal() {
   const modal = document.getElementById('makeOfferModal');
   if (!modal) return;
@@ -1123,11 +1121,11 @@ async function submitOffer() {
   console.log('FormData created, sending request...');
   
   try {
-    // Use FormData for multipart/form-data upload
+    // FormData for multipart/form-data upload
     const response = await fetch('/PayBach/model/api/client/submit_offer.php', {
       method: 'POST',
       body: formData
-      // Don't set Content-Type header for FormData, browser sets it automatically
+      
     });
     
     console.log('Response received:', response);

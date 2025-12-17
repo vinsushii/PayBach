@@ -41,9 +41,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const { listing, items, categories, images, currentPrice, increment, offers } = data;
+  const { listing, items, categories, images, currentPrice, increment, offers, highestBidder } = data;
   const CURRENT_USER_ID = localStorage.getItem("user_id");
   const isOwner = listing.user_idnum === CURRENT_USER_ID;
+  const endDate = listing.end_date;
 
   // ================= BASIC INFO =================
   const item = items?.[0] || {};
@@ -94,7 +95,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ================= PRICE & DETAILS =================
   const priceText = document.querySelector(".price");
-  priceText.textContent = "₱" + Number(currentPrice).toLocaleString();
+
+  if (endDate > new Date().toJSON()) {
+    priceText.textContent = "₱" + Number(currentPrice).toLocaleString();
+  } else {
+    const above = document.querySelector(".bid-text");
+    above.textContent = "Winning bidder: " + highestBidder;
+    priceText.textContent = "Winning Bid: ₱" + Number(currentPrice).toLocaleString();
+  }
   document.getElementById("meetup-location").textContent = listing.exchange_method || "N/A";
   document.getElementById("payment-method").textContent = listing.payment_method || "N/A";
 
@@ -105,76 +113,78 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================= BID HISTORY =================
   const container = document.querySelector(".bid-offers-container");
   container.innerHTML = "";
-  if (!offers.length) container.innerHTML = "<p>No bids yet.</p>";
-  else {
-    const table = document.createElement("table");
-    table.innerHTML = `<tr><th>User</th><th>Bid Offer</th></tr>`;
-    offers.forEach(o => {
-      const r = document.createElement("tr");
-      r.innerHTML = `<td>${o.user_id}</td><td>₱${Number(o.price_offered).toLocaleString()}</td>`;
-      table.appendChild(r);
-    });
-    container.appendChild(table);
-  }
+  const table = document.createElement("table");
+  table.innerHTML = `<tr><th>User</th><th>Bid Offer</th></tr>`;
+  offers.forEach(o => {
+    const r = document.createElement("tr");
+    r.innerHTML = `<td>${o.user_id}</td><td>₱${Number(o.price_offered).toLocaleString()}</td>`;
+    table.appendChild(r);
+  });
+  container.appendChild(table);
+  
 
   // ================= BID ACTION =================
   const bidBox = document.querySelector(".bid-box");
   if (!bidBox) return;
 
-  const bidBtn = document.createElement("button"); 
-  bidBtn.className = "topup";
-  bidBtn.textContent = isOwner ? "You own this item" : "Place Bid";
-  if (isOwner) {
-    bidBtn.disabled = true;
-    bidBtn.classList.add("disabled");
-  }
-  bidBox.appendChild(bidBtn);
-  if (isOwner) return;
 
-  const modal = document.getElementById("topupModal");
-  const closeBtn = modal.querySelector(".close");
-  const confirmBtn = document.getElementById("confirmTopup");
-  const input = document.getElementById("topupInput");
-  let lowestValidBid = Number(currentPrice) + Number(increment);
-
-  bidBtn.onclick = () => {
-    input.value = (Number(currentPrice) + Number(increment)).toFixed(2); // numeric addition + 2 decimals
-    modal.style.display = "flex";
-  };
-
-  closeBtn.onclick = () => (modal.style.display = "none");
-  modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
-
-  confirmBtn.onclick = async () => {
-    const newBid = parseFloat(input.value);
-    if (isNaN(newBid)) return alert("Invalid amount");
-    if (newBid <= currentPrice) return alert(`Bid must be higher than current: ₱${currentPrice}`);
-
-    try {
-      const res = await fetch("/PayBach/model/api/client/update_price.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `listing_id=${listingId}&bid_amount=${newBid}`
-      });
-
-      const text = await res.text(); // always read as text first
-      let result;
-      try {
-        result = JSON.parse(text); // parse JSON safely
-      } catch (e) {
-        console.error("Invalid JSON RAW RESPONSE >>>", JSON.stringify(text));
-        return alert("Server returned invalid data. Check console.");
-      }
-
-      if (result.success) {
-        priceText.textContent = "₱" + Number(newBid).toLocaleString();
-        modal.style.display = "none";
-        alert("Bid placed successfully!");
-        location.reload();
-      } else alert(result.error || "Bid was rejected by server.");
-    } catch (err) {
-      console.error(err);
-      alert("Error placing bid. Check your connection.");
+  if (endDate < new Date().toJSON()) {
+    const bidBtn = document.createElement("button"); 
+    bidBtn.className = "topup";
+    bidBtn.textContent = isOwner ? "You own this item" : "Place Bid";
+    if (isOwner) {
+      bidBtn.disabled = true;
+      bidBtn.classList.add("disabled");
     }
-  };
+    bidBox.appendChild(bidBtn);
+    if (isOwner) return;
+
+    const modal = document.getElementById("topupModal");
+    const closeBtn = modal.querySelector(".close");
+    const confirmBtn = document.getElementById("confirmTopup");
+    const input = document.getElementById("topupInput");
+
+    bidBtn.onclick = () => {
+      input.value = (Number(currentPrice) + Number(increment)).toFixed(2); // numeric addition + 2 decimals
+      modal.style.display = "flex";
+    };
+
+    closeBtn.onclick = () => (modal.style.display = "none");
+    modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+
+    confirmBtn.onclick = async () => {
+      const newBid = parseFloat(input.value);
+      if (isNaN(newBid)) return alert("Invalid amount");
+      if (newBid <= currentPrice) return alert(`Bid must be higher than current: ₱${currentPrice}`);
+
+      try {
+        const res = await fetch("/PayBach/model/api/client/update_price.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `listing_id=${listingId}&bid_amount=${newBid}`
+        });
+
+        const text = await res.text(); // always read as text first
+        let result;
+        try {
+          result = JSON.parse(text); // parse JSON safely
+        } catch (e) {
+          console.error("Invalid JSON RAW RESPONSE >>>", JSON.stringify(text));
+          return alert("Server returned invalid data. Check console.");
+        }
+
+        if (result.success) {
+          priceText.textContent = "₱" + Number(newBid).toLocaleString();
+          modal.style.display = "none";
+          alert("Bid placed successfully!");
+          location.reload();
+        } else alert(result.error || "Bid was rejected by server.");
+      } catch (err) {
+        console.error(err);
+        alert("Error placing bid. Check your connection.");
+      }
+    };
+  } else {
+
+  }
 });

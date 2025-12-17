@@ -1,170 +1,248 @@
+/* =========================
+   PAGE LAYOUT
+========================= */
 main {
-max-width: 1100px;
-margin: 2rem auto;
-padding: 1rem;
-display: grid;
-grid-template-columns: 1fr 1fr;
-grid-template-areas:
-"title title"
-"desc images"
-"tags images"
-"price images"
-"seller seller"
-"bids bids";
-gap: 1.5rem;
-font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 2.5rem auto;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  grid-template-areas:
+    "back back"
+    "title title"
+    "desc images"
+    "tags images"
+    "price images"
+    "seller seller"
+    "bids bids";
+  gap: 2rem;
+  font-family: Arial, sans-serif;
+  color: #333;
 }
 
+/* Back Button */
+.back-btn {
+  grid-area: back;
+  text-decoration: none;
+  font-weight: bold;
+  color: #10006b;
+  margin-bottom: 0.5rem;
+}
 
-/* Title */
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   TITLE
+========================= */
 main h2 {
-grid-area: title;
-font-size: 1.8rem;
-font-weight: bold;
-margin-bottom: 0.5rem;
+  grid-area: title;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
-
-/* Description */
+/* =========================
+   DESCRIPTION
+========================= */
 .description {
-grid-area: desc;
-background: #fff;
-padding: 1rem;
-border-radius: 8px;
-box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  grid-area: desc;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
-
 
 .description strong {
-display: inline-block;
-margin-bottom: 0.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
 }
-
 
 .description .lorem {
-margin-top: 0.5rem;
-line-height: 1.5;
-color: #444;
+  margin-top: 0.8rem;
+  line-height: 1.6;
+  color: #555;
 }
 
-
-/* Tags / Categories */
+/* =========================
+   TAGS
+========================= */
 #item-tags {
-grid-area: tags;
-display: flex;
-flex-wrap: wrap;
-gap: 0.5rem;
+  grid-area: tags;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
-
 
 #item-tags .tag {
-padding: 0.3rem 0.7rem;
-font-size: 0.85rem;
-border-radius: 20px;
-border: none;
-background: #eef2f7;
-cursor: default;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  background: #eef2f7;
+  color: #333;
 }
 
-/* Image Section */
-/* CAROUSEL IMAGE */
+/* =========================
+   IMAGE CAROUSEL
+========================= */
 .main-image.carousel {
+  grid-area: images;
   position: relative;
   background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .main-image.carousel img {
-  max-width: 320px;
-  max-height: 300px;
+  max-width: 380px;
+  max-height: 320px;
   object-fit: contain;
 }
 
-/* CAROUSEL ARROWS */
+/* Carousel Arrows */
 .carousel .arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   border: none;
   font-size: 26px;
   font-weight: bold;
   cursor: pointer;
   color: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   opacity: 0;
-  transition: all 0.25s ease;
+  transition: 0.25s ease;
 }
 
-/* Show arrows on hover (carousel behavior) */
 .carousel:hover .arrow {
   opacity: 1;
 }
 
 .carousel .arrow.left {
-  left: 10px;
+  left: 12px;
 }
 
 .carousel .arrow.right {
-  right: 10px;
+  right: 12px;
 }
 
-/* Hover effect */
 .carousel .arrow:hover {
   background: #10006b;
   color: #fff;
-  transform: translateY(-50%) scale(1.1);
 }
 
+/* Thumbnails */
+.thumbnail-row {
+  display: none;
+}
 
 .thumb {
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
+  border-radius: 10px;
   object-fit: cover;
-  border-radius: 8px;
   cursor: pointer;
   opacity: 0.7;
-  transition: 0.3s;
+  transition: 0.25s ease;
 }
+
+.thumb:hover,
+.thumb.active {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* =========================
+   PRICE & DETAILS
+========================= */
+.price-container {
+  grid-area: price;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.price-container .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #10006b;
+  margin-bottom: 0.6rem;
+}
+
+.price-container p {
+  margin: 0.3rem 0;
+  color: #555;
+}
+
+/* =========================
+   SELLER INFO
+========================= */
+.meetup {
+  grid-area: seller;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   BID HISTORY
+========================= */
 .bid-offers {
-  background-color: #f5f5f5;
-  padding: 20px;
-  margin-top: 30px;
+  grid-area: bids;
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
 }
 
 .bid-offers h3 {
-  font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .bid-offers-container table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
 }
 
 .bid-offers-container th,
 .bid-offers-container td {
-  padding: 8px 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .bid-offers-container th {
   font-weight: bold;
-  border-bottom: 2px solid #ccc;
+  background: #f5f7fb;
 }
 
-.bid-offers-container td {
-  border-bottom: 1px solid #e0e0e0;
-}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "back"
+      "title"
+      "images"
+      "desc"
+      "tags"
+      "price"
+      "seller"
+      "bids";
+  }
 
+  .main-image.carousel img {
+    max-width: 100%;
+  }
+}

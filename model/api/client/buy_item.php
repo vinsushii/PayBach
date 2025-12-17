@@ -16,7 +16,7 @@ if (!$listing_id) {
 /* ================= LISTING ================= */ 
 
 $stmt = $conn->prepare("
-    SELECT l.*, u.first_name, u.last_name, u.email
+    SELECT l.*, u.first_name, u.last_name, u.email, l.end_date
     FROM listings l
     JOIN users u ON l.user_idnum = u.user_idnum
     WHERE l.listing_id = ? AND l.is_valid = TRUE
@@ -77,7 +77,7 @@ $stmt->close();
 /* ================= BIDS ================= */
 
 $stmt = $conn->prepare("
-    SELECT current_amount, bid_increment, autobuy_amount
+    SELECT current_amount, bid_increment, autobuy_amount, current_highest_bidder
     FROM bids
     WHERE listing_id = ?
 ");
@@ -89,6 +89,7 @@ $stmt->close();
 $currentPrice = $bid["current_amount"] ?? 0;
 $increment = $bid["bid_increment"] ?? 1;
 $autobuy = $bid["autobuy_amount"];
+$highestBidder = $bid["current_highest_bidder"];
 
 /* ================= OFFERS ================= */
 
@@ -115,5 +116,6 @@ echo json_encode([
     "currentPrice" => $currentPrice,
     "increment" => $increment,
     "offers" => $offers,
-    "autobuy" => $autobuy
+    "autobuy" => $autobuy,
+    "highestBidder" => $highestBidder
 ]);
