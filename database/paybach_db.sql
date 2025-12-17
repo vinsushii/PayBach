@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 17, 2025 at 05:02 AM
+-- Generation Time: Dec 17, 2025 at 06:19 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -254,6 +254,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `is_valid` tinyint(1) DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
+  `status` enum('pending','completed','cancelled','active') DEFAULT 'pending',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -262,32 +263,32 @@ CREATE TABLE IF NOT EXISTS `listings` (
 -- Dumping data for table `listings`
 --
 
-INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `end_date`, `description`, `exchange_method`, `payment_method`, `is_valid`, `created_at`, `listing_type`) VALUES
-(21, '2230136', 1, '2025-12-14 18:46:09', '2025-12-21 18:46:09', 'Gaming laptop with great flexibility. Used once or twice. Comes with box', 'in person', 'onsite', 1, '2025-12-14 18:46:09', 'bid'),
-(22, '2230136', 1, '2025-12-14 18:57:00', '2025-12-21 18:57:00', 'Pentel graphgear 1000 .5 in satin gold. Has retractable tip', 'drop off', 'online', 1, '2025-12-14 18:57:00', 'bid'),
-(23, '2241389', 1, '2025-12-15 00:44:13', '2026-01-14 00:44:13', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:44:13', 'trade'),
-(24, '2241389', 1, '2025-12-15 00:49:30', '2025-12-22 00:49:30', 'kkkk', 'face to face', 'onsite', 1, '2025-12-15 00:49:30', 'bid'),
-(25, '2241389', 1, '2025-12-15 00:57:30', '2026-01-14 00:57:30', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:57:30', 'trade'),
-(26, '2241389', 1, '2025-12-15 00:58:03', '2026-01-14 00:58:03', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:58:03', 'trade'),
-(27, '2241389', 1, '2025-12-15 03:56:42', '2026-01-14 03:56:42', 'asadsa', 'in person', 'Trade only', 1, '2025-12-15 03:56:42', 'trade'),
-(28, '2241389', 1, '2025-12-15 04:52:47', '2026-01-14 04:52:47', 'asas', 'in person', 'onsite', 1, '2025-12-15 04:52:47', 'trade'),
-(29, '2241389', 1, '2025-12-15 04:58:07', '2026-01-14 04:58:07', 'sssss', 'in person', 'online', 1, '2025-12-15 04:58:07', 'trade'),
-(30, '111', 1, '2025-12-15 16:05:04', '2026-01-14 16:05:04', 'White', 'in person', 'Trade only', 1, '2025-12-15 16:05:04', 'trade'),
-(31, '111', 1, '2025-12-15 16:15:04', '2025-12-22 16:15:04', 'good mouse', 'in person', 'onsite', 1, '2025-12-15 16:15:04', 'bid'),
-(32, '222', 1, '2025-12-15 16:47:18', '2025-12-22 16:47:18', 'sarap', 'in person', 'onsite', 1, '2025-12-15 16:47:18', 'bid'),
-(33, '2242157', 1, '2025-12-15 16:51:51', '2025-12-22 16:51:51', 'headphones', 'in person', 'onsite', 1, '2025-12-15 16:51:51', 'bid'),
-(34, '222', 1, '2025-12-15 20:49:29', '2026-01-14 20:49:29', 'logitech mouse', 'in person', 'Trade only', 1, '2025-12-15 20:49:29', 'trade'),
-(35, '2241389', 1, '2025-12-16 03:48:14', '2026-01-15 03:48:14', 'asdasd', 'in person', 'Trade only', 1, '2025-12-16 03:48:14', 'trade'),
-(36, '2241389', 1, '2025-12-16 08:00:17', '2026-01-15 08:00:17', 'asda', 'campus', 'Trade only', 1, '2025-12-16 08:00:17', 'trade'),
-(37, '2241389', 1, '2025-12-16 08:11:36', '2026-01-15 08:11:36', 'ok', 'drop off', 'onsite', 1, '2025-12-16 08:11:36', 'trade'),
-(38, '2241389', 1, '2025-12-16 10:02:52', '2026-01-15 10:02:52', 'ok', 'in person', 'Trade only', 1, '2025-12-16 10:02:52', 'trade'),
-(39, '2241389', 1, '2025-12-17 08:36:43', '2026-01-16 08:36:43', 'bought never used', 'in person', 'Trade only', 1, '2025-12-17 08:36:43', 'trade'),
-(40, '2241389', 1, '2025-12-17 08:57:37', '2026-01-16 08:57:37', '1 year', 'in person', 'Trade only', 1, '2025-12-17 08:57:37', 'trade'),
-(41, '2241389', 1, '2025-12-17 09:39:26', '2026-01-16 09:39:26', 'asda', 'drop off', 'Trade only', 1, '2025-12-17 09:39:26', 'trade'),
-(42, '2241389', 1, '2025-12-17 11:39:18', '2026-01-16 11:39:18', 'aasda', 'drop off', 'Trade only', 1, '2025-12-17 11:39:18', 'trade'),
-(43, '22412345', 1, '2025-12-17 11:51:24', '2026-01-16 11:51:24', 'asda', 'shipping', 'Trade only', 1, '2025-12-17 11:51:24', 'trade'),
-(44, '2241389', 1, '2025-12-17 11:55:32', '2026-01-16 11:55:32', 'rav', 'drop off', 'onsite', 1, '2025-12-17 11:55:32', 'trade'),
-(45, '2241389', 1, '2025-12-17 13:00:50', '2026-01-16 13:00:50', 'never used', 'in person', 'onsite', 1, '2025-12-17 13:00:50', 'trade');
+INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `end_date`, `description`, `exchange_method`, `payment_method`, `is_valid`, `created_at`, `listing_type`, `status`) VALUES
+(21, '2230136', 1, '2025-12-14 18:46:09', '2025-12-21 18:46:09', 'Gaming laptop with great flexibility. Used once or twice. Comes with box', 'in person', 'onsite', 1, '2025-12-14 18:46:09', 'bid', 'pending'),
+(22, '2230136', 1, '2025-12-14 18:57:00', '2025-12-21 18:57:00', 'Pentel graphgear 1000 .5 in satin gold. Has retractable tip', 'drop off', 'online', 1, '2025-12-14 18:57:00', 'bid', 'pending'),
+(23, '2241389', 1, '2025-12-15 00:44:13', '2026-01-14 00:44:13', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:44:13', 'trade', 'pending'),
+(24, '2241389', 1, '2025-12-15 00:49:30', '2025-12-22 00:49:30', 'kkkk', 'face to face', 'onsite', 1, '2025-12-15 00:49:30', 'bid', 'pending'),
+(25, '2241389', 1, '2025-12-15 00:57:30', '2026-01-14 00:57:30', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:57:30', 'trade', 'pending'),
+(26, '2241389', 1, '2025-12-15 00:58:03', '2026-01-14 00:58:03', 'Lenovo Legion', 'in person', 'Trade only', 1, '2025-12-15 00:58:03', 'trade', 'pending'),
+(27, '2241389', 1, '2025-12-15 03:56:42', '2026-01-14 03:56:42', 'asadsa', 'in person', 'Trade only', 1, '2025-12-15 03:56:42', 'trade', 'pending'),
+(28, '2241389', 1, '2025-12-15 04:52:47', '2026-01-14 04:52:47', 'asas', 'in person', 'onsite', 1, '2025-12-15 04:52:47', 'trade', 'pending'),
+(29, '2241389', 1, '2025-12-15 04:58:07', '2026-01-14 04:58:07', 'sssss', 'in person', 'online', 1, '2025-12-15 04:58:07', 'trade', 'pending'),
+(30, '111', 1, '2025-12-15 16:05:04', '2026-01-14 16:05:04', 'White', 'in person', 'Trade only', 1, '2025-12-15 16:05:04', 'trade', 'pending'),
+(31, '111', 1, '2025-12-15 16:15:04', '2025-12-22 16:15:04', 'good mouse', 'in person', 'onsite', 1, '2025-12-15 16:15:04', 'bid', 'pending'),
+(32, '222', 1, '2025-12-15 16:47:18', '2025-12-22 16:47:18', 'sarap', 'in person', 'onsite', 1, '2025-12-15 16:47:18', 'bid', 'pending'),
+(33, '2242157', 1, '2025-12-15 16:51:51', '2025-12-22 16:51:51', 'headphones', 'in person', 'onsite', 1, '2025-12-15 16:51:51', 'bid', 'pending'),
+(34, '222', 1, '2025-12-15 20:49:29', '2026-01-14 20:49:29', 'logitech mouse', 'in person', 'Trade only', 1, '2025-12-15 20:49:29', 'trade', 'pending'),
+(35, '2241389', 1, '2025-12-16 03:48:14', '2026-01-15 03:48:14', 'asdasd', 'in person', 'Trade only', 1, '2025-12-16 03:48:14', 'trade', 'pending'),
+(36, '2241389', 1, '2025-12-16 08:00:17', '2026-01-15 08:00:17', 'asda', 'campus', 'Trade only', 1, '2025-12-16 08:00:17', 'trade', 'pending'),
+(37, '2241389', 1, '2025-12-16 08:11:36', '2026-01-15 08:11:36', 'ok', 'drop off', 'onsite', 1, '2025-12-16 08:11:36', 'trade', 'pending'),
+(38, '2241389', 1, '2025-12-16 10:02:52', '2026-01-15 10:02:52', 'ok', 'in person', 'Trade only', 1, '2025-12-16 10:02:52', 'trade', 'pending'),
+(39, '2241389', 1, '2025-12-17 08:36:43', '2026-01-16 08:36:43', 'bought never used', 'in person', 'Trade only', 1, '2025-12-17 08:36:43', 'trade', 'pending'),
+(40, '2241389', 1, '2025-12-17 08:57:37', '2026-01-16 08:57:37', '1 year', 'in person', 'Trade only', 1, '2025-12-17 08:57:37', 'trade', 'pending'),
+(41, '2241389', 1, '2025-12-17 09:39:26', '2026-01-16 09:39:26', 'asda', 'drop off', 'Trade only', 1, '2025-12-17 09:39:26', 'trade', 'pending'),
+(42, '2241389', 1, '2025-12-17 11:39:18', '2026-01-16 11:39:18', 'aasda', 'drop off', 'Trade only', 1, '2025-12-17 11:39:18', 'trade', 'pending'),
+(43, '22412345', 1, '2025-12-17 11:51:24', '2026-01-16 11:51:24', 'asda', 'shipping', 'Trade only', 1, '2025-12-17 11:51:24', 'trade', 'pending'),
+(44, '2241389', 1, '2025-12-17 11:55:32', '2026-01-16 11:55:32', 'rav', 'drop off', 'onsite', 1, '2025-12-17 11:55:32', 'trade', 'pending'),
+(45, '2241389', 1, '2025-12-17 13:00:50', '2026-01-16 13:00:50', 'never used', 'in person', 'onsite', 1, '2025-12-17 13:00:50', 'trade', 'pending');
 
 -- --------------------------------------------------------
 
@@ -495,32 +496,6 @@ CREATE TABLE IF NOT EXISTS `platform_metrics` (
   `avg_transaction_value` decimal(10,2) DEFAULT '0.00',
   PRIMARY KEY (`metric_id`),
   UNIQUE KEY `metric_date` (`metric_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `transactions`
---
-
-DROP TABLE IF EXISTS `transactions`;
-CREATE TABLE IF NOT EXISTS `transactions` (
-  `transaction_id` varchar(20) NOT NULL,
-  `listing_id` int DEFAULT NULL,
-  `seller_id` varchar(20) DEFAULT NULL,
-  `buyer_id` varchar(20) DEFAULT NULL,
-  `transaction_type` enum('auction','barter','sale') NOT NULL,
-  `item_name` varchar(255) NOT NULL,
-  `starting_bid` decimal(10,2) DEFAULT NULL,
-  `final_price` decimal(10,2) DEFAULT NULL,
-  `transaction_date` datetime DEFAULT CURRENT_TIMESTAMP,
-  `status` enum('pending','completed','cancelled','active') DEFAULT 'pending',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`transaction_id`),
-  KEY `seller_id` (`seller_id`),
-  KEY `buyer_id` (`buyer_id`),
-  KEY `transaction_date` (`transaction_date`),
-  KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
