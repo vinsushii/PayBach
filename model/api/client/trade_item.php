@@ -1,5 +1,4 @@
 <?php
-// trade_item.php
 require_once __DIR__ . '/../../config/db_connect.php';
 session_start();
 
@@ -146,10 +145,9 @@ try {
         
     } else if ($user_has_offer) {
         // Offerer: show only their own offer (including rejected)
-        $all_offers = [$user_offer]; // Only their own offer
+        $all_offers = [$user_offer]; 
         $filtered_offers = [$user_offer];
     }
-    // Viewer: no offers shown
     
     // Determine user role and prepare response data
     $user_role = 'viewer';
@@ -167,7 +165,7 @@ try {
             'offered_item_condition' => $user_offer['item_condition'] ?? 'N/A',
             'offered_images' => $user_offer['offered_item_image'] ? [$user_offer['offered_item_image']] : [],
             
-            // What the offerer is looking for (the original owner's offered item)
+            // What the offerer is looking for
             'listing_item_name' => $trade['offered_item_name'],
             'listing_description' => $trade['offered_item_description'],
             'listing_item_condition' => $trade['offered_item_condition'],
@@ -185,7 +183,7 @@ try {
             'status' => $trade['status'],
             'barter_status' => $trade['barter_status'] ?? 'active',
             
-            // Owner info (the original trade owner)
+            // Owner info 
             'owner_name' => $trade['owner_name'],
             'owner_email' => $trade['owner_email'],
             
@@ -194,11 +192,11 @@ try {
             'has_accepted_offer' => $trade['has_accepted_offer'] > 0,
             'accepted_offer_image' => $trade['accepted_offer_image'] ?? null,
             
-            // Accepted by info (if applicable)
+            // Accepted by info 
             'accepted_by_name' => null,
             'accepted_by_email' => null,
             
-            // ADD THIS LINE: Include user_offer_status in the trade object
+            // Include user_offer_status in the trade object
             'user_offer_status' => $user_offer['status'] ?? 'pending'
         ];
         
@@ -213,11 +211,11 @@ try {
         $response_trade['requested_items_text'] = $response_trade['listing_description'] ?? 'Trade Item';
     }
     
-    // Add rejected offers information
+    // rejected offers information
     $response_trade['rejected_offers_count'] = count($rejected_offers);
     $response_trade['has_rejected_offers'] = !empty($rejected_offers);
     
-    // ADD THIS LINE: Include user_offer_status (null for owner)
+    // Include user_offer_status
     $response_trade['user_offer_status'] = null;
     
     } else {
@@ -231,7 +229,7 @@ try {
             $response_trade['requested_items_text'] = $response_trade['listing_description'] ?? 'Trade Item';
         }
         
-        // ADD THIS LINE: Include user_offer_status (null for viewer)
+        // Include user_offer_status
         $response_trade['user_offer_status'] = null;
     }
     
@@ -242,7 +240,7 @@ try {
         'user_role' => $user_role,
         'user_offer_status' => $user_has_offer ? ($user_offer['status'] ?? 'pending') : null,
         'trade' => $response_trade,
-        'offers' => $filtered_offers, // Main offers list (filtered based on role)
+        'offers' => $filtered_offers, // Main offers list 
         'all_offers' => $all_offers, // All offers including rejected (for owner's modal)
     ];
     

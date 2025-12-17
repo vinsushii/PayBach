@@ -88,7 +88,6 @@ try {
     }
     
 if ($action === 'accept') {
-    // When accepting an offer:
     
     // Update this offer to accepted
     $update_offer_query = "UPDATE barter_offers SET status = 'accepted' WHERE offer_id = ?";

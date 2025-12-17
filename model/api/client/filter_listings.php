@@ -1,5 +1,4 @@
 <?php
-// model/api/client/filter_listings.php
 header("Content-Type: application/json");
 require_once __DIR__ . "/../../config/db_connect.php";
 
@@ -11,7 +10,7 @@ $categories = isset($_GET['categories']) ? explode(',', $_GET['categories']) : [
 $listing_type = isset($_GET['type']) ? $_GET['type'] : 'bid'; // 'bid' or 'trade'
 
 try {
-    // Base query - MATCHING YOUR EXACT STRUCTURE
+
     $sql = "
         SELECT 
             l.listing_id,
@@ -76,7 +75,7 @@ try {
     
     $listings = $result->fetch_all(MYSQLI_ASSOC);
     
-    // Process data (EXACTLY LIKE YOUR fetch_listings.php)
+    // Process data (same as fetch_listings.php)
     foreach ($listings as &$l) {
         $listing_id = $l["listing_id"];
         

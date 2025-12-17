@@ -15,7 +15,6 @@ $user_idnum = $_SESSION['user_idnum'];
 try {
     $conn = get_db_connection();
     
-    // FIXED: Changed the condition to only exclude users with pending or accepted offers
     // Users with rejected offers should still see the trade
     $query = "
     SELECT DISTINCT
@@ -88,7 +87,7 @@ try {
         $row['owner_name'] = trim($row['first_name'] . ' ' . $row['last_name']);
         $row['barter_status'] = 'available';
         
-        // Add user_offer_status for frontend to know if user had a previous rejected offer
+        // Add user_offer_status for frontend 
         if ($row['user_offer_status'] === 'rejected') {
             $row['has_rejected_offer'] = true;
         } else {

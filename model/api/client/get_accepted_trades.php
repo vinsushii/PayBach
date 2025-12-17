@@ -15,7 +15,6 @@ if (!isset($_SESSION['user_idnum'])) {
 $user_idnum = $_SESSION['user_idnum'];
 
 try {
-    // Get database connection
     $conn = get_db_connection();
     
     if (!$conn) {
