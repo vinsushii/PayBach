@@ -11,9 +11,19 @@ router.get("/dashboard", async (req, res) => {
   try {
     // TOTAL BIDS (COMPLETED AUCTIONS)
     const [bids] = await pool.query(`
-      SELECT COUNT(*) AS count 
-      FROM transactions 
-      WHERE transaction_type = 'auction' AND status = 'completed'
+        SELECT
+        (
+            SELECT COUNT(*)
+            FROM listings l
+            JOIN bids b ON b.listing_id = l.listing_id
+            WHERE l.listing_type = 'bid'
+              AND l.status = 'completed'
+              AND b.bid_status = 'CLOSED'
+        ) +
+        (
+            SELECT COUNT(*)
+            FROM barter_transactions
+        ) AS count
     `);
 
     // TOTAL TRADES (COMPLETED BARTERS)
