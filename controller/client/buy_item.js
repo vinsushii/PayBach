@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================= BASIC INFO =================
   const item = items?.[0] || {};
   const title = item.name || listing.description || "Unnamed Item";
+  document.querySelector(".time-left").textContent = (listing.status == "ongoing") ? "Ongoing" : "Completed";
   document.querySelector("main h2").textContent = title;
   document.querySelector(".description p.lorem").textContent = listing.description || "No description provided.";
   document.querySelector(".description strong").textContent = "Condition: " + (item.item_condition || "N/A");
@@ -128,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!bidBox) return;
 
 
-  if (endDate < new Date().toJSON()) {
+  if (endDate > new Date().toJSON()) {
     const bidBtn = document.createElement("button"); 
     bidBtn.className = "topup";
     bidBtn.textContent = isOwner ? "You own this item" : "Place Bid";
