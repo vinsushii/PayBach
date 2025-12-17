@@ -31,3 +31,56 @@
   color: #333;
   font-size: 1rem;
 }
+/* =========================
+   MOBILE RESPONSIVE – CHATS
+   ========================= */
+@media (max-width: 768px) {
+
+  .chats-container {
+    padding: 20px;
+    min-height: auto;
+  }
+
+  .back-section {
+    margin-bottom: 10px;
+  }
+
+  .back-link {
+    font-size: 15px;
+  }
+
+  .chats-box {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .empty-chat img {
+    width: 90px;
+    margin: 30px 0 8px;
+  }
+
+  .empty-chat p {
+    font-size: 0.95rem;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .chats-container {
+    padding: 15px;
+  }
+
+  .chats-box {
+    padding: 16px;
+  }
+
+  .empty-chat img {
+    width: 75px;
+  }
+
+  .empty-chat p {
+    font-size: 0.9rem;
+    padding: 0 10px;
+  }
+}

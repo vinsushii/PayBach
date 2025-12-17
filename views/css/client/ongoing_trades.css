@@ -374,3 +374,126 @@ body {
   font-size: 16px;
   font-weight: 500;
 }
+
+/* =====================================
+   MOBILE RESPONSIVE – ONGOING TRADES
+   ===================================== */
+@media (max-width: 768px) {
+
+  /* PAGE */
+  .trades-section {
+    padding: 20px 15px;
+  }
+
+  .trades-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  /* LAYOUT */
+  .trades-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .trades-column {
+    width: 100%;
+    min-width: auto;
+    padding: 16px;
+  }
+
+  /* HEADER */
+  .trades-header h3 {
+    font-size: 18px;
+  }
+
+  .action-add-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+  }
+
+  /* CONTAINER */
+  .trades-container {
+    height: auto;
+    max-height: 420px;
+  }
+
+  /* CARDS */
+  .trade-card {
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 15px;
+  }
+
+  .trade-image-container {
+    height: 140px;
+  }
+
+  .trade-title {
+    font-size: 15px;
+  }
+
+  .trade-description {
+    font-size: 12px;
+  }
+
+  .trade-cash {
+    font-size: 12px;
+  }
+
+  /* BUTTONS */
+  .btn-make-offer,
+  .btn-view-offers {
+    font-size: 13px;
+    padding: 9px;
+  }
+
+  /* ALERTS */
+  .alert-error,
+  .alert-success {
+    right: 10px;
+    left: 10px;
+    width: auto;
+    text-align: center;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .trades-section h2 {
+    font-size: 20px;
+  }
+
+  .trades-column {
+    border-radius: 12px;
+  }
+
+  .trade-card {
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .trade-image-container {
+    height: 120px;
+  }
+
+  .trade-status {
+    font-size: 10px;
+    padding: 5px 12px;
+  }
+
+  .trade-owner,
+  .trade-date {
+    font-size: 10px;
+  }
+
+  .empty-state {
+    padding: 40px 10px;
+  }
+
+  .empty-state-message {
+    font-size: 14px;
+  }
+}

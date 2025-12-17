@@ -499,3 +499,164 @@ h2 {
   font-size: 14px;
   text-align: right;
 }
+/* =========================
+   MOBILE RESPONSIVE
+   ========================= */
+@media (max-width: 768px) {
+
+  /* GLOBAL */
+  body {
+    font-size: 14px;
+  }
+
+  /* HEADER */
+  .header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .header-icons {
+    position: static;
+    align-self: flex-end;
+    margin-top: 5px;
+  }
+
+  .logo {
+    width: 45px;
+  }
+
+  .logo-text h1 {
+    font-size: 18px;
+  }
+
+  .logo-text p {
+    font-size: 12px;
+  }
+
+  /* NAVBAR */
+  .navbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .navbar a {
+    width: 100%;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .search-bar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+
+  /* MAIN CONTENT */
+  .product-page {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  /* PRODUCT SECTION */
+  .product-section {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  /* IMAGE GALLERY */
+  .image-gallery {
+    min-width: 100%;
+  }
+
+  .image-gallery .main-image img {
+    max-width: 100%;
+  }
+
+  .arrow.left {
+    left: 0;
+  }
+
+  .arrow.right {
+    right: 0;
+  }
+
+  .thumb {
+    width: 55px;
+    height: 55px;
+  }
+
+  /* PRODUCT DETAILS */
+  .product-details {
+    min-width: 100%;
+  }
+
+  .description {
+    padding: 1rem;
+  }
+
+  .favorite-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* BID BOX */
+  .price {
+    font-size: 24px;
+  }
+
+  .topup,
+  .report {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  /* MODALS */
+  .modal-content,
+  .report-content {
+    width: 90%;
+  }
+
+  /* MEETUP */
+  .meetup {
+    padding: 15px;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+  }
+
+  .credits {
+    text-align: center;
+    margin-top: 8px;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .logo-text h1 {
+    font-size: 16px;
+  }
+
+  .navbar a {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .price {
+    font-size: 22px;
+  }
+
+  .thumb {
+    width: 48px;
+    height: 48px;
+  }
+}

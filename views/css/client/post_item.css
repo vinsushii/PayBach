@@ -99,3 +99,87 @@ textarea {
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* =========================
+   MOBILE RESPONSIVE – POST ITEM
+   ========================= */
+@media (max-width: 768px) {
+
+  .post-item {
+    padding: 20px;
+  }
+
+  .form-container {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .form-container h2 {
+    font-size: 18px;
+    padding: 5px 12px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .listing-type,
+  .payment-buttons,
+  .tag-selection {
+    gap: 8px;
+  }
+
+  .type-btn,
+  .payment-btn,
+  .tag {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  #add-image-btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .submit-btn {
+    font-size: 15px;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .post-item {
+    padding: 15px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+  }
+
+  .form-container {
+    padding: 16px;
+  }
+
+  .form-container h2 {
+    font-size: 16px;
+  }
+
+  .type-btn,
+  .payment-btn,
+  .tag {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  textarea {
+    min-height: 100px;
+  }
+}
