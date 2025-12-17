@@ -13,10 +13,34 @@ if (!$listing_id) {
     exit;
 }
 
+// check if listing should still be active, set listing to completed if not
+
+$stmtStatusCheck = $conn->prepare("
+    SELECT end_date, status
+    FROM listings
+    WHERE listing_id = ? AND is_valid = TRUE
+");
+$stmtStatusCheck->bind_param("i", $listing_id);
+$stmtStatusCheck->execute();
+$statusCheck = $stmtStatusCheck->get_result()->fetch_assoc();
+$stmtStatusCheck->close();
+
+$currentDateTime = date('m/d/Y h:i:s a', time());
+if ($statusCheck["end_date"] < $currentDateTime) {
+    $stmtStatusUpdate = $conn->prepare("
+        UPDATE listings
+        SET status = ?
+        WHERE listing_id = ?
+    ");
+    $stmtStatusCheck->bind_param("si", "completed", $listing_id);
+    $stmtStatusCheck->execute();
+    $stmtStatusCheck->close();
+}
+
 /* ================= LISTING ================= */ 
 
 $stmt = $conn->prepare("
-    SELECT l.*, u.first_name, u.last_name, u.email, l.end_date
+    SELECT l.*, u.first_name, u.last_name, u.email, l.end_date, l.status
     FROM listings l
     JOIN users u ON l.user_idnum = u.user_idnum
     WHERE l.listing_id = ? AND l.is_valid = TRUE
