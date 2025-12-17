@@ -39,9 +39,10 @@ router.get("/dashboard", async (req, res) => {
 
     // TO VALIDATE (INVALID LISTINGS)
     const [validate] = await pool.query(`
-      SELECT COUNT(*) AS count 
-      FROM listings 
-      WHERE is_valid = 0
+      SELECT COUNT(*) AS count
+  FROM listings
+  WHERE is_valid = 1
+    AND listing_type = 'bid'
     `);
 
     res.json({
