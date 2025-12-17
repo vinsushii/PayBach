@@ -66,8 +66,6 @@ qs("#postForm").addEventListener("submit", async (e) => {
   // ====================
   // VALIDATIONS START
   // ====================
-  const itemPrice = qs("[name='item_price']").value.trim();
-  const maxPrice = qs("[name='max_price']").value.trim();
   const startingBid = qs("[name='bid']").value.trim();
   const maxBid = qs("[name='max_bid']").value.trim();
 
@@ -79,37 +77,23 @@ qs("#postForm").addEventListener("submit", async (e) => {
   };
 
   // RULE 1: No empty inputs allowed
-  if (!itemPrice || !maxPrice || !startingBid || !maxBid) {
+  if (!startingBid || !maxBid) {
     alert("All bid fields must be filled. Whitespaces are not allowed.");
     return;
   }
 
   // RULE 2: Decimal format validation
-  if (!decimalCheck(itemPrice) || !decimalCheck(maxPrice) || !decimalCheck(startingBid) || !decimalCheck(maxBid)) {
+  if (!decimalCheck(startingBid) || !decimalCheck(maxBid)) {
     alert("Decimal values must be only 00, 25, 50, or 75.");
     return;
   }
 
-  const itemP = parseFloat(itemPrice);
-  const maxP = parseFloat(maxPrice);
   const startB = parseFloat(startingBid);
   const maxBVal = parseFloat(maxBid);
 
-  // RULE 3: Item Price ≤ Max Price
-  if (itemP > maxP) {
-    alert("Item Price must not be greater than Max Price.");
-    return;
-  }
-
-  // RULE 4: Starting bid ≤ max price AND Max bid ≤ max price
-  if (startB > maxP || maxBVal > maxP) {
-    alert("Starting Bid and Max Bid must NOT exceed Max Price.");
-    return;
-  }
-
-  // RULE 5: Max bid must not equal starting bid
-  if (startB === maxBVal) {
-    alert("Max Bid must not be equal to Starting Bid.");
+  // RULE 3: Max bid must be greater than starting bid
+  if (startB >= maxBVal) {
+    alert("Autobuy Price must be greater than Starting Bid.");
     return;
   }
   // ====================
@@ -161,10 +145,8 @@ qs("#postForm").addEventListener("submit", async (e) => {
   formData.append("listing_type", "bid");
 
   // BID FIELDS
-  formData.append("item_price", itemPrice);
   formData.append("bid", startingBid);
   formData.append("max_bid", maxBid);
-  formData.append("max_price", maxPrice);
 
   // Tags
   selectedTags.forEach((tag, i) => formData.append(`categories[${i}]`, tag));

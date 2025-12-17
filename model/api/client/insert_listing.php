@@ -109,8 +109,6 @@ try {
     }
     // 3. INSERT INTO BIDS TABLE (for bid listings)
     if ($listing_type === 'bid') {
-    $item_price = $_POST['item_price'] ?? 0;
-    $max_price = $_POST['max_price'] ?? 0;
     $starting_bid = $_POST['bid'] ?? 0;
     $max_bid = $_POST['max_bid'] ?? 0;
     

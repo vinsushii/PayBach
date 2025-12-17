@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       let result = await response.json();
       if (result.success) {
-        //const { user_idnum } = result;
         localStorage.setItem("user_id", result.user_idnum);
         window.location.href = result.redirect;
       } else {
