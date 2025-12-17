@@ -38,10 +38,10 @@ router.get("/metrics", async (req, res) => {
       
         const [[transactions]] = await pool.query(`
           SELECT COUNT(*) AS completed_transactions,
-                 IFNULL(SUM(final_price),0) AS total_sales,
-                 IFNULL(AVG(final_price),0) AS avg_value
-          FROM transactions
-          WHERE status = 'completed'
+                 IFNULL(SUM(current_amount),0) AS total_sales,
+                 IFNULL(AVG(current_amount),0) AS avg_value
+          FROM bids
+          WHERE bid_status = 'CLOSED'
         `);
       
         return res.json({
@@ -80,21 +80,19 @@ router.get("/metrics", async (req, res) => {
     if (type === "TRANSACTION") {
       const [rows] = await pool.query(`
         SELECT
-          t.transaction_id,
-          t.listing_id,
-          t.buyer_id,
+          l.listing_id,
+          b.current_highest_bidder AS buyer_id,
           l.listing_type,
           li.name AS item_name,
           b.start_bid,
-          t.final_price,
-          t.transaction_date,
-          t.status,
-          t.created_at
-        FROM transactions t
-        JOIN listings l ON l.listing_id = t.listing_id
+          b.current_amount AS final_price,
+          b.bid_datetime AS transaction_date,
+          l.status,
+          l.created_at
+        FROM listings l
         JOIN listing_items li ON li.listing_id = l.listing_id
         LEFT JOIN bids b ON b.listing_id = l.listing_id
-        ORDER BY t.transaction_date DESC
+        ORDER BY transaction_date DESC
       `);
 
       return res.json({ success: true, data: rows });
