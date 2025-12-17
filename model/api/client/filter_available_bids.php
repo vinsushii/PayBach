@@ -1,5 +1,4 @@
 <?php
-// model/api/client/filter_listings.php
 session_start();
 header("Content-Type: application/json");
 

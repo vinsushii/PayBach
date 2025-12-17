@@ -1,5 +1,5 @@
 <?php
-ob_start(); // Start output buffering
+ob_start(); // output buffering
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
