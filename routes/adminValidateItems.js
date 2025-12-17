@@ -12,17 +12,16 @@ router.use(adminOnly);
 router.get("/validate/count", async (req, res) => {
   try {
     const [[bidCount]] = await pool.query(
-      `SELECT COUNT(*) AS count FROM listings WHERE is_valid = 0`
-    );
-    const [[tradeCount]] = await pool.query(
-      `SELECT COUNT(*) AS count FROM barters WHERE is_valid = 0`
+      `SELECT COUNT(*) AS count
+FROM listings
+WHERE is_valid = 1
+  AND listing_type = 'bid';`
     );
 
     res.json({
       success: true,
-      total: bidCount.count + tradeCount.count,
+      total: bidCount.count,
       bids: bidCount.count,
-      trades: tradeCount.count,
     });
   } catch (err) {
     console.error("Count items error:", err);
@@ -32,44 +31,42 @@ router.get("/validate/count", async (req, res) => {
 
 /* -------------------- FETCH ITEMS -------------------- */
 router.get("/validate/items", async (req, res) => {
-  const { type } = req.query; // BID | TRADE | ALL
-  try {
-    let results = [];
+    try {
+      const [rows] = await pool.query(`
+        SELECT 
+    l.listing_id AS id,
+    MAX(li.name) AS name,
+    MAX(b.start_bid) AS price,
+    MAX(img.image_path) AS image,
+    'BID' AS type
+FROM listings l
+JOIN listing_items li 
+    ON li.listing_id = l.listing_id
+LEFT JOIN bids b 
+    ON b.listing_id = l.listing_id
+LEFT JOIN listing_images img 
+    ON img.listing_id = l.listing_id
+WHERE l.is_valid = 1
+  AND l.listing_type = 'bid'
+GROUP BY l.listing_id;
 
-    if (!type || type === "BID" || type === "ALL") {
-      const [bids] = await pool.query(
-        `SELECT listing_id AS id, listing_name AS name, starting_price AS price, image_path AS image, 'BID' AS type 
-         FROM listings 
-         WHERE is_valid = 0`
-      );
-      results = results.concat(bids);
+      `);
+  
+      res.json({ success: true, items: rows });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false });
     }
-
-    if (!type || type === "TRADE" || type === "ALL") {
-      const [trades] = await pool.query(
-        `SELECT barter_id AS id, item_name AS name, NULL AS price, image_path AS image, 'TRADE' AS type 
-         FROM barters 
-         WHERE is_valid = 0`
-      );
-      results = results.concat(trades);
-    }
-
-    res.json({ success: true, items: results });
-  } catch (err) {
-    console.error("Fetch items error:", err);
-    res.status(500).json({ success: false });
-  }
-});
+  });
+  
 
 /* -------------------- APPROVE ITEM -------------------- */
 router.post("/validate/:type/:id/approve", async (req, res) => {
   const { type, id } = req.params;
   try {
     if (type === "BID") {
-      await pool.query(`UPDATE listings SET is_valid = 1 WHERE listing_id = ?`, [id]);
-    } else if (type === "TRADE") {
-      await pool.query(`UPDATE barters SET is_valid = 1 WHERE barter_id = ?`, [id]);
-    } else {
+      await pool.query(`UPDATE listings SET is_valid = 0 WHERE listing_id = ?`, [id]);
+    }  else {
       return res.status(400).json({ success: false, message: "Invalid type" });
     }
 

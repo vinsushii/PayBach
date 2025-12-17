@@ -5,9 +5,17 @@ import cors from "cors";
 import pool from "./model/admin/db.js";
 import adminDashboardRoutes from "./routes/adminDashboard.js";
 import adminValidateRoutes from "./routes/adminValidateItems.js";
+import adminMetricsRoutes from "./routes/adminMetrics.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Serve static files from views folder
+app.use(express.static(path.join(__dirname, "views")));
 /* -------------------- MIDDLEWARE -------------------- */
 app.use(express.json());
 app.use(cors({
@@ -26,6 +34,7 @@ app.use(session({
 // Mount routers at top level
 app.use("/api/admin", adminDashboardRoutes);
 app.use("/admin", adminValidateRoutes);
+app.use("/admin", adminMetricsRoutes);
 
 /* -------------------- LOGIN (ADMIN ONLY) -------------------- */
 app.post("/api/login", async (req, res) => {

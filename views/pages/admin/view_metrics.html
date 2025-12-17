@@ -1,155 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>View Metrics</title>
+<head>
+    <meta charset="UTF-8">
+    <title>View Metrics</title>
 
-        <!-- PAGE CSS -->
-        <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="../../css/admin/review_reports.css">
+    <!-- PAGE CSS -->
+    <link rel="stylesheet" href="../../css/bootstrap/bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/admin/review_reports.css">
 
-        <!-- LAYOUT CSS -->
-        <link rel="stylesheet" href="../../css/layout/admin_sidebar.css">
-    </head>
-    <body>
-        <div id="sidebar" class="sidebar"></div>
+    <!-- LAYOUT CSS -->
+    <link rel="stylesheet" href="../../css/layout/admin_sidebar.css">
+</head>
+<body>
+    <div id="sidebar" class="sidebar"></div>
 
-        <div class="content">
-            <div class="d-flex justify-content-end align-items-center mb-4 admin-header">
-                <span class="text-muted me-2">Welcome, Admin</span>
-            </div>
-
-            <div class="filter-controls mb-4 d-flex align-items-center">
-                <select id="itemFilter" class="form-select custom-select filter-bids-margin">
-                    <option value="SUMMARY">SUMMARY</option>
-                    <option value="USER">USER</option>
-                    <option value="TRANSACTION">TRANSACTION</option>
-                </select>
-            </div>
-
-            <!-- USER Table -->
-            <div id="USER" class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Session ID</th>
-                            <th>User ID</th>
-                            <th>Log-in Time</th>
-                            <th>Last Activity</th>
-                            <th>Log-out Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>SID00001</td>
-                            <td>U001</td>
-                            <td>2025-12-13 08:00</td>
-                            <td>2025-12-13 08:15</td>
-                            <td>2025-12-13 08:30</td>
-                        </tr>
-                        <tr>
-                            <td>SID00002</td>
-                            <td>U002</td>
-                            <td>2025-12-13 08:30</td>
-                            <td>2025-12-13 09:20</td>
-                            <td>2025-12-13 10:45</td>
-                        </tr>
-                        <tr>
-                            <td>SID00003</td>
-                            <td>U003</td>
-                            <td>2025-12-13 09:00</td>
-                            <td>2025-12-13 09:50</td>
-                            <td>2025-12-13 10:00</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- TRANSACTION Table -->
-            <div id="TRANSACTION" class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Transaction ID</th>
-                            <th>Listing ID</th>
-                            <th>Buyer ID</th>
-                            <th>Transaction Type</th>
-                            <th>Item Name</th>
-                            <th>Starting Bid</th>
-                            <th>Final Price</th>
-                            <th>Transaction Date</th>
-                            <th>Status</th>
-                            <th>Created at</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>TID00001</td>
-                            <td>LID001</td>
-                            <td>BID001</td>
-                            <td>Bid</td>
-                            <td>Cereal Box</td>
-                            <td>20.00</td>
-                            <td>200.00</td>
-                            <td>2025-12-13 08:30</td>
-                            <td>Sold</td>
-                            <td>2025-12-13 01:30</td>
-                        </tr>
-                        <tr>
-                            <td>TID00002</td>
-                            <td>LID002</td>
-                            <td>BID002</td>
-                            <td>Trade</td>
-                            <td>CD</td>
-                            <td>0.00</td>
-                            <td>0.00</td>
-                            <td>2025-12-13 15:30</td>
-                            <td>Sold</td>
-                            <td>2025-12-13 19:30</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- SUMMARY Table -->
-            <div id="SUMMARY" class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Metric ID</th>
-                            <th>Metric Date</th>
-                            <th>Total Users</th>
-                            <th>Active Users</th>
-                            <th>New Users</th>
-                            <th>Total Listings</th>
-                            <th>Active Listings</th>
-                            <th>Completed Transactions</th>
-                            <th>Total Sales</th>
-                            <th>Average Transaction Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>MID00001</td>
-                            <td>2025-12-13 08:30</td>
-                            <td>109</td>
-                            <td>46</td>
-                            <td>8</td>
-                            <td>400</td>
-                            <td>200</td>
-                            <td>57</td>
-                            <td>57000.00</td>
-                            <td>2025-12-13 21:30</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
+    <div class="content">
+        <div class="d-flex justify-content-end align-items-center mb-4 admin-header">
+            <span class="text-muted me-2">Welcome, Admin</span>
         </div>
 
-        <div id="footer" class="footer"></div>
+        <div class="filter-controls mb-4 d-flex align-items-center">
+            <select id="itemFilter" class="form-select custom-select filter-bids-margin">
+                <option value="SUMMARY">SUMMARY</option>
+                <option value="USER">USER</option>
+                <option value="TRANSACTION">TRANSACTION</option>
+            </select>
+        </div>
 
-        <script src="../layout/load_layout.js"></script>
-      <script src="/controller/admin/view_metrics.js"></script>
-    </body>
+        <!-- USER Table -->
+        <div id="USER" class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Session ID</th>
+                        <th>User ID</th>
+                        <th>Log-in Time</th>
+                        <th>Last Activity</th>
+                        <th>Log-out Time</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- TRANSACTION Table -->
+        <div id="TRANSACTION" class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Listing ID</th>
+                        <th>Buyer ID</th>
+                        <th>Transaction Type</th>
+                        <th>Item Name</th>
+                        <th>Starting Bid</th>
+                        <th>Final Price</th>
+                        <th>Transaction Date</th>
+                        <th>Status</th>
+                        <th>Created at</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- SUMMARY Table -->
+        <div id="SUMMARY" class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Metric ID</th>
+                        <th>Metric Date</th>
+                        <th>Total Users</th>
+                        <th>Active Users</th>
+                        <th>New Users</th>
+                        <th>Total Listings</th>
+                        <th>Active Listings</th>
+                        <th>Completed Transactions</th>
+                        <th>Total Sales</th>
+                        <th>Average Transaction Value</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="footer" class="footer"></div>
+
+    <script src="../layout/load_layout.js"></script>
+    <script src="/controller/admin/view_metrics.js"></script>
+</body>
 </html>
