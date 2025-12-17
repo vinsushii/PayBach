@@ -1,32 +1,110 @@
-// load_layout.js
+// Load header
+fetch('../layout/header.html')
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById('header').innerHTML = data;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const logoutBtn = document.querySelector(".logout-btn");
+        // Check session AFTER header loads
+        fetch('../../../model/config/check_session.php')
+            .then(res => {
+                if (!res.ok) throw new Error('check_session.php not found');
+                return res.json();
+            })
+            .then(session => {
+                console.log('SESSION:', session);
 
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault(); // prevent default link behavior
+                const authText = document.getElementById('auth-text');
+                const authLink = document.getElementById('auth-link');
+                const logoutBtn = document.getElementById('logout-btn');
 
-      try {
-        const res = await fetch("/api/logout", {
-          method: "POST",
-          credentials: "include" // important for session cookie
-        });
+                if (!authText || !authLink) return;
 
-        const data = await res.json();
-        if (data.success) {
-          // Redirect to index.html after successful logout
-          window.location.href = "/index.html";
-        } else {
-          alert("Logout failed. Please try again.");
-        }
-      } catch (err) {
-        console.error("Logout error:", err);
-        alert("Something went wrong during logout.");
-      }
+                if (session.loggedIn && session.username && session.username.trim() !== "") {
+                    authText.textContent = session.username;
+
+                    authLink.href =
+                        session.role === 'admin'
+                            ? '../../../views/pages/admin/bidding_summary.html'
+                            : '../../../views/pages/client/homepage.html';
+
+                    if (logoutBtn) logoutBtn.style.display = 'block';
+                } else {
+                    authText.textContent = "Account";
+                    authLink.href = '../../../index.html';
+
+                    if (logoutBtn) logoutBtn.style.display = 'none';
+                }
+
+                // Logout handler
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        //disable button to prevent double-click
+                        logoutBtn.disabled=true;
+                        fetch('../../../model/config/logout.php',{
+                            method: 'POST'
+                        })
+                            .then(()=>{
+                                //always redirect to login(index.html)
+                                window.location.replace('../../../index.html');
+                               })
+                            .catch(err => console.error('Logout failed:', err));
+                    });
+                }
+            })
+            .catch(err => console.error('Session check failed:', err));
     });
-  }
-});
+    // Search functionality
+    function initSearch() {
+      const searchForm = document.getElementById("search-form");
+      const searchInput = searchForm?.querySelector("input");
+
+      if (!searchForm || !searchInput) {
+        console.warn("Search bar not found");
+        return;
+      }
+
+      async function performSearch() {
+        const term = searchInput.value.trim();
+        await loadListings(term);
+      }
+
+      // Submit (button or Enter)
+      searchForm.addEventListener("submit", e => {
+        e.preventDefault();
+        performSearch();
+      });
+
+      // Optional: live search
+      let timer;
+      searchInput.addEventListener("input", () => {
+        clearTimeout(timer);
+        timer = setTimeout(performSearch, 500);
+      });
+
+      console.log("Backend-powered search initialized");
+    }
+
+
+
+// Load navigation
+fetch('../layout/client_nav.html')
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('client-nav').innerHTML = data;
+
+    // Initialize search after nav is injected
+    if (typeof initSearch === "function") {
+      initSearch();
+    }
+  });
+
+
+// Load footer
+fetch('../layout/footer.html')
+    .then(res => res.text())
+    .then(data => document.getElementById('footer').innerHTML = data);
+
+// Load sidebar (admin)
 const sidebarEl = document.getElementById('sidebar');
 if (sidebarEl) {
     fetch('../layout/admin_sidebar.html')

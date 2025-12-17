@@ -15,8 +15,13 @@ $user_idnum = $_SESSION['user_idnum'];
 try {
     $conn = get_db_connection();
     
+    // Get completed trades for the current user
+    // This includes trades where user is owner and trade is completed/canceled
+    // OR where user made an accepted/rejected offer
+    
     $query = "
-        SELECT DISTINCT
+        -- Get trades where user is owner and trade is completed/canceled
+        SELECT 
             b.barter_id,
             b.listing_id,
             b.offered_item_name,
@@ -27,44 +32,82 @@ try {
             b.max_additional_cash,
             b.created_at,
             b.updated_at,
-            b.status,  
+            b.status,
             l.description as listing_description,
             li.name as listing_item_name,
             li.item_condition as listing_item_condition,
-            bo.status as final_offer_status,
-            bo.offered_item_name as accepted_offer_item,
-            bo.offered_item_image as accepted_offer_image,  
-            t.transaction_date as completed_date,
-            GROUP_CONCAT(DISTINCT li_img.image_path) as images
+            'owner' as user_role,
+            NULL as offer_status,
+            NULL as accepted_offer_item,
+            NULL as accepted_offer_image,
+            bt.completed_date,
+            GROUP_CONCAT(DISTINCT li_img.image_path) as images,
+            NULL as offerer_name,
+            NULL as offerer_email
         FROM barters b
         JOIN listings l ON b.listing_id = l.listing_id
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
         LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
-        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id 
-            AND (bo.offerer_idnum = ? OR bo.status = 'accepted')
-        LEFT JOIN transactions t ON b.listing_id = t.listing_id AND t.transaction_type = 'barter'
+        LEFT JOIN barter_transactions bt ON b.barter_id = bt.barter_id
         WHERE l.listing_type = 'trade'
-        AND (
-            (b.user_idnum = ? AND b.status IN ('completed', 'canceled'))  
-            OR
-            (bo.offerer_idnum = ? AND bo.status IN ('accepted', 'rejected'))  
-        )
+        AND b.user_idnum = ?
+        AND b.status IN ('completed', 'canceled')
         GROUP BY b.barter_id
-        ORDER BY COALESCE(t.transaction_date, b.updated_at) DESC
+        
+        UNION ALL
+        
+        -- Get trades where user made offers that were accepted/rejected
+        SELECT 
+            b.barter_id,
+            b.listing_id,
+            b.offered_item_name,
+            b.offered_item_description,
+            b.offered_item_condition,
+            b.exchange_method,
+            b.payment_method,
+            b.max_additional_cash,
+            b.created_at,
+            b.updated_at,
+            b.status,
+            l.description as listing_description,
+            li.name as listing_item_name,
+            li.item_condition as listing_item_condition,
+            'offerer' as user_role,
+            bo.status as offer_status,
+            bo.offered_item_name as accepted_offer_item,
+            bo.offered_item_image as accepted_offer_image,
+            bt.completed_date,
+            GROUP_CONCAT(DISTINCT li_img.image_path) as images,
+            CONCAT(u.first_name, ' ', u.last_name) as offerer_name,
+            u.email as offerer_email
+        FROM barter_offers bo
+        JOIN barters b ON bo.barter_id = b.barter_id
+        JOIN listings l ON b.listing_id = l.listing_id
+        JOIN users u ON b.user_idnum = u.user_idnum
+        LEFT JOIN listing_items li ON l.listing_id = li.listing_id
+        LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
+        LEFT JOIN barter_transactions bt ON b.barter_id = bt.barter_id
+        WHERE l.listing_type = 'trade'
+        AND bo.offerer_idnum = ?
+        AND bo.status IN ('accepted', 'rejected')
+        GROUP BY b.barter_id, bo.offer_id
+        
+        ORDER BY completed_date DESC, updated_at DESC
     ";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('sss', $user_idnum, $user_idnum, $user_idnum);
+    $stmt->bind_param('ss', $user_idnum, $user_idnum);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $trades = [];
     while ($row = $result->fetch_assoc()) {
+        // Process images
         if ($row['images']) {
             $images = explode(',', $row['images']);
             $row['images'] = array_map(function($img) {
                 $img = str_replace('../../../', '', $img);
-                return '/PayBach/uploads/' . ltrim($img, '/');  // Add PayBach prefix
+                return '/PayBach/uploads/' . ltrim($img, '/');
             }, $images);
         } else {
             $row['images'] = [];
@@ -78,17 +121,17 @@ try {
         $row['item_name'] = $row['offered_item_name'];
         $row['description'] = $row['offered_item_description'];
         
-        // Set barter_status based on database status
+        // Determine barter status
         if ($row['status'] === 'canceled') {
             $row['barter_status'] = 'canceled';
         } elseif ($row['status'] === 'completed') {
             $row['barter_status'] = 'completed';
-        } elseif ($row['final_offer_status'] === 'accepted') {
+        } elseif ($row['offer_status'] === 'accepted') {
             $row['barter_status'] = 'accepted';
-        } elseif ($row['final_offer_status'] === 'rejected') {
+        } elseif ($row['offer_status'] === 'rejected') {
             $row['barter_status'] = 'rejected';
         } else {
-            $row['barter_status'] = 'completed';  // default
+            $row['barter_status'] = 'completed';
         }
         
         $trades[] = $row;
@@ -102,7 +145,11 @@ try {
     $stmt->close();
     
 } catch (Exception $e) {
+    error_log("Completed trades error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Failed to load completed trades: ' . $e->getMessage()
+    ]);
 }
 ?>
