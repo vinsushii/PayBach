@@ -86,12 +86,25 @@ function createCardElement(item, showPrice = true) {
   const priceHtml = (showPrice && price) ? `<p class="price">₱${escapeHtml(price)}</p>` : "";
   const typeLabelHtml = typeText ? `<p class="item-tag ${typeClass}">${typeText}</p>` : "";
 
-  div.innerHTML = `
-    <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}">
-    ${titleHtml}
-    ${priceHtml}
-    ${typeLabelHtml}
-  `;
+  
+  if (item.listing_type) {
+    const ex = item.listing_type.toLowerCase();
+    if (ex.includes("bid") || ex.includes("bidding") || ex.includes("auction")) {
+      div.innerHTML = `
+        <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}">
+        ${titleHtml}
+        ${priceHtml}
+        ${typeLabelHtml}
+      `;
+    } else {
+      div.innerHTML = `
+        <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(title)}">
+        ${titleHtml}
+        ${typeLabelHtml}
+      `;
+    }
+  }
+  
 
   // click => details page, ownership check
   div.addEventListener("click", () => {

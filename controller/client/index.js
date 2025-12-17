@@ -36,8 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-      const result = await response.json();
+      let result = await response.json();
       if (result.success) {
+        //const { user_idnum } = result;
+        localStorage.setItem("user_id", result.user_idnum);
         window.location.href = result.redirect;
       } else {
         alert(result.error);

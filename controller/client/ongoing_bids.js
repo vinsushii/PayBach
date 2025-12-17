@@ -38,6 +38,7 @@ async function loadBidListings() {
         bid.owner_id;
 
       bid.is_owner = String(ownerId) === String(CURRENT_USER_ID);
+      console.log(ownerId + ", " + CURRENT_USER_ID);
     
       const card = createBidCard(bid);
 
