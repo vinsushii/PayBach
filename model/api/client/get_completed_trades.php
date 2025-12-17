@@ -40,20 +40,21 @@ try {
         JOIN listings l ON b.listing_id = l.listing_id
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
         LEFT JOIN listing_images li_img ON l.listing_id = li_img.listing_id
-        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id AND bo.status = 'accepted'
+        LEFT JOIN barter_offers bo ON b.barter_id = bo.barter_id 
+            AND (bo.offerer_idnum = ? OR bo.status = 'accepted')
         LEFT JOIN transactions t ON b.listing_id = t.listing_id AND t.transaction_type = 'barter'
         WHERE l.listing_type = 'trade'
         AND (
             (b.user_idnum = ? AND b.status IN ('completed', 'canceled'))  
             OR
-            (bo.offerer_idnum = ? AND bo.status = 'accepted')  
+            (bo.offerer_idnum = ? AND bo.status IN ('accepted', 'rejected'))  
         )
         GROUP BY b.barter_id
         ORDER BY COALESCE(t.transaction_date, b.updated_at) DESC
     ";
     
     $stmt = $conn->prepare($query);
-    $stmt->bind_param('ss', $user_idnum, $user_idnum);
+    $stmt->bind_param('sss', $user_idnum, $user_idnum, $user_idnum);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -84,6 +85,8 @@ try {
             $row['barter_status'] = 'completed';
         } elseif ($row['final_offer_status'] === 'accepted') {
             $row['barter_status'] = 'accepted';
+        } elseif ($row['final_offer_status'] === 'rejected') {
+            $row['barter_status'] = 'rejected';
         } else {
             $row['barter_status'] = 'completed';  // default
         }

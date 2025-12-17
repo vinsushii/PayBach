@@ -587,3 +587,34 @@
 .trade-status-badge.accepted span {
   color: #0c5460;
 }
+.rejected-badge {
+  color: #dc3545;
+  background-color: #f8d7da;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.accepted-badge {
+  color: #28a745;
+  background-color: #d4edda;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.pending-badge {
+  color: #856404;
+  background-color: #fff3cd;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.rejected-offer-message {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fff3f3;
+  border-left: 4px solid #dc3545;
+  border-radius: 4px;
+}

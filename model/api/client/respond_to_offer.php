@@ -87,64 +87,80 @@ try {
         throw new Exception("Offer is no longer pending");
     }
     
-    if ($action === 'accept') {
-        // When accepting an offer:
-        // 1. Update this offer to 'accepted'
-        // 2. Reject all other offers for the same barter
-        // 3. Update the barter to reflect the accepted offer
-        
-        // Update this offer to accepted
-        $update_offer_query = "UPDATE barter_offers SET status = 'accepted' WHERE offer_id = ?";
-        $update_offer_stmt = $conn->prepare($update_offer_query);
-        $update_offer_stmt->bind_param('i', $offer_id);
-        $update_offer_stmt->execute();
-        $update_offer_stmt->close();
-        
-        // Reject all other offers for this barter
-        $reject_others_query = "UPDATE barter_offers SET status = 'rejected' WHERE barter_id = ? AND offer_id != ? AND status = 'pending'";
-        $reject_others_stmt = $conn->prepare($reject_others_query);
-        $reject_others_stmt->bind_param('ii', $offer_data['barter_id'], $offer_id);
-        $reject_others_stmt->execute();
-        $reject_others_stmt->close();
-        
-       
-        //barter status to 'accepted'
-        $update_barter_status_query = "
-            UPDATE barters 
-            SET status = 'accepted',
-                updated_at = NOW()
-            WHERE barter_id = ?
-        ";
-        $update_barter_status_stmt = $conn->prepare($update_barter_status_query);
-        $update_barter_status_stmt->bind_param('i', $offer_data['barter_id']);
-        $update_barter_status_stmt->execute();
-        $update_barter_status_stmt->close();
-        
-    } 
+if ($action === 'accept') {
+    // When accepting an offer:
     
-    // Store the accepted offer's image in the barter for easy access
-    if (!empty($offer_data['offered_item_image'])) {
-        $update_barter_image_query = "
-            UPDATE barters 
-            SET accepted_offer_image = ?,
-                updated_at = NOW()
-            WHERE barter_id = ?
-        ";
-        
-        $update_barter_image_stmt = $conn->prepare($update_barter_image_query);
-        $update_barter_image_stmt->bind_param('si', $offer_data['offered_item_image'], $offer_data['barter_id']);
-        $update_barter_image_stmt->execute();
-        $update_barter_image_stmt->close();
-    }else if ($action === 'reject') {
-        // When rejecting an offer, just update its status
-        $update_offer_query = "UPDATE barter_offers SET status = 'rejected' WHERE offer_id = ?";
-        $update_offer_stmt = $conn->prepare($update_offer_query);
-        $update_offer_stmt->bind_param('i', $offer_id);
-        $update_offer_stmt->execute();
-        $update_offer_stmt->close();
+    // Update this offer to accepted
+    $update_offer_query = "UPDATE barter_offers SET status = 'accepted' WHERE offer_id = ?";
+    $update_offer_stmt = $conn->prepare($update_offer_query);
+    $update_offer_stmt->bind_param('i', $offer_id);
+    if (!$update_offer_stmt->execute()) {
+        throw new Exception("Failed to accept offer: " . $update_offer_stmt->error);
     }
-  
+    $update_offer_stmt->close();
     
+    // Reject all other offers for this barter
+    $reject_others_query = "UPDATE barter_offers SET status = 'rejected' WHERE barter_id = ? AND offer_id != ? AND status = 'pending'";
+    $reject_others_stmt = $conn->prepare($reject_others_query);
+    $reject_others_stmt->bind_param('ii', $offer_data['barter_id'], $offer_id);
+    if (!$reject_others_stmt->execute()) {
+        throw new Exception("Failed to reject other offers: " . $reject_others_stmt->error);
+    }
+    $reject_others_stmt->close();
+    
+    // Update barter status to 'accepted'
+    $update_barter_status_query = "
+        UPDATE barters 
+        SET status = 'accepted',
+            updated_at = NOW()
+        WHERE barter_id = ?
+    ";
+    $update_barter_status_stmt = $conn->prepare($update_barter_status_query);
+    $update_barter_status_stmt->bind_param('i', $offer_data['barter_id']);
+    if (!$update_barter_status_stmt->execute()) {
+        throw new Exception("Failed to update barter status: " . $update_barter_status_stmt->error);
+    }
+    $update_barter_status_stmt->close();
+    
+} else if ($action === 'reject') {
+    // When rejecting an offer, just update its status
+    $update_offer_query = "UPDATE barter_offers SET status = 'rejected' WHERE offer_id = ?";
+    $update_offer_stmt = $conn->prepare($update_offer_query);
+    $update_offer_stmt->bind_param('i', $offer_id);
+    if (!$update_offer_stmt->execute()) {
+        throw new Exception("Failed to reject offer: " . $update_offer_stmt->error);
+    }
+    $update_offer_stmt->close();
+    
+    // Check if there are any pending offers left
+    $check_pending_query = "
+        SELECT COUNT(*) as pending_count 
+        FROM barter_offers 
+        WHERE barter_id = ? 
+        AND status = 'pending'
+    ";
+    $check_pending_stmt = $conn->prepare($check_pending_query);
+    $check_pending_stmt->bind_param('i', $offer_data['barter_id']);
+    $check_pending_stmt->execute();
+    $pending_result = $check_pending_stmt->get_result();
+    $pending_data = $pending_result->fetch_assoc();
+    $check_pending_stmt->close();
+    
+    // If no pending offers left, update barter status
+    if ($pending_data['pending_count'] == 0) {
+        $update_barter_no_offers_query = "
+            UPDATE barters 
+            SET status = 'active',
+                updated_at = NOW()
+            WHERE barter_id = ?
+            AND status != 'accepted'
+        ";
+        $update_barter_no_offers_stmt = $conn->prepare($update_barter_no_offers_query);
+        $update_barter_no_offers_stmt->bind_param('i', $offer_data['barter_id']);
+        $update_barter_no_offers_stmt->execute();
+        $update_barter_no_offers_stmt->close();
+    }
+}
     // Commit transaction
     $conn->commit();
     

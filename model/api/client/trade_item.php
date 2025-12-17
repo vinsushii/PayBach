@@ -1,88 +1,64 @@
 <?php
-
-ob_start(); // Start output buffering
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
+// trade_item.php
 require_once __DIR__ . '/../../config/db_connect.php';
 session_start();
 
 header('Content-Type: application/json');
 
-// Check authentication
 if (!isset($_SESSION['user_idnum'])) {
-    ob_end_clean();
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => 'Not authenticated. Please login first.']);
+    echo json_encode(['success' => false, 'error' => 'Not authenticated.']);
     exit;
 }
 
-// Get request parameters
-$barter_id = isset($_GET['barter_id']) ? trim($_GET['barter_id']) : null;
+$barter_id = isset($_GET['barter_id']) ? intval($_GET['barter_id']) : 0;
+$current_user_id = $_SESSION['user_idnum'];
 
 if (!$barter_id) {
-    ob_end_clean();
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Missing barter_id parameter']);
+    echo json_encode(['success' => false, 'error' => 'Missing barter_id']);
     exit;
 }
-
-$user_idnum = $_SESSION['user_idnum'];
 
 try {
     $conn = get_db_connection();
     
-    if (!$conn) {
-        throw new Exception("Database connection failed");
-    }
-    
-    // Check if barter_id is numeric
-    if (!is_numeric($barter_id)) {
-        throw new Exception("Invalid barter_id: must be numeric");
-    }
-    
-    $barter_id_int = (int)$barter_id;
-    
-    // Get trade details
+    // Get the basic trade information
     $query = "
         SELECT 
-            b.barter_id,
-            b.listing_id,
-            b.user_idnum as owner_id,
-            b.offered_item_name,
-            b.offered_item_description,
-            b.offered_item_condition,
-            b.exchange_method,
-            b.payment_method,
-            b.max_additional_cash,
-            b.trade_tags,
-            b.requested_items_text,
-            b.created_at,
-            b.updated_at,
-            b.is_active,
-            b.status,  
+            b.*,
             l.description as listing_description,
-            u.first_name,
-            u.last_name,
-            u.email as owner_email,
             li.name as listing_item_name,
-            li.item_condition as listing_item_condition
+            li.item_condition as listing_item_condition,
+            u.user_idnum as owner_idnum,
+            CONCAT(u.first_name, ' ', u.last_name) as owner_name,
+            u.email as owner_email,
+            GROUP_CONCAT(DISTINCT li_img.image_path) as offered_images,
+            GROUP_CONCAT(DISTINCT li_img2.image_path) as listing_images,
+            (
+                SELECT COUNT(*) 
+                FROM barter_offers bo 
+                WHERE bo.barter_id = b.barter_id 
+                AND bo.status = 'pending'
+            ) as offer_count,
+            (
+                SELECT COUNT(*) 
+                FROM barter_offers bo 
+                WHERE bo.barter_id = b.barter_id 
+                AND bo.status = 'accepted'
+            ) as has_accepted_offer
         FROM barters b
         JOIN listings l ON b.listing_id = l.listing_id
         JOIN users u ON b.user_idnum = u.user_idnum
         LEFT JOIN listing_items li ON l.listing_id = li.listing_id
+        LEFT JOIN listing_images li_img ON b.listing_id = li_img.listing_id
+        LEFT JOIN listing_images li_img2 ON l.listing_id = li_img2.listing_id
         WHERE b.barter_id = ?
-        LIMIT 1
+        GROUP BY b.barter_id
     ";
     
     $stmt = $conn->prepare($query);
-    if (!$stmt) {
-        throw new Exception("Prepare failed: " . $conn->error);
-    }
-    
-    $stmt->bind_param('i', $barter_id_int);
+    $stmt->bind_param('i', $barter_id);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -91,238 +67,198 @@ try {
     }
     
     $trade = $result->fetch_assoc();
-    $stmt->close();
     
-    // Get images for the OFFERED item (from listing_images)
-    $images_query = "
-        SELECT image_path 
-        FROM listing_images 
-        WHERE listing_id = ? 
-        ORDER BY image_id ASC
-    ";
-    
-    $images_stmt = $conn->prepare($images_query);
-    if ($images_stmt) {
-        $images_stmt->bind_param('i', $trade['listing_id']);
-        $images_stmt->execute();
-        $images_result = $images_stmt->get_result();
-        
-        $offered_images = [];
-        while ($row = $images_result->fetch_assoc()) {
-            $offered_images[] = $row['image_path'];
-        }
-        $trade['offered_images'] = $offered_images;
-        $images_stmt->close();
+    // Process images
+    if ($trade['offered_images']) {
+        $trade['offered_images'] = array_filter(explode(',', $trade['offered_images']));
     } else {
         $trade['offered_images'] = [];
     }
     
-    // For the REQUESTED item (what they're looking for), we don't have images
-    $trade['requested_images'] = [];
-    
-    // Process image paths for offered item
-    if (!empty($trade['offered_images'])) {
-        $trade['offered_images'] = array_map(function($img) {
-            // Remove any directory traversal prefixes
-            $img = preg_replace('/^(\.\.\/)+/', '', $img);
-            $img = preg_replace('/^\.\//', '', $img);
-            
-            // Check if path already contains uploads
-            if (strpos($img, 'uploads/') === 0) {
-                return '/PayBach/' . $img;
-            }
-            
-            // Otherwise prepend uploads directory
-            return '/PayBach/uploads/' . ltrim($img, '/');
-        }, $trade['offered_images']);
+    if ($trade['listing_images']) {
+        $trade['listing_images'] = array_filter(explode(',', $trade['listing_images']));
+    } else {
+        $trade['listing_images'] = [];
     }
     
-    // Determine user role
-    if ($trade['owner_id'] == $user_idnum) {
-        $trade['user_role'] = 'owner';
-        
-        // Get offers for owner
-        $offers_query = "
+    // Check if current user has made an offer to this trade
+    $user_offer_query = "
+        SELECT 
+            bo.*,
+            CONCAT(u.first_name, ' ', u.last_name) as offerer_name,
+            u.email as offerer_email
+        FROM barter_offers bo
+        JOIN users u ON bo.offerer_idnum = u.user_idnum
+        WHERE bo.barter_id = ? 
+        AND bo.offerer_idnum = ?
+        ORDER BY bo.created_at DESC
+        LIMIT 1
+    ";
+    
+    $user_offer_stmt = $conn->prepare($user_offer_query);
+    $user_offer_stmt->bind_param('is', $barter_id, $current_user_id);
+    $user_offer_stmt->execute();
+    $user_offer_result = $user_offer_stmt->get_result();
+    
+    $user_has_offer = $user_offer_result->num_rows > 0;
+    $user_offer = $user_has_offer ? $user_offer_result->fetch_assoc() : null;
+    
+    // Get all offers for this trade
+    $all_offers = [];
+    $rejected_offers = [];
+    $filtered_offers = [];
+    
+    if ($trade['owner_idnum'] == $current_user_id) {
+        // Owner: get all offers for viewing in modal
+        $all_offers_query = "
             SELECT 
-                bo.offer_id,
-                bo.offered_item_name,
-                bo.item_condition as offered_item_condition,
-                bo.offered_item_description as description,
-                bo.additional_cash,
-                bo.offered_item_image,  
-                bo.status,
-                bo.created_at,
-                u.first_name,
-                u.last_name,
+                bo.*,
+                CONCAT(u.first_name, ' ', u.last_name) as offerer_name,
                 u.email as offerer_email
             FROM barter_offers bo
             JOIN users u ON bo.offerer_idnum = u.user_idnum
             WHERE bo.barter_id = ?
-            ORDER BY bo.created_at DESC
+            ORDER BY 
+                CASE WHEN bo.status = 'accepted' THEN 1 
+                     WHEN bo.status = 'pending' THEN 2
+                     ELSE 3 END,
+                bo.created_at DESC
         ";
         
-        $offers_stmt = $conn->prepare($offers_query);
-        if ($offers_stmt) {
-            $offers_stmt->bind_param('i', $barter_id_int);
-            $offers_stmt->execute();
-            $offers_result = $offers_stmt->get_result();
+        $offers_stmt = $conn->prepare($all_offers_query);
+        $offers_stmt->bind_param('i', $barter_id);
+        $offers_stmt->execute();
+        $offers_result = $offers_stmt->get_result();
+        
+        while ($row = $offers_result->fetch_assoc()) {
+            $all_offers[] = $row;
+            // Separate rejected offers for owner's sidebar filtering
+            if ($row['status'] === 'rejected') {
+                $rejected_offers[] = $row;
+            }
+        }
+        
+        // For owner's sidebar, filter out rejected offers
+        $filtered_offers = array_filter($all_offers, function($offer) {
+            return $offer['status'] !== 'rejected';
+        });
+        $filtered_offers = array_values($filtered_offers); // Reset array keys
+        
+    } else if ($user_has_offer) {
+        // Offerer: show only their own offer (including rejected)
+        $all_offers = [$user_offer]; // Only their own offer
+        $filtered_offers = [$user_offer];
+    }
+    // Viewer: no offers shown
+    
+    // Determine user role and prepare response data
+    $user_role = 'viewer';
+    $response_trade = null;
+    
+    if ($user_has_offer) {
+        $user_role = 'offerer';
+        
+        // For offerer perspective: flip the trade
+        $response_trade = [
+            'barter_id' => $trade['barter_id'],
+            'listing_id' => $trade['listing_id'],
+            'offered_item_name' => $user_offer['offered_item_name'] ?? 'Your Offer',
+            'offered_item_description' => $user_offer['offered_item_description'] ?? $user_offer['description'] ?? '',
+            'offered_item_condition' => $user_offer['item_condition'] ?? 'N/A',
+            'offered_images' => $user_offer['offered_item_image'] ? [$user_offer['offered_item_image']] : [],
             
-            $offers = [];
-            while ($offer = $offers_result->fetch_assoc()) {
-                $offer['offerer_name'] = trim($offer['first_name'] . ' ' . $offer['last_name']);
-                $offers[] = $offer;
-            }
-            $offers_stmt->close();
-        } else {
-            $offers = [];
-        }
-        
-        // Check if has offers
-        $trade['has_offers'] = !empty($offers);
-        $trade['offer_count'] = count($offers);
-        
-        // Check for accepted offer and get offerer info
-        $accepted_offerer_info = null;
-        foreach ($offers as $offer) {
-            if ($offer['status'] === 'accepted') {
-                $accepted_offerer_info = [
-                    'name' => $offer['offerer_name'],
-                    'email' => $offer['offerer_email']
-                ];
-                break;
-            }
-        }
-
-        // If there's an accepted offer, update the trade with offerer info
-        if ($accepted_offerer_info) {
-            $trade['accepted_by_name'] = $accepted_offerer_info['name'];
-            $trade['accepted_by_email'] = $accepted_offerer_info['email'];
-        }
-
-        $trade['owner_name'] = trim($trade['first_name'] . ' ' . $trade['last_name']);
-        $trade['owner_email'] = $trade['owner_email'] ?: 'Email not available';
-
-        // If no owner name, set default
-        if (empty($trade['owner_name']) || $trade['owner_name'] === ' ') {
-            $trade['owner_name'] = 'Unknown User';
-        }
-        
-    } else {
-        $trade['user_role'] = 'viewer';
-        $offers = [];
-        
-        // Check if user has made an offer
-        $user_offer_query = "
-            SELECT status 
-            FROM barter_offers 
-            WHERE barter_id = ? 
-            AND offerer_idnum = ?
-            ORDER BY created_at DESC 
-            LIMIT 1
-        ";
-        
-        $user_offer_stmt = $conn->prepare($user_offer_query);
-        if ($user_offer_stmt) {
-            $user_offer_stmt->bind_param('is', $barter_id, $user_idnum);
-            $user_offer_stmt->execute();
-            $user_offer_result = $user_offer_stmt->get_result();
+            // What the offerer is looking for (the original owner's offered item)
+            'listing_item_name' => $trade['offered_item_name'],
+            'listing_description' => $trade['offered_item_description'],
+            'listing_item_condition' => $trade['offered_item_condition'],
+            'listing_images' => $trade['offered_images'],
+            'requested_items_text' => $trade['offered_item_name'],
             
-            if ($user_offer_result->num_rows > 0) {
-                $user_offer = $user_offer_result->fetch_assoc();
-                $trade['user_role'] = 'offerer';
-                $trade['user_offer_status'] = $user_offer['status'];
-            }
-            $user_offer_stmt->close();
+            // Trade details (same)
+            'exchange_method' => $trade['exchange_method'],
+            'payment_method' => $trade['payment_method'],
+            'max_additional_cash' => $user_offer['additional_cash'] ?? 0,
+            'trade_tags' => $trade['trade_tags'],
+            'created_at' => $trade['created_at'],
+            'updated_at' => $trade['updated_at'],
+            'is_active' => $trade['is_active'],
+            'status' => $trade['status'],
+            'barter_status' => $trade['barter_status'] ?? 'active',
+            
+            // Owner info (the original trade owner)
+            'owner_name' => $trade['owner_name'],
+            'owner_email' => $trade['owner_email'],
+            
+            // Offer info
+            'offer_count' => $trade['offer_count'],
+            'has_accepted_offer' => $trade['has_accepted_offer'] > 0,
+            'accepted_offer_image' => $trade['accepted_offer_image'] ?? null,
+            
+            // Accepted by info (if applicable)
+            'accepted_by_name' => null,
+            'accepted_by_email' => null,
+            
+            // ADD THIS LINE: Include user_offer_status in the trade object
+            'user_offer_status' => $user_offer['status'] ?? 'pending'
+        ];
+        
+    }  else if ($trade['owner_idnum'] == $current_user_id) {
+    $user_role = 'owner';
+    
+    // For owner: show original trade with requested_items_text
+    $response_trade = $trade;
+    
+    // Ensure we have the correct requested item text
+    if (empty($response_trade['requested_items_text']) && !empty($response_trade['listing_item_name'])) {
+        $response_trade['requested_items_text'] = $response_trade['listing_description'] ?? 'Trade Item';
+    }
+    
+    // Add rejected offers information
+    $response_trade['rejected_offers_count'] = count($rejected_offers);
+    $response_trade['has_rejected_offers'] = !empty($rejected_offers);
+    
+    // ADD THIS LINE: Include user_offer_status (null for owner)
+    $response_trade['user_offer_status'] = null;
+    
+    } else {
+        $user_role = 'viewer';
+        
+        // For viewer: show original trade
+        $response_trade = $trade;
+        
+        // Ensure we have the correct requested item text
+        if (empty($response_trade['requested_items_text']) && !empty($response_trade['listing_item_name'])) {
+            $response_trade['requested_items_text'] = $response_trade['listing_description'] ?? 'Trade Item';
         }
         
-        $trade['has_offers'] = false;
-        $trade['offer_count'] = 0;
-        $trade['has_accepted_offer'] = false;
+        // ADD THIS LINE: Include user_offer_status (null for viewer)
+        $response_trade['user_offer_status'] = null;
     }
     
-    // Determine barter status
-    switch($trade['status']) {
-        case 'completed':
-            $trade['barter_status'] = 'completed';
-            break;
-        case 'canceled':
-            $trade['barter_status'] = 'canceled';
-            break;
-        case 'accepted':
-            $trade['barter_status'] = 'accepted';
-            break;
-        default:
-            // For active trades, check if they have offers or accepted offers
-            if ($trade['has_accepted_offer']) {
-                $trade['barter_status'] = 'accepted';
-            } elseif ($trade['has_offers']) {
-                $trade['barter_status'] = 'has_offers';
-            } else {
-                $trade['barter_status'] = 'active';
-            }
-    }
-    
-    // Format data for frontend
-    $trade['owner_name'] = trim($trade['first_name'] . ' ' . $trade['last_name']);
-    $trade['owner_email'] = $trade['owner_email'] ?: 'Email not available';
-
-    // Make sure we're setting these values correctly
-    if (empty($trade['owner_name']) || $trade['owner_name'] === ' ') {
-        $trade['owner_name'] = 'Unknown User';
-    }
-
-    // The item they're looking for is in requested_items_text
-    $trade['listing_item_name'] = $trade['requested_items_text'] ?: ($trade['listing_item_name'] ?: 'Trade Item');
-
-    // If no listing_item_condition, use a default
-    if (empty($trade['listing_item_condition'])) {
-        $trade['listing_item_condition'] = 'Not specified';
-    }
-    
-    // Format dates
-    if ($trade['created_at']) {
-        $trade['created_at_formatted'] = date('F j, Y, g:i a', strtotime($trade['created_at']));
-    }
-    if ($trade['updated_at']) {
-        $trade['updated_at_formatted'] = date('F j, Y, g:i a', strtotime($trade['updated_at']));
-    }
-    
-    // Parse trade tags if they exist
-    if ($trade['trade_tags']) {
-        try {
-            $tags = json_decode($trade['trade_tags'], true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $trade['parsed_tags'] = $tags;
-            } else {
-                $trade['parsed_tags'] = [];
-            }
-        } catch (Exception $e) {
-            $trade['parsed_tags'] = [];
-        }
-    } else {
-        $trade['parsed_tags'] = [];
-    }
-    
-    // Close connection
-    $conn->close();
-    
-    // Clear output buffer and send response
-    ob_end_clean();
-    echo json_encode([
+    // Build the final response
+    $response = [
         'success' => true,
-        'trade' => $trade,
-        'offers' => $offers
-    ]);
+        'current_user_id' => $current_user_id,
+        'user_role' => $user_role,
+        'user_offer_status' => $user_has_offer ? ($user_offer['status'] ?? 'pending') : null,
+        'trade' => $response_trade,
+        'offers' => $filtered_offers, // Main offers list (filtered based on role)
+        'all_offers' => $all_offers, // All offers including rejected (for owner's modal)
+    ];
+    
+    // Add rejected offers for owner
+    if ($user_role === 'owner') {
+        $response['rejected_offers'] = $rejected_offers;
+    }
+    
+    echo json_encode($response);
     
 } catch (Exception $e) {
-    // Clear output buffer and send error
-    ob_end_clean();
-    error_log("Trade item error: " . $e->getMessage());
-    
+    error_log("Trade API Error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => 'Server error',
-        'message' => $e->getMessage()
+        'error' => $e->getMessage()
     ]);
 }
+?>

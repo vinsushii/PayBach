@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 16, 2025 at 11:03 AM
+-- Generation Time: Dec 17, 2025 at 05:02 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -52,25 +52,14 @@ CREATE TABLE IF NOT EXISTS `barters` (
   KEY `exchange_method` (`exchange_method`),
   KEY `payment_method` (`payment_method`),
   KEY `is_active` (`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `barters`
 --
 
 INSERT INTO `barters` (`barter_id`, `listing_id`, `user_idnum`, `offered_item_name`, `offered_item_condition`, `offered_item_description`, `exchange_method`, `payment_method`, `requested_items_text`, `accepted_offer_image`, `max_additional_cash`, `trade_tags`, `created_at`, `updated_at`, `is_active`, `status`) VALUES
-(1, 23, '2241389', 'iphone 1121', 'New', 'Lenovo Legion', 'in person', 'none', 'MAC', NULL, 0.00, NULL, '2025-12-15 00:44:13', '2025-12-16 07:52:03', 0, 'canceled'),
-(2, 25, '2241389', 'iphone 112312', 'New', 'Lenovo Legion', 'in person', 'none', 'MAC', NULL, 0.00, '[\"laptop\"]', '2025-12-15 00:57:30', '2025-12-16 04:45:34', 0, 'canceled'),
-(3, 26, '2241389', 'iphone 112312123123', 'Well loved', 'Lenovo Legion', 'in person', 'none', 'MAC', NULL, 0.00, NULL, '2025-12-15 00:58:03', '2025-12-16 04:45:10', 0, 'canceled'),
-(4, 27, '2241389', 'iphone 112312123123', 'New', 'asadsa', 'in person', 'none', 'rat', NULL, 0.00, '[\"laptop\"]', '2025-12-15 03:56:42', '2025-12-16 04:27:25', 1, 'active'),
-(5, 28, '2241389', 'rat', 'Like New', 'asas', 'in person', 'onsite', 'rat', NULL, 0.00, '[\"laptop\"]', '2025-12-15 04:52:47', '2025-12-16 04:33:06', 0, 'completed'),
-(6, 29, '2241389', 'hutao', 'Good', 'sssss', 'in person', 'online', 'trade', NULL, 0.00, '[\"anime\"]', '2025-12-15 04:58:07', '2025-12-16 04:33:06', 0, 'completed'),
-(7, 30, '111', 'mouse', 'Good', 'White', 'in person', 'none', 'Tech accessories', NULL, 0.00, NULL, '2025-12-15 16:05:04', '2025-12-15 16:05:04', 1, 'active'),
-(8, 34, '222', 'mouse', 'New', 'logitech mouse', 'in person', 'none', 'Earphones', NULL, 0.00, NULL, '2025-12-15 20:49:29', '2025-12-15 20:49:29', 1, 'active'),
-(9, 35, '2241389', 'sssssssssss', 'Good', 'asdasd', 'in person', 'none', 'ratv', NULL, 0.00, '[\"rat\"]', '2025-12-16 03:48:14', '2025-12-16 04:33:06', 0, 'completed'),
-(10, 36, '2241389', 'sssssssssss12111', 'New', 'asda', 'campus', 'none', 'rat', NULL, 0.00, NULL, '2025-12-16 08:00:17', '2025-12-16 08:04:22', 0, 'canceled'),
-(11, 37, '2241389', 'laptop 123', 'Good', 'ok', 'drop off', 'onsite', 'kl', NULL, 0.00, NULL, '2025-12-16 08:11:36', '2025-12-16 10:29:27', 0, 'canceled'),
-(12, 38, '2241389', 'iphone 1121', 'Good', 'ok', 'in person', 'none', 'oikok', NULL, 0.00, NULL, '2025-12-16 10:02:52', '2025-12-16 10:29:21', 0, 'canceled');
+(19, 45, '2241389', 'computer set', 'New', 'never used', 'in person', 'onsite', 'laptop', NULL, 0.00, '[\"laptop\"]', '2025-12-17 13:00:50', '2025-12-17 13:02:09', 0, 'completed');
 
 -- --------------------------------------------------------
 
@@ -97,18 +86,47 @@ CREATE TABLE IF NOT EXISTS `barter_offers` (
   KEY `offerer_idnum` (`offerer_idnum`),
   KEY `listing_id` (`listing_id`),
   KEY `status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `barter_offers`
 --
 
 INSERT INTO `barter_offers` (`offer_id`, `listing_id`, `barter_id`, `offerer_idnum`, `offered_item_name`, `item_condition`, `offered_item_description`, `additional_cash`, `offered_item_image`, `status`, `created_at`, `updated_at`) VALUES
-(1, 28, 5, '22412345', 'rat', 'good', '0', 0.00, NULL, 'accepted', '2025-12-16 03:43:56', '2025-12-16 04:26:05'),
-(2, 27, 4, '22412345', 'rat', 'good', '0', 0.00, 'uploads/offer_images/offer_69406f0c494960.59282400.jpg', 'accepted', '2025-12-16 04:26:52', '2025-12-16 04:27:25'),
-(3, 23, 1, '22412345', 'rat', 'new', '0', 0.00, 'uploads/offer_images/offer_694073aadc1357.93824957.jpg', 'accepted', '2025-12-16 04:46:34', '2025-12-16 04:47:08'),
-(4, 30, 7, '22412345', 'asdas', 'fair', '0', 0.00, NULL, 'pending', '2025-12-16 04:50:47', '2025-12-16 04:50:47'),
-(5, 36, 10, '22412345', 'asdas', 'good', '0', 0.00, 'uploads/offer_images/offer_6940a13ca9e759.93792145.jpg', 'rejected', '2025-12-16 08:01:00', '2025-12-16 08:04:22');
+(15, 45, 19, '22412345', 'laptop', 'good', '0', 0.00, 'uploads/offer_images/offer_6942393c2fe818.17763427.jpg', 'accepted', '2025-12-17 13:01:48', '2025-12-17 13:02:01');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barter_transactions`
+--
+
+DROP TABLE IF EXISTS `barter_transactions`;
+CREATE TABLE IF NOT EXISTS `barter_transactions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `barter_id` int NOT NULL,
+  `listing_id` int NOT NULL,
+  `seller_id` varchar(20) NOT NULL,
+  `buyer_id` varchar(20) NOT NULL,
+  `seller_item_name` varchar(100) NOT NULL,
+  `buyer_item_name` varchar(100) NOT NULL,
+  `additional_cash` decimal(10,2) DEFAULT '0.00',
+  `exchange_method` varchar(50) DEFAULT NULL,
+  `completed_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `barter_id` (`barter_id`),
+  KEY `seller_id` (`seller_id`),
+  KEY `buyer_id` (`buyer_id`),
+  KEY `completed_date` (`completed_date`),
+  KEY `exchange_method` (`exchange_method`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `barter_transactions`
+--
+
+INSERT INTO `barter_transactions` (`id`, `barter_id`, `listing_id`, `seller_id`, `buyer_id`, `seller_item_name`, `buyer_item_name`, `additional_cash`, `exchange_method`, `completed_date`) VALUES
+(1, 19, 45, '2241389', '22412345', 'computer set', 'laptop', 0.00, 'in person', '2025-12-17 13:02:09');
 
 -- --------------------------------------------------------
 
@@ -238,7 +256,7 @@ CREATE TABLE IF NOT EXISTS `listings` (
   `listing_type` enum('bid','trade') NOT NULL DEFAULT 'bid',
   PRIMARY KEY (`listing_id`),
   KEY `user_idnum` (`user_idnum`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listings`
@@ -262,7 +280,14 @@ INSERT INTO `listings` (`listing_id`, `user_idnum`, `quantity`, `start_date`, `e
 (35, '2241389', 1, '2025-12-16 03:48:14', '2026-01-15 03:48:14', 'asdasd', 'in person', 'Trade only', 1, '2025-12-16 03:48:14', 'trade'),
 (36, '2241389', 1, '2025-12-16 08:00:17', '2026-01-15 08:00:17', 'asda', 'campus', 'Trade only', 1, '2025-12-16 08:00:17', 'trade'),
 (37, '2241389', 1, '2025-12-16 08:11:36', '2026-01-15 08:11:36', 'ok', 'drop off', 'onsite', 1, '2025-12-16 08:11:36', 'trade'),
-(38, '2241389', 1, '2025-12-16 10:02:52', '2026-01-15 10:02:52', 'ok', 'in person', 'Trade only', 1, '2025-12-16 10:02:52', 'trade');
+(38, '2241389', 1, '2025-12-16 10:02:52', '2026-01-15 10:02:52', 'ok', 'in person', 'Trade only', 1, '2025-12-16 10:02:52', 'trade'),
+(39, '2241389', 1, '2025-12-17 08:36:43', '2026-01-16 08:36:43', 'bought never used', 'in person', 'Trade only', 1, '2025-12-17 08:36:43', 'trade'),
+(40, '2241389', 1, '2025-12-17 08:57:37', '2026-01-16 08:57:37', '1 year', 'in person', 'Trade only', 1, '2025-12-17 08:57:37', 'trade'),
+(41, '2241389', 1, '2025-12-17 09:39:26', '2026-01-16 09:39:26', 'asda', 'drop off', 'Trade only', 1, '2025-12-17 09:39:26', 'trade'),
+(42, '2241389', 1, '2025-12-17 11:39:18', '2026-01-16 11:39:18', 'aasda', 'drop off', 'Trade only', 1, '2025-12-17 11:39:18', 'trade'),
+(43, '22412345', 1, '2025-12-17 11:51:24', '2026-01-16 11:51:24', 'asda', 'shipping', 'Trade only', 1, '2025-12-17 11:51:24', 'trade'),
+(44, '2241389', 1, '2025-12-17 11:55:32', '2026-01-16 11:55:32', 'rav', 'drop off', 'onsite', 1, '2025-12-17 11:55:32', 'trade'),
+(45, '2241389', 1, '2025-12-17 13:00:50', '2026-01-16 13:00:50', 'never used', 'in person', 'onsite', 1, '2025-12-17 13:00:50', 'trade');
 
 -- --------------------------------------------------------
 
@@ -277,7 +302,7 @@ CREATE TABLE IF NOT EXISTS `listing_categories` (
   `category` enum('Fashion','School Supplies','Technology','Tools & Home Materials','Automotive','Hobbies & Toys','Decoration','Sports & Recreation','Pet Supplies','Beauty','Others') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_categories`
@@ -314,7 +339,21 @@ INSERT INTO `listing_categories` (`id`, `listing_id`, `category`) VALUES
 (50, 37, ''),
 (51, 37, 'Technology'),
 (52, 38, ''),
-(53, 38, 'Technology');
+(53, 38, 'Technology'),
+(54, 39, ''),
+(55, 39, 'Technology'),
+(56, 40, ''),
+(57, 40, 'Technology'),
+(58, 41, ''),
+(59, 41, 'Fashion'),
+(60, 42, ''),
+(61, 42, 'Technology'),
+(62, 43, ''),
+(63, 43, 'School Supplies'),
+(64, 44, ''),
+(65, 44, 'School Supplies'),
+(66, 45, ''),
+(67, 45, 'Technology');
 
 -- --------------------------------------------------------
 
@@ -330,7 +369,7 @@ CREATE TABLE IF NOT EXISTS `listing_images` (
   `uploaded_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`image_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_images`
@@ -355,7 +394,15 @@ INSERT INTO `listing_images` (`image_id`, `listing_id`, `image_path`, `uploaded_
 (28, 35, '../../../uploads/1765828094_694065fec7666_OIP.jpg', '2025-12-16 03:48:14'),
 (29, 36, '../../../uploads/1765843217_6940a1113681c_OIP.jpg', '2025-12-16 08:00:17'),
 (30, 37, '../../../uploads/1765843896_6940a3b84af94_OIP.jpg', '2025-12-16 08:11:36'),
-(31, 38, '../../../uploads/1765850572_6940bdcce1847_OIP.jpg', '2025-12-16 10:02:52');
+(31, 38, '../../../uploads/1765850572_6940bdcce1847_OIP.jpg', '2025-12-16 10:02:52'),
+(32, 39, '../../../uploads/1765931803_6941fb1b8fabd_computer-05.jpg', '2025-12-17 08:36:43'),
+(33, 40, '../../../uploads/1765933057_694200016d166_computer-05.jpg', '2025-12-17 08:57:37'),
+(34, 41, '../../../uploads/1765935566_694209ce728e8_computer-05.jpg', '2025-12-17 09:39:26'),
+(35, 41, '../../../uploads/1765935566_694209ce72ac8_OIP.jpg', '2025-12-17 09:39:26'),
+(36, 42, '../../../uploads/1765942758_694225e677e0d_computer-05.jpg', '2025-12-17 11:39:18'),
+(37, 43, '../../../uploads/1765943484_694228bc11ca4_OIP.jpg', '2025-12-17 11:51:24'),
+(38, 44, '../../../uploads/1765943732_694229b45541b_OIP.jpg', '2025-12-17 11:55:32'),
+(39, 45, '../../../uploads/1765947650_69423902d44ae_computer-05.jpg', '2025-12-17 13:00:50');
 
 -- --------------------------------------------------------
 
@@ -372,7 +419,7 @@ CREATE TABLE IF NOT EXISTS `listing_items` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`),
   KEY `listing_id` (`listing_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `listing_items`
@@ -396,7 +443,37 @@ INSERT INTO `listing_items` (`item_id`, `listing_id`, `name`, `item_condition`, 
 (34, 35, 'sssssssssss', 'Good', '2025-12-16 03:48:14'),
 (35, 36, 'sssssssssss12111', 'New', '2025-12-16 08:00:17'),
 (36, 37, 'laptop 123', 'Good', '2025-12-16 08:11:36'),
-(37, 38, 'iphone 1121', 'Good', '2025-12-16 10:02:52');
+(37, 38, 'iphone 1121', 'Good', '2025-12-16 10:02:52'),
+(38, 39, 'computer set', 'New', '2025-12-17 08:36:43'),
+(39, 40, 'computer set', 'Good', '2025-12-17 08:57:37'),
+(40, 41, 'computer set', 'Like New', '2025-12-17 09:39:26'),
+(41, 42, 'computer set', 'New', '2025-12-17 11:39:18'),
+(42, 43, 'sssssssssss12111', 'Like New', '2025-12-17 11:51:24'),
+(43, 44, 'laptop 123', 'New', '2025-12-17 11:55:32'),
+(44, 45, 'computer set', 'New', '2025-12-17 13:00:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `notification_id` int NOT NULL AUTO_INCREMENT,
+  `receiver_idnum` varchar(20) NOT NULL,
+  `sender_idnum` varchar(20) NOT NULL,
+  `listing_id` int NOT NULL,
+  `type` enum('bid') NOT NULL DEFAULT 'bid',
+  `message` varchar(255) NOT NULL,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notification_id`),
+  KEY `receiver_idnum` (`receiver_idnum`),
+  KEY `listing_id` (`listing_id`),
+  KEY `is_read` (`is_read`),
+  KEY `fk_notifications_sender` (`sender_idnum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 

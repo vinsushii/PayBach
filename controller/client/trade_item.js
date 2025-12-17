@@ -50,7 +50,6 @@ function initModals() {
 // Load trade data from backend API
 async function loadTradeData(barterId) {
   try {
-  
     console.log('Fetching trade details for barter_id:', barterId);
     
     const response = await fetch(`${API_ENDPOINTS.getTradeDetails}?barter_id=${barterId}`);
@@ -74,7 +73,13 @@ async function loadTradeData(barterId) {
     if (data.success && data.trade) {
       currentTrade = data.trade;
       existingOffers = data.offers || [];
-      currentUserRole = data.trade.user_role || 'viewer';
+      currentUserRole = data.user_role || 'viewer';
+      currentUserIdnum = data.current_user_id; // Store current user ID
+      
+      // Log the perspective
+      console.log('Current user role:', currentUserRole);
+      console.log('Current user ID:', currentUserIdnum);
+      console.log('Trade data for this perspective:', currentTrade);
       
       // Hide loading state, show content
       const loadingState = document.getElementById('loading-state');
@@ -102,24 +107,45 @@ async function loadTradeData(barterId) {
 function renderTradeDetails() {
   if (!currentTrade) return;
   
-  console.log('Rendering trade:', currentTrade);
+  console.log('Rendering trade from perspective:', currentUserRole);
+  console.log('Trade data:', currentTrade);
   
-  // Set page title
+  // Set page title based on perspective
   const tradeTitle = document.getElementById('trade-title');
   if (tradeTitle) {
-    tradeTitle.textContent = 
-      `${currentTrade.offered_item_name} → ${currentTrade.listing_item_name || 'Trade Item'}`;
+    if (currentUserRole === 'offerer') {
+      // For offerer: show "Your Offer → What you want (owner's item)"
+      const lookingForName = currentTrade.listing_item_name || currentTrade.requested_items_text || 'Trade Item';
+      tradeTitle.textContent = `${currentTrade.offered_item_name} → ${lookingForName}`;
+    } else {
+      // For owner/viewer: show "Owner's Item → What owner wants"
+      const lookingForName = currentTrade.requested_items_text || currentTrade.listing_description || 'Trade Item';
+      tradeTitle.textContent = `${currentTrade.offered_item_name} → ${lookingForName}`;
+    }
   }
   
-  // Offered Item 
+  // Offered Item - depends on perspective
   setElementText('offered-item-name', currentTrade.offered_item_name);
   setElementText('offered-item-condition', currentTrade.offered_item_condition || 'N/A');
   setElementText('offered-item-description', currentTrade.offered_item_description || 'No description provided.');
   
-  // Requested Item 
-  setElementText('requested-item-name', currentTrade.listing_item_name || 'Trade Item');
-  setElementText('requested-item-condition', currentTrade.listing_item_condition || 'N/A');
-  setElementText('requested-item-description', currentTrade.listing_description || currentTrade.requested_items_text || 'No description provided.');
+  // Requested Item - depends on perspective
+  if (currentUserRole === 'offerer') {
+    // For offerer: Looking for the owner's item
+    const lookingForName = currentTrade.listing_item_name || currentTrade.requested_items_text || 'Trade Item';
+    setElementText('requested-item-name', lookingForName);
+    setElementText('requested-item-condition', currentTrade.listing_item_condition || 'N/A');
+    setElementText('requested-item-description', currentTrade.listing_description || currentTrade.offered_item_description || 'No description provided.');
+  } else {
+    // For owner/viewer: Looking for what the owner requested
+    const lookingForName = currentTrade.requested_items_text || currentTrade.listing_description || 'Trade Item';
+    setElementText('requested-item-name', lookingForName);
+    setElementText('requested-item-condition', currentTrade.listing_item_condition || 'N/A');
+    
+    // Use requested_items_text or listing_description for description
+    const requestedText = currentTrade.requested_items_text || currentTrade.listing_description || 'No description provided.';
+    setElementText('requested-item-description', requestedText);
+  }
 
   // Trade Meta Info
   setElementText('exchange-method', currentTrade.exchange_method || 'N/A');
@@ -148,11 +174,12 @@ function renderTradeDetails() {
     }));
   }
   
-  // Owner Info
+  // Owner Info - always show the original trade owner
   if (currentTrade.owner_name) {
     setElementText('owner-name', currentTrade.owner_name);
     setElementText('owner-email', currentTrade.owner_email || 'Email not available');
   }
+  
   // Show accepted by info if available
   const acceptedByInfo = document.getElementById('accepted-by-info');
   const acceptedByName = document.getElementById('accepted-by-name');
@@ -195,26 +222,54 @@ function processTradeImages() {
   
   if (!offeredImage || !requestedImage) return;
   
-  // Offered item image
-  if (currentTrade.offered_images && currentTrade.offered_images.length > 0) {
-    const imagePath = processImagePath(currentTrade.offered_images[0]);
-    offeredImage.src = imagePath;
-  }
+  // Reset both images to default first
+  offeredImage.src = '../../images/default-item.png';
+  requestedImage.src = '../../images/default-item.png';
   
-  // Requested item image - check for accepted offer image first
-  let requestedImagePath = '../../images/default-item.png';
-  
-  // Check if there's an accepted offer with an image
-  if (currentTrade.accepted_offer_image) {
-    requestedImagePath = processImagePath(currentTrade.accepted_offer_image);
+  if (currentUserRole === 'offerer') {
+    // For offerer: 
+    // - Offered image = user's offer image
+    // - Requested image = owner's item image
+    
+    // Offered item image (user's offer)
+    if (currentTrade.offered_images && currentTrade.offered_images.length > 0) {
+      const imagePath = processImagePath(currentTrade.offered_images[0]);
+      offeredImage.src = imagePath;
+    }
+    
+    // Requested item image (owner's item)
+    if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
+      const imagePath = processImagePath(currentTrade.listing_images[0]);
+      requestedImage.src = imagePath;
+    } else if (currentTrade.accepted_offer_image) {
+      // Fallback to accepted offer image if available
+      const imagePath = processImagePath(currentTrade.accepted_offer_image);
+      requestedImage.src = imagePath;
+    }
+    
+  } else {
+    // For owner/viewer:
+    // - Offered image = owner's item image
+    // - Requested image = accepted offer image OR listing image
+    
+    // Offered item image (owner's item)
+    if (currentTrade.offered_images && currentTrade.offered_images.length > 0) {
+      const imagePath = processImagePath(currentTrade.offered_images[0]);
+      offeredImage.src = imagePath;
+    }
+    
+    // Requested item image
+    // First check if there's an accepted offer image
+    if (currentTrade.accepted_offer_image) {
+      const imagePath = processImagePath(currentTrade.accepted_offer_image);
+      requestedImage.src = imagePath;
+    }
+    // Then check for listing images
+    else if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
+      const imagePath = processImagePath(currentTrade.listing_images[0]);
+      requestedImage.src = imagePath;
+    }
   }
-  // Check if there are listing images (original requested item)
-  else if (currentTrade.listing_images && currentTrade.listing_images.length > 0) {
-    const listingImagePath = processImagePath(currentTrade.listing_images[0]);
-    requestedImagePath = listingImagePath;
-  }
-  
-  requestedImage.src = requestedImagePath;
   
   // Add error handlers
   offeredImage.onerror = () => {
@@ -355,50 +410,118 @@ function renderActionButtons() {
   actionsContainer.innerHTML = '';
   
   if (currentUserRole === 'owner') {
-    // Owner actions
-    if (currentTrade.has_offers || currentTrade.offer_count > 0) {
-      const viewOffersBtn = document.createElement('button');
-      viewOffersBtn.className = 'action-btn primary';
-      viewOffersBtn.innerHTML = '📬 View Offers';
-      viewOffersBtn.addEventListener('click', () => showViewOffersModal());
-      actionsContainer.appendChild(viewOffersBtn);
+    // OWNER ACTIONS
+    // ==============
+    if (currentTrade.status === 'completed' || currentTrade.status === 'canceled') {
+      // Trade is already completed or canceled
+      const statusMsg = document.createElement('div');
+      statusMsg.className = 'trade-status-message';
+      if (currentTrade.status === 'completed') {
+        statusMsg.innerHTML = `
+          <p>✓ Trade Completed</p>
+          <p><small>This trade has been successfully completed</small></p>
+        `;
+      } else {
+        statusMsg.innerHTML = `
+          <p>✗ Trade Canceled</p>
+          <p><small>This trade has been canceled</small></p>
+        `;
+      }
+      actionsContainer.appendChild(statusMsg);
+    } else {
+      // Trade is active or accepted - show owner buttons
+      
+      // 1. View Offers button (only if there are offers)
+      if (existingOffers && existingOffers.length > 0) {
+        const viewOffersBtn = document.createElement('button');
+        viewOffersBtn.className = 'action-btn primary';
+        viewOffersBtn.textContent = `View Offers (${existingOffers.length})`;
+        viewOffersBtn.addEventListener('click', () => showViewOffersModal());
+        actionsContainer.appendChild(viewOffersBtn);
+      } else {
+        const noOffersMsg = document.createElement('p');
+        noOffersMsg.className = 'trade-inactive';
+        noOffersMsg.textContent = 'No offers yet. Share this trade to get offers!';
+        actionsContainer.appendChild(noOffersMsg);
+      }
+      
+      // 2. Action buttons container for Cancel/Complete
+      const actionButtons = document.createElement('div');
+      actionButtons.className = 'action-buttons-row';
+      actionButtons.style.display = 'flex';
+      actionButtons.style.gap = '10px';
+      actionButtons.style.marginTop = '15px';
+      
+      // 3. Cancel Trade button (always available for active trades)
+      if (currentTrade.status !== 'completed' && currentTrade.status !== 'canceled') {
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'action-btn secondary';
+        cancelBtn.textContent = 'Cancel Trade';
+        cancelBtn.addEventListener('click', () => cancelTrade());
+        actionButtons.appendChild(cancelBtn);
+      }
+      
+      // 4. Complete Trade button (only if trade is accepted)
+      if (currentTrade.status === 'accepted') {
+        const completeBtn = document.createElement('button');
+        completeBtn.className = 'action-btn primary';
+        completeBtn.textContent = 'Complete Trade';
+        completeBtn.addEventListener('click', () => completeTrade());
+        actionButtons.appendChild(completeBtn);
+      }
+      
+      if (actionButtons.children.length > 0) {
+        actionsContainer.appendChild(actionButtons);
+      }
     }
     
-    if (currentTrade.is_active == 1) {
-      const cancelBtn = document.createElement('button');
-      cancelBtn.className = 'action-btn danger';
-      cancelBtn.textContent = 'Cancel Trade';
-      cancelBtn.addEventListener('click', () => cancelTrade());
-      actionsContainer.appendChild(cancelBtn);
-    }
-    
-    const completeBtn = document.createElement('button');
-    completeBtn.className = 'action-btn success';
-    completeBtn.textContent = 'Mark as Complete';
-    completeBtn.disabled = !currentTrade.has_accepted_offer;
-    completeBtn.title = currentTrade.has_accepted_offer 
-      ? 'Complete this trade' 
-      : 'You need to accept an offer first';
-    completeBtn.addEventListener('click', () => completeTrade());
-    actionsContainer.appendChild(completeBtn);
-    
-  } else if (currentUserRole === 'viewer') {
-    // Viewer (not owner, hasn't made an offer)
-    if (currentTrade.is_active == 1) {
+  } else if (currentUserRole === 'viewer' || 
+             (currentUserRole === 'offerer' && currentTrade.user_offer_status === 'rejected')) {
+    // VIEWER or OFFERER with REJECTED offer
+    // =====================================
+    if (currentTrade.is_active !== false && currentTrade.status !== 'completed' && currentTrade.status !== 'canceled') {
       const makeOfferBtn = document.createElement('button');
       makeOfferBtn.className = 'action-btn primary';
-      makeOfferBtn.textContent = 'Make an Offer';
+      
+      if (currentTrade.user_offer_status === 'rejected') {
+        makeOfferBtn.textContent = 'Make a New Offer';
+        makeOfferBtn.title = 'Your previous offer was rejected. You can make a new offer.';
+        
+        // Add rejected message
+        const rejectedMsg = document.createElement('div');
+        rejectedMsg.className = 'rejected-offer-message';
+        rejectedMsg.innerHTML = `
+          <p style="color: #dc3545; margin-top: 10px;">
+            <small>Your previous offer was rejected. You can submit a new one.</small>
+          </p>
+        `;
+        actionsContainer.appendChild(makeOfferBtn);
+        actionsContainer.appendChild(rejectedMsg);
+      } else {
+        makeOfferBtn.textContent = 'Make an Offer';
+        actionsContainer.appendChild(makeOfferBtn);
+      }
+      
       makeOfferBtn.addEventListener('click', () => showMakeOfferModal());
-      actionsContainer.appendChild(makeOfferBtn);
+      
     } else {
       const inactiveMsg = document.createElement('p');
       inactiveMsg.className = 'trade-inactive';
-      inactiveMsg.textContent = 'This trade is no longer active';
+      
+      if (currentTrade.status === 'completed') {
+        inactiveMsg.textContent = 'This trade has been completed';
+      } else if (currentTrade.status === 'canceled') {
+        inactiveMsg.textContent = 'This trade has been canceled';
+      } else {
+        inactiveMsg.textContent = 'This trade is no longer active';
+      }
+      
       actionsContainer.appendChild(inactiveMsg);
     }
     
   } else if (currentUserRole === 'offerer') {
-    // User has already made an offer
+    // OFFERER with ACTIVE offer (pending or accepted)
+    // ==============================================
     const offerStatus = currentTrade.user_offer_status || 'pending';
     
     const statusMsg = document.createElement('div');
@@ -406,33 +529,64 @@ function renderActionButtons() {
     
     if (offerStatus === 'pending') {
       statusMsg.innerHTML = `
-        <p> Your offer is pending review</p>
+        <p>⏳ Your offer is pending review</p>
         <p><small>The trade owner will review your offer soon</small></p>
       `;
     } else if (offerStatus === 'accepted') {
-      statusMsg.innerHTML = `
-        <p> Your offer was accepted!</p>
-        <p><small>Contact the owner to complete the trade</small></p>
-      `;
-    } else if (offerStatus === 'rejected') {
-      statusMsg.innerHTML = `
-        <p> Your offer was not accepted</p>
-        <p><small>Feel free to browse other trades</small></p>
-      `;
+      if (currentTrade.status === 'completed') {
+        statusMsg.innerHTML = `
+          <p>✓ Trade Completed!</p>
+          <p><small>This trade has been completed</small></p>
+        `;
+      } else {
+        statusMsg.innerHTML = `
+          <p>✓ Your offer was accepted!</p>
+          <p><small>Contact the owner to complete the trade</small></p>
+        `;
+      }
     }
     
     actionsContainer.appendChild(statusMsg);
   }
 }
 
-// Render existing offers in the sidebar
 function renderExistingOffers() {
   const offersContainer = document.getElementById('existing-offers');
   const offersSection = document.getElementById('existing-offers-section');
   
   if (!offersContainer || !offersSection) return;
   
-  if (!existingOffers || existingOffers.length === 0) {
+  // Filter offers based on user role
+  let displayOffers = [];
+  
+  if (currentUserRole === 'owner') {
+    // For owner: only show pending offers in sidebar
+    displayOffers = existingOffers.filter(offer => offer.status === 'pending');
+  } else if (currentUserRole === 'offerer' || currentUserRole === 'viewer') {
+    // For offerer/viewer: show their own offer regardless of status
+    displayOffers = existingOffers.filter(offer => 
+      offer.offerer_idnum === currentUserIdnum
+    );
+  }
+  
+  // If user has a rejected offer, add a note about making a new offer
+  if (currentUserRole === 'offerer' && currentTrade.user_offer_status === 'rejected') {
+    const rejectedOffer = displayOffers.find(o => o.status === 'rejected');
+    if (rejectedOffer) {
+      const rejectedNote = document.createElement('div');
+      rejectedNote.className = 'rejected-offer-note';
+      rejectedNote.innerHTML = `
+        <p style="color: #dc3545; font-size: 14px; margin-top: 10px;">
+          <small>Your offer was rejected. You can make a new offer.</small>
+        </p>
+      `;
+      if (offersContainer.parentNode) {
+        offersContainer.parentNode.insertBefore(rejectedNote, offersContainer.nextSibling);
+      }
+    }
+  }
+  
+  if (!displayOffers || displayOffers.length === 0) {
     offersSection.style.display = 'none';
     return;
   }
@@ -441,30 +595,41 @@ function renderExistingOffers() {
   offersContainer.innerHTML = '';
   
   // Show only first 3 offers in sidebar
-  const displayOffers = existingOffers.slice(0, 3);
+  const limitedOffers = displayOffers.slice(0, 3);
   
-  displayOffers.forEach(offer => {
+  limitedOffers.forEach(offer => {
     const offerElement = document.createElement('div');
-    offerElement.className = 'offer-item';
+    offerElement.className = `offer-item ${offer.status}`;
     
-    const condition = offer.offered_item_condition || 'N/A';
-    const cash = offer.additional_cash > 0 ? `+₱${offer.additional_cash}` : '';
+    // Use item_condition (from barter_offers table) or offered_item_condition as fallback
+    const condition = offer.item_condition || offer.offered_item_condition || 'N/A';
+    const cash = offer.additional_cash > 0 ? `+₱${parseFloat(offer.additional_cash).toFixed(2)}` : '';
+    
+    // Add status badge with different colors
+    let statusBadge = '';
+    if (offer.status === 'rejected') {
+      statusBadge = '<span class="rejected-badge">❌ Rejected</span>';
+    } else if (offer.status === 'accepted') {
+      statusBadge = '<span class="accepted-badge">✓ Accepted</span>';
+    } else if (offer.status === 'pending') {
+      statusBadge = '<span class="pending-badge">⏳ Pending</span>';
+    }
     
     offerElement.innerHTML = `
       <h5>${offer.offered_item_name || 'Unnamed Item'}</h5>
       <p>Condition: ${condition}</p>
       ${cash ? `<p>Additional: ${cash}</p>` : ''}
-      <p><small>Status: ${offer.status}</small></p>
+      <p><small>${statusBadge}</small></p>
     `;
     
     offersContainer.appendChild(offerElement);
   });
   
   // Show "view more" if there are more offers
-  if (existingOffers.length > 3 && currentUserRole === 'owner') {
+  if (displayOffers.length > 3 && currentUserRole === 'owner') {
     const viewMore = document.createElement('div');
     viewMore.className = 'view-more-offers';
-    viewMore.innerHTML = `<p><small>+${existingOffers.length - 3} more offers</small></p>`;
+    viewMore.innerHTML = `<p><small>+${displayOffers.length - 3} more offers</small></p>`;
     viewMore.addEventListener('click', () => showViewOffersModal());
     offersContainer.appendChild(viewMore);
   }
@@ -536,7 +701,6 @@ async function submitOffer() {
   }
 }
 
-// Show view offers modal
 function showViewOffersModal() {
   const modal = document.getElementById('viewOffersModal');
   const offersList = document.getElementById('offers-list');
@@ -545,7 +709,20 @@ function showViewOffersModal() {
   
   offersList.innerHTML = '';
   
-  if (!existingOffers || existingOffers.length === 0) {
+  // For owner: show ALL offers including rejected from data.all_offers
+  // For offerer: show only their own offer from data.offers
+  let displayOffers = [];
+  
+  if (currentUserRole === 'owner') {
+    // Use all_offers if available, otherwise use existingOffers
+    displayOffers = window.allOffers || existingOffers;
+  } else if (currentUserRole === 'offerer') {
+    displayOffers = existingOffers.filter(offer => 
+      offer.offerer_idnum === currentUserIdnum
+    );
+  }
+  
+  if (!displayOffers || displayOffers.length === 0) {
     offersList.innerHTML = `
       <div class="empty-offers">
         <p>📭 No offers yet</p>
@@ -553,20 +730,57 @@ function showViewOffersModal() {
       </div>
     `;
   } else {
-    existingOffers.forEach(offer => {
-      const offerCard = createOfferCard(offer);
-      offersList.appendChild(offerCard);
-    });
+    // Group offers by status
+    const acceptedOffers = displayOffers.filter(o => o.status === 'accepted');
+    const pendingOffers = displayOffers.filter(o => o.status === 'pending');
+    const rejectedOffers = displayOffers.filter(o => o.status === 'rejected');
+    
+    // Display accepted offers first
+    if (acceptedOffers.length > 0) {
+      const section = document.createElement('div');
+      section.className = 'offers-section';
+      section.innerHTML = `<h3>✅ Accepted Offer</h3>`;
+      offersList.appendChild(section);
+      acceptedOffers.forEach(offer => {
+        const offerCard = createOfferCard(offer);
+        section.appendChild(offerCard);
+      });
+    }
+    
+    // Display pending offers
+    if (pendingOffers.length > 0) {
+      const section = document.createElement('div');
+      section.className = 'offers-section';
+      section.innerHTML = `<h3>⏳ Pending Offers (${pendingOffers.length})</h3>`;
+      offersList.appendChild(section);
+      pendingOffers.forEach(offer => {
+        const offerCard = createOfferCard(offer);
+        section.appendChild(offerCard);
+      });
+    }
+    
+    // Display rejected offers (only for owner)
+    if (rejectedOffers.length > 0 && currentUserRole === 'owner') {
+      const section = document.createElement('div');
+      section.className = 'offers-section rejected-section';
+      section.innerHTML = `<h3>❌ Rejected Offers (${rejectedOffers.length})</h3>`;
+      offersList.appendChild(section);
+      rejectedOffers.forEach(offer => {
+        const offerCard = createOfferCard(offer);
+        section.appendChild(offerCard);
+      });
+    }
   }
   
   modal.style.display = 'flex';
 }
 
+//create offer
 function createOfferCard(offer) {
   const card = document.createElement('div');
   card.className = `offer-card ${offer.status}`;
   
-  const condition = offer.offered_item_condition || 'N/A';
+  const condition = offer.item_condition || offer.offered_item_condition || 'N/A';
   const cash = offer.additional_cash > 0 ? `+₱${parseFloat(offer.additional_cash).toFixed(2)}` : '';
   const date = new Date(offer.created_at).toLocaleDateString();
   
@@ -598,7 +812,7 @@ function createOfferCard(offer) {
     </h4>
     
     <div class="offer-details">
-      <p><strong>Description:</strong> ${offer.description || 'No description'}</p>
+      <p><strong>Description:</strong> ${offer.offered_item_description || offer.description || 'No description'}</p>
       <p><strong>Condition:</strong> ${condition}</p>
       ${cash ? `<p><strong>Additional Cash:</strong> ${cash}</p>` : ''}
       <p><small>Offered on: ${date}</small></p>
