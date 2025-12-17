@@ -95,7 +95,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ================= PRICE & DETAILS =================
   const priceText = document.querySelector(".price");
-  if (endDate > new Date()) {
+
+  if (endDate > new Date().toJSON()) {
     priceText.textContent = "₱" + Number(currentPrice).toLocaleString();
   } else {
     const above = document.querySelector(".bid-text");
@@ -112,17 +113,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================= BID HISTORY =================
   const container = document.querySelector(".bid-offers-container");
   container.innerHTML = "";
-  if (!offers.length && isOwner) container.innerHTML = "<p>No bids yet.</p>";
-  else {
-    const table = document.createElement("table");
-    table.innerHTML = `<tr><th>User</th><th>Bid Offer</th></tr>`;
-    offers.forEach(o => {
-      const r = document.createElement("tr");
-      r.innerHTML = `<td>${o.user_id}</td><td>₱${Number(o.price_offered).toLocaleString()}</td>`;
-      table.appendChild(r);
-    });
-    container.appendChild(table);
-  }
+  const table = document.createElement("table");
+  table.innerHTML = `<tr><th>User</th><th>Bid Offer</th></tr>`;
+  offers.forEach(o => {
+    const r = document.createElement("tr");
+    r.innerHTML = `<td>${o.user_id}</td><td>₱${Number(o.price_offered).toLocaleString()}</td>`;
+    table.appendChild(r);
+  });
+  container.appendChild(table);
+  
 
   // ================= BID ACTION =================
   const bidBox = document.querySelector(".bid-box");
