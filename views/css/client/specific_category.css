@@ -78,3 +78,90 @@ body {
   padding: 30px;
   color: #666;
 }
+
+/* =========================
+   MOBILE RESPONSIVE – ITEMS GRID
+   ========================= */
+@media (max-width: 768px) {
+
+  /* HEADER */
+  .specific-header {
+    padding: 14px 16px;
+  }
+
+  .header-inner {
+    gap: 12px;
+  }
+
+  #category-title {
+    font-size: 18px;
+  }
+
+  .back-link {
+    font-size: 13px;
+  }
+
+  /* GRID */
+  .items-container {
+    margin: 16px auto;
+    gap: 14px;
+    padding: 0 12px 40px;
+  }
+
+  .item-img {
+    height: 130px;
+  }
+
+  .item-title {
+    font-size: 15px;
+  }
+
+  .item-meta {
+    font-size: 12px;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .specific-header {
+    padding: 12px 14px;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #category-title {
+    font-size: 16px;
+  }
+
+  /* Two-column feel on phones */
+  .items-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 10px 30px;
+  }
+
+  .item-card {
+    padding: 10px;
+  }
+
+  .item-img {
+    height: 110px;
+  }
+
+  .item-title {
+    font-size: 14px;
+  }
+
+  .item-meta {
+    font-size: 11px;
+  }
+
+  .no-results {
+    padding: 20px;
+    font-size: 14px;
+  }
+}

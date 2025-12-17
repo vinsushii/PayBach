@@ -202,3 +202,100 @@ input:focus {
   from { opacity: 0; transform: translate(-50%, -20px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
+
+/* =========================
+   MOBILE RESPONSIVE STYLES
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    height: auto;
+    align-items: flex-start;
+    padding: 20px 10px;
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .header {
+    padding: 12px;
+  }
+
+  .logo {
+    width: 45px;
+    height: 45px;
+  }
+
+  .brand h1 {
+    font-size: 18px;
+  }
+
+  .brand p {
+    font-size: 11px;
+  }
+
+  .form-container {
+    padding: 25px 15px;
+  }
+
+  .avatar {
+    width: 80px;
+    margin-top: -40px;
+  }
+
+  form {
+    width: 100%;
+    padding: 20px;
+  }
+
+  input {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .bottom-text {
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
+/* EXTRA SMALL PHONES */
+@media (max-width: 480px) {
+
+  .brand h1 {
+    font-size: 16px;
+  }
+
+  .brand span {
+    display: block;
+  }
+
+  .avatar {
+    width: 70px;
+  }
+
+  .toggle-password {
+    top: 10px;
+  }
+
+  #notification {
+    width: 90%;
+    text-align: center;
+    font-size: 14px;
+    padding: 12px;
+  }
+}
+
