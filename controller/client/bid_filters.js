@@ -118,10 +118,11 @@ async function filterBidsByCategoriesBackend(categories) {
 
   try {
     // Call backend filter API - categories are comma-separated
-    const categoriesParam = categories.join(',');
-    const response = await fetch(
-      `../../../model/api/client/filter_listings.php?type=bid&categories=${encodeURIComponent(categoriesParam)}`
-    );
+   const categoriesParam = categories.join(',');
+const response = await fetch(
+  `../../../model/api/client/filter_listings.php?type=bid&categories=${encodeURIComponent(categoriesParam)}`
+);
+
     
     const data = await response.json();
 
@@ -165,11 +166,16 @@ function displayFilteredBidsFromBackend(bids) {
   // Use the SAME card creation as ongoing_bids.js
   bids.forEach(bid => {
     // Check ownership (same logic as ongoing_bids.js)
-    const ownerId = bid.owner_id || bid.user_idnum;
+    const ownerId = 
+  bid.user_idnum ||
+  bid.user_id ||
+  bid.seller_id ||
+  bid.owner_id;
+
     bid.is_owner = CURRENT_USER_ID && String(ownerId) === String(CURRENT_USER_ID);
     
     // Create card - using the EXACT SAME createBidCard function
-    const card = createBidCard(bid);
+    const card = window.createBidCard(bid);
     availableContainer.appendChild(card);
   });
 }

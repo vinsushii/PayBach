@@ -133,3 +133,4 @@ function showError(msg) {
 
 // Make loadBidListings available globally for bid_filters.js
 window.loadBidListings = loadBidListings;
+window.createBidCard = createBidCard;
