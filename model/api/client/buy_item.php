@@ -38,6 +38,15 @@ if ($endTime < $currentTime && $statusCheck["status"] == "ongoing") {
     ");
     $stmtStatusCheck->bind_param("si", $completed, $listing_id);
     $stmtStatusCheck->execute();
+    
+    $completed = "CLOSED";
+    $stmtStatusCheck = $conn->prepare("
+        UPDATE bids
+        SET bid_status = ?
+        WHERE listing_id = ?
+    ");
+    $stmtStatusCheck->bind_param("si", $completed, $listing_id);
+    $stmtStatusCheck->execute();
     $stmtStatusCheck->close();
 }
 
