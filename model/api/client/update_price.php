@@ -67,6 +67,23 @@ try {
     $stmt->execute();
     $stmt->close();
 
+    /* Notification */
+    $message = $user_idnum . " placed a new bid on your item.";
+    $stmt = $conn->prepare("
+            INSERT INTO notifications
+        (receiver_idnum, sender_idnum, listing_id, type, message)
+        VALUES (?, ?, ?, 'bid', ?)
+    ");
+    $stmt->bind_param(
+        "ssis",
+        $row['owner_id'], //item owner
+        $user_idnum, //bidder
+        $listing_id,
+        $message
+    );
+    $stmt->execute();
+    $stmt->close();
+
     $conn->commit();
 
     echo json_encode([
