@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     item.name || listing.description || "Unnamed Item";
 
   // Description
+  document.querySelector(".time-left").textContent = (listing.status == "ongoing") ? "Ongoing" : "Completed";
   document.querySelector(".description p.lorem").textContent =
     listing.description || "No description provided.";
   document.querySelector(".description strong").nextElementSibling.textContent =

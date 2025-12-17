@@ -26,13 +26,17 @@ $statusCheck = $stmtStatusCheck->get_result()->fetch_assoc();
 $stmtStatusCheck->close();
 
 $currentDateTime = date('m/d/Y h:i:s a', time());
-if ($statusCheck["end_date"] < $currentDateTime) {
-    $stmtStatusUpdate = $conn->prepare("
+$currentTime = strtotime($currentDateTime);
+$endTime = strtotime($statusCheck["end_date"]);
+
+if ($endTime < $currentTime && $statusCheck["status"] == "ongoing") {
+    $completed = "completed";
+    $stmtStatusCheck = $conn->prepare("
         UPDATE listings
         SET status = ?
         WHERE listing_id = ?
     ");
-    $stmtStatusCheck->bind_param("si", "completed", $listing_id);
+    $stmtStatusCheck->bind_param("si", $completed, $listing_id);
     $stmtStatusCheck->execute();
     $stmtStatusCheck->close();
 }
