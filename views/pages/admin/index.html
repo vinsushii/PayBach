@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayBach | Admin Login</title>
+  <link rel="stylesheet" href="../../css/client/style.css">
+</head>
+<body>
+  <div id="notification"></div>
+
+  <div class="app-container">
+    <header class="header">
+      <img src="../../images/payback-logo.png" alt="PayBach Logo" class="logo">
+      <div class="brand">
+        <h1>Pay<span>Bach</span></h1>
+        <p>Admin Panel</p>
+      </div>
+    </header>
+
+    <section class="form-container active" id="admin-login-form">
+      <img src="../../images/Generic-profile.png" alt="Admin Icon" class="avatar">
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <img src="../../images/user-profile.png" alt="User Icon" class="icon">
+          <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+          <img src="../../images/lock.png" alt="Lock Icon" class="icon">
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn">LOGIN</button>
+        <p class="redirect-link">
+            Are you a client/student? <a href="../../../index.html">Go to Client Login</a>
+          </p>
+      </form>
+    </section>
+  </div>
+  
+  <script src="../../../controller/admin/admin.js"></script>
+</body>
+</html>

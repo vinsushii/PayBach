@@ -299,3 +299,20 @@ input:focus {
   }
 }
 
+.redirect-link {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #10006b;
+}
+
+.redirect-link a {
+  color: #10006b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.redirect-link a:hover {
+  text-decoration: underline;
+}

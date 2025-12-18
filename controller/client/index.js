@@ -30,21 +30,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // Forward to PHP for clients
   async function forwardToPHP(email, password) {
     try {
-      const response = await fetch("/PayBach/model/api/client/login.php", {
+      const response = await fetch("model/api/client/login.php", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
-      let result = await response.json();
+
+      const result = await response.json();
       if (result.success) {
         localStorage.setItem("user_id", result.user_idnum);
         window.location.href = result.redirect;
       } else {
-        alert(result.error);
+        showNotification(result.error || "Login failed.", "error");
       }
     } catch (err) {
       console.error(err);
+      showNotification("Server error. Try again later.", "error");
     }
   }
 
@@ -56,29 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = loginForm.email.value;
       const password = loginForm.password.value;
 
-      try {
-        // Try Node.js login first (admins only)
-        const response = await fetch("http://localhost:3000/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ email, password })
-        });
-
-        const result = await response.json();
-
-        if (result.success && result.role === "admin") {
-          showNotification("Admin login successful!", "success");
-          setTimeout(() => (window.location.href = result.redirect), 800);
-          return;
-        }
-
-        // Otherwise, forward to PHP (students/clients)
-        forwardToPHP(email, password);
-      } catch (error) {
-        console.error("Error:", error);
-        showNotification("Server error. Try again later.", "error");
-      }
+      // Forward to PHP backend for students/clients
+      forwardToPHP(email, password);
     });
   }
 });
