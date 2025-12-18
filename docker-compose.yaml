@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+
+  php-apache:
+    build:
+      context: .
+      dockerfile: Dockerfile.apache
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    restart: always
+
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.nodejs
+    ports:
+      - "3000:3000"
+    volumes:
+      - /usr/src/app/node_modules
+    depends_on:
+      - mysql
+    environment:
+      - WAIT_HOSTS=mysql:3306
+    restart: always
+
+  mysql:
+    image: mysql:9.1
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: paybach_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/paybach.sql:/docker-entrypoint-initdb.d/paybach.sql
+    restart: always
+
+volumes:
+  db_data:
